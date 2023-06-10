@@ -52,7 +52,7 @@ function NavItem({ item }) {
               bgcolor: 'action.selected',
               fontWeight: 'fontWeightBold',
             },
-            bgcolor: isOpen ? 'rgba(0,0,0,0.09)' : '',
+            bgcolor: isOpen ? 'rgba(0,0,0,0.02)' : '',
             color: isOpen ? 'text.primary' : '',
           }}
         >
@@ -73,6 +73,7 @@ function NavItem({ item }) {
                     bgcolor: 'action.selected',
                     fontWeight: 'fontWeightBold',
                   },
+                  bgcolor: 'rgba(0,0,0,0.02)',
                 }}
               >
                 <StyledNavItemIcon>{subItem.icon && subItem.icon}</StyledNavItemIcon>

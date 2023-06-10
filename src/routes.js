@@ -1,5 +1,7 @@
 import { lazy } from 'react';
-import { Navigate, useRoutes } from 'react-router-dom';
+import { Navigate, useRoutes, Outlet } from 'react-router-dom';
+// hooks
+import useAuth from './hooks/useAuth';
 // layouts
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
@@ -17,30 +19,43 @@ const SubCategories = lazy(() => import('./pages/master/SubCategories'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  // Check if the user is authenticated
+  const { auth } = useAuth();
+
+  // eslint-disable-next-line react/prop-types
+  const PrivateRoute = ({ ...rest }) =>
+    auth?.email ? <Outlet /> : <Navigate to="/login" state={{ from: rest.location }} replace />;
+
   const routes = useRoutes([
-    {
-      path: '/dashboard',
-      element: <DashboardLayout />,
-      children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: 'app', element: <DashboardAppPage /> },
-        { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
-      ],
-    },
-    {
-      path: '/master',
-      element: <DashboardLayout />,
-      children: [
-        { element: <Navigate to="/master/categories" />, index: true },
-        { path: 'categories', element: <Categories /> },
-        { path: 'sub-categories', element: <SubCategories /> },
-      ],
-    },
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: '/',
+      element: <PrivateRoute />,
+      children: [
+        {
+          path: '/dashboard',
+          element: <DashboardLayout />,
+          children: [
+            { element: <Navigate to="/dashboard/app" />, index: true },
+            { path: 'app', element: <DashboardAppPage /> },
+            { path: 'user', element: <UserPage /> },
+            { path: 'products', element: <ProductsPage /> },
+            { path: 'blog', element: <BlogPage /> },
+          ],
+        },
+        {
+          path: '/master',
+          element: <DashboardLayout />,
+          children: [
+            { element: <Navigate to="/master/categories" />, index: true },
+            { path: 'categories', element: <Categories /> },
+            { path: 'sub-categories', element: <SubCategories /> },
+          ],
+        },
+      ],
     },
     {
       element: <SimpleLayout />,
