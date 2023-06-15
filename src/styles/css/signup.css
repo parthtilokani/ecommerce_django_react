@@ -1,0 +1,28 @@
+.signup-main {
+  min-height: calc(100vh - 64px);
+}
+.signup-body,
+.signin-body {
+  max-width: 400px;
+}
+.signup-head {
+  color: var(--primary);
+}
+.signup-btn {
+  background-color: var(--primary) !important;
+}
+.already-user {
+  font-size: smaller;
+  color: var(--secondary);
+  text-decoration: underline;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+.note-div {
+  font-size: smaller;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  text-align: center;
+}

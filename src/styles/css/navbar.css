@@ -1,36 +1,137 @@
 nav {
-  width: "100%";
-  height: 54px;
+  display: flex;
+  width: 100%;
+  height: 64px;
   background-color: var(--primary);
   color: white;
 }
-
-.nav-sub {
+#app-brand {
+  position: relative;
   height: inherit;
-  margin: 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  width: 100%;
+  background-color: inherit;
+  text-align: center;
+  z-index: 3;
 }
-
+#app-brand h3 {
+  padding: 0 1rem;
+}
+#app-brand a {
+  text-decoration: none;
+  color: white;
+}
+#hamburger {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+}
+#hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: var(--secondary);
+  border-radius: 5px;
+  margin-bottom: 5px;
+  transform-origin: 4px 0px;
+  transition: 0.3s ease-in;
+}
+#hamburger:hover span {
+  background: white;
+}
+.hamburger-close {
+  position: relative;
+}
+.hamburger-close span:nth-child(odd) {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  width: 32px !important;
+}
+.hamburger-close span:nth-child(2) {
+  display: none !important;
+}
+.hamburger-close span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 0;
+}
+.hamburger-close span:nth-child(3) {
+  transform: rotate(-45deg);
+  bottom: 0;
+  left: -1px;
+}
 @media (width > 1100px) {
-  .nav-sub {
-    margin: 0 100px;
+  nav {
+    padding: 0 100px;
   }
 }
-
 #app-menu {
-  height: inherit;
+  position: absolute;
+  width: 100%;
+  top: -300px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+  transition: 0.5s ease-in-out;
+  z-index: 2;
 }
-
+.menu-open {
+  top: 64px !important;
+}
 #app-menu ul {
-  height: inherit;
   list-style: none;
+  text-align: center;
+  background-color: white;
+  height: inherit;
+  margin: 0;
 }
-
 #app-menu li {
-  margin: 0 30px;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid white;
+  cursor: pointer;
+  color: var(--secondary);
 }
-
+#app-menu li a {
+  text-decoration: none;
+  color: var(--secondary);
+}
 .nav-post-ad {
   background-color: var(--secondary);
   border-radius: 20px;
   padding: 7px 20px;
+  font-weight: 600;
+  color: white;
+  border: none;
+}
+@media (width > 700px) {
+  #app-brand {
+    width: 300px !important;
+    text-align: start !important;
+    margin-left: 0 !important;
+  }
+  #hamburger {
+    display: none !important;
+  }
+  #app-menu {
+    position: relative !important;
+    top: auto !important;
+    box-shadow: none !important;
+    max-width: 700px !important;
+  }
+  #app-menu ul {
+    background-color: var(--primary) !important;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 64px !important;
+    margin: 0 !important;
+  }
+  #app-menu li {
+    padding: 0 !important;
+    border: none !important;
+  }
 }

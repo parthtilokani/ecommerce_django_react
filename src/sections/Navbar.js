@@ -1,24 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 // css
 import "../styles/css/navbar.css";
 
+// hooks
+import useAuth from "../hooks/useAuth.js";
+
 const Navbar = () => {
+  const { auth } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <nav>
-      <div className='d-flex justify-content-between align-items-center nav-sub'>
-        <div id='app-logo'>
-          <h3>Classified Ads</h3>
+      <div id='app-brand'>
+        <h3>
+          <Link to='/'>Classified Ads</Link>
+        </h3>
+        <div
+          id='hamburger'
+          className={isOpen ? "hamburger-close" : ""}
+          onClick={() => setIsOpen((prev) => !prev)}>
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
-        <div id='app-menu'>
-          <ul className='d-flex justify-content-evenly align-items-center'>
-            <li>Home</li>
-            <li>All Categories</li>
-            <li>Contact</li>
-            <li>Profile</li>
-            <li className='nav-post-ad'>+ Post Your Ad</li>
-          </ul>
-        </div>
+      </div>
+      <div id='app-menu' className={isOpen ? "menu-open" : ""}>
+        <ul>
+          <li>
+            <Link to='/home'>Home</Link>
+          </li>
+          <li>All Categories</li>
+          <li>
+            <Link to='/contact'>Contact</Link>
+          </li>
+          <li>
+            {auth?.token ? (
+              <Link to='/profile'>Profile</Link>
+            ) : (
+              <Link to='/signup'>Sign Up</Link>
+            )}
+          </li>
+          <li>
+            <Link to='/post-new-ad'>
+              <button className='nav-post-ad'>+ Post Your Ad</button>
+            </Link>
+          </li>
+        </ul>
       </div>
     </nav>
   );

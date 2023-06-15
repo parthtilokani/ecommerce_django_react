@@ -10,9 +10,12 @@ h3,
 h4,
 h5,
 h6,
-p,
-span {
+p {
   margin: 0 !important;
+}
+
+ul {
+  padding: 0 !important;
 }
 
 * {
