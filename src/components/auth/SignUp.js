@@ -98,11 +98,6 @@ const SignUp = ({ setIsSignUp }) => {
       <div className='mt-1 already-user' onClick={() => setIsSignUp(false)}>
         Already a user? Sign In
       </div>
-      <hr />
-      <div className='note-div'>
-        Your contact is never shared with external parties nor do we use it to
-        spam you in any way.
-      </div>
     </div>
   );
 };

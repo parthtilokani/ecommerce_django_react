@@ -23,13 +23,15 @@ const Authentication = () => {
   }, [auth, navigate]);
 
   return (
-    <div className='container'>
-      <div className='signup-main d-flex justify-content-center align-items-center'>
-        {isSignUp ? (
-          <SignUp {...{ setIsSignUp }} />
-        ) : (
-          <SignIn {...{ setIsSignUp }} />
-        )}
+    <div id='signup-bg'>
+      <div className='signup-overlay'>
+        <div className='signup-main d-flex justify-content-center align-items-center'>
+          {isSignUp ? (
+            <SignUp {...{ setIsSignUp }} />
+          ) : (
+            <SignIn {...{ setIsSignUp }} />
+          )}
+        </div>
       </div>
     </div>
   );

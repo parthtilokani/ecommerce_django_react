@@ -1,9 +1,22 @@
+#signup-bg {
+  background-image: url(https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/uploads/2019/10/home-big-banner2.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#signup-bg .signup-overlay {
+  background-color: hsla(0, 0%, 0%, 0.5);
+}
 .signup-main {
   min-height: calc(100vh - 64px);
 }
 .signup-body,
 .signin-body {
-  max-width: 400px;
+  max-width: 440px;
+  padding: 20px;
+  margin: 1rem 0.3rem;
+  background-color: white;
+  border-radius: 8px;
 }
 .signup-head {
   color: var(--primary);

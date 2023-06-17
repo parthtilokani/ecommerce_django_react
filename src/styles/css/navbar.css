@@ -107,6 +107,9 @@ nav {
   color: white;
   border: none;
 }
+.nav-post-ad:hover {
+  background-color: rgb(62, 176, 154);
+}
 @media (width > 700px) {
   #app-brand {
     width: 300px !important;
@@ -133,5 +136,11 @@ nav {
   #app-menu li {
     padding: 0 !important;
     border: none !important;
+  }
+  #app-menu a {
+    color: white !important;
+  }
+  #app-menu a:hover {
+    color: var(--secondary) !important;
   }
 }

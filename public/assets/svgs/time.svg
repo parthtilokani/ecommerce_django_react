@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="400" height="400" viewBox="0 0 400 400" xml:space="preserve">
+<desc>Created with Fabric.js 3.6.6</desc>
+<defs>
+</defs>
+<g transform="matrix(21.22 0 0 21.22 201.55 201.55)" id="SVGRepo_iconCarrier"  >
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(67,198,172); fill-rule: evenodd; opacity: 1;"  transform=" translate(-12, -12)" d="M 12 21 C 16.9706 21 21 16.9706 21 12 C 21 7.02944 16.9706 3 12 3 C 7.02944 3 3 7.02944 3 12 C 3 16.9706 7.02944 21 12 21 Z M 13 6.5 C 13 5.94772 12.5523 5.5 12 5.5 C 11.4477 5.5 11 5.94772 11 6.5 V 11.75 C 11 12.4404 11.5596 13 12.25 13 H 15.5 C 16.0523 13 16.5 12.5523 16.5 12 C 16.5 11.4477 16.0523 11 15.5 11 H 13 V 6.5 Z" stroke-linecap="round" />
+</g>
+</svg>
