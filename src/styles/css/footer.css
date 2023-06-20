@@ -1,0 +1,28 @@
+footer {
+  min-height: 350px;
+  background-color: #000;
+  padding: 60px 0;
+  color: white;
+}
+footer .footer-main {
+  max-width: 1300px;
+  margin: auto;
+}
+footer .f-icon-div {
+  height: 35px;
+  width: 35px;
+  background-color: hsl(0, 0%, 20%);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+footer .f-icon-div img {
+  width: 20px;
+  height: 20px;
+}
+footer .f-icon-div:hover {
+  background-color: var(--secondary);
+}

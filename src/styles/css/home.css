@@ -32,6 +32,7 @@
   padding: 10px;
   display: flex;
   height: 50px;
+  cursor: pointer;
 }
 #home-search .input-wrapper img {
   width: 25px;
@@ -43,7 +44,7 @@
   cursor: pointer;
 }
 #home-search .search-btn:hover {
-  background-color: rgb(62, 176, 154);
+  background-color: var(--btn-color-secondary-hover);
 }
 #home-search .p-hldr {
   margin: 2px 10px 0;
@@ -95,6 +96,34 @@
     border-radius: 0;
   }
 }
+/*Models*/
+.location-model {
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0px;
+  z-index: 7;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.location-model .card {
+  height: 400px;
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  position: relative;
+}
+.location-model .close-btn {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
 
 /*Popular Categories*/
 #home-pp-categories {
@@ -108,7 +137,7 @@
   max-width: 300px;
   margin: auto;
   min-height: 200px;
-  background-color: hsla(168, 53%, 52%, 0.08);
+  background-color: var(--bg-color-secondary);
   padding: 6px;
   cursor: pointer;
   transition: all 0.3s ease-out;
@@ -140,7 +169,7 @@
 #home-featured-ads {
   min-height: calc(100vh - 64px);
   padding: 40px 0;
-  background-color: hsla(168, 53%, 52%, 0.08);
+  background-color: var(--bg-color-secondary);
 }
 .featured-ads-main {
   max-width: 1300px;
@@ -257,6 +286,14 @@
 }
 #home-info-panel .info-panel-card {
   height: inherit;
+  width: 290px;
+  margin: 30px auto;
+}
+#home-info-panel .ip-img-div {
+  width: 125px;
+  height: 125px;
+  margin: 5px;
+  text-align: center;
 }
 #home-info-panel img {
   width: 125px;
@@ -265,4 +302,48 @@
 #home-info-panel .col-sm-4:nth-child(3) .info-panel-card img {
   width: 115px;
   height: 115px;
+}
+
+/*Our Pricing and Packages*/
+#home-our-pricing {
+  min-height: calc(100vh - 64px);
+  padding: 40px 0;
+}
+#home-our-pricing .our-pricing-main {
+  max-width: 1300px;
+}
+#home-our-pricing .our-pricing-card {
+  width: 300px;
+  text-align: center;
+  background-color: var(--bg-color-secondary);
+  margin-bottom: 30px;
+  transition: all 0.3s ease-out;
+  cursor: pointer;
+}
+#home-our-pricing .our-pricing-card div {
+  padding: 17px;
+}
+#home-our-pricing .our-pricing-card .pricing {
+  background-color: var(--secondary);
+  color: white;
+}
+#home-our-pricing .our-pricing-card .pricing span {
+  font-size: 15px;
+}
+#home-our-pricing .our-pricing-card .op-features {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+#home-our-pricing .our-pricing-card button {
+  height: 50px;
+  width: 200px;
+  background-color: var(--secondary);
+  border: none;
+  color: white;
+}
+#home-our-pricing .our-pricing-card:hover {
+  background-color: var(--bg-color-secondary-hover);
+}
+#home-our-pricing .our-pricing-card:hover .pricing,
+#home-our-pricing .our-pricing-card:hover button {
+  background-color: var(--btn-color-secondary-hover);
 }

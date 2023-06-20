@@ -1,18 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 
 // css
 import "../styles/css/home.css";
 
 const Home = () => {
+  const [locationView, setLocationView] = useState(false);
+  const [categoryView, setCategoryView] = useState(false);
+  const [subCategoryView, setSubCategoryView] = useState(false);
+
   return (
-    <div>
+    <div className='position-relative'>
       {/*HERO*/}
       <div id='home-hero'>
         <div className='overlay'>
           <div id='home-search'>
             <div className='row justify-content-center'>
               <div className='col-lg-6 col-xl-2 cols'>
-                <div className='input-wrapper'>
+                <div
+                  className='input-wrapper'
+                  onClick={() => setLocationView(true)}>
                   <div>
                     <img src='/assets/svgs/location.svg' alt='location' />
                   </div>
@@ -20,7 +26,9 @@ const Home = () => {
                 </div>
               </div>
               <div className='col-lg-6 col-xl-2 cols'>
-                <div className='input-wrapper'>
+                <div
+                  className='input-wrapper'
+                  onClick={() => setCategoryView(true)}>
                   <div>
                     <img src='/assets/svgs/category.svg' alt='category' />
                   </div>
@@ -28,7 +36,9 @@ const Home = () => {
                 </div>
               </div>
               <div className='col-lg-6 col-xl-2 cols'>
-                <div className='input-wrapper'>
+                <div
+                  className='input-wrapper'
+                  onClick={() => setSubCategoryView(true)}>
                   <div>
                     <img
                       src='/assets/svgs/subcategory.svg'
@@ -56,6 +66,46 @@ const Home = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      {/*Models*/}
+      <div
+        className='location-model'
+        style={locationView ? {} : { display: "none" }}>
+        <div className='card'>
+          <div className='h5 p-1 text-center'>Select Location</div>
+          <img
+            src='./assets/svgs/close.svg'
+            className='close-btn'
+            alt=''
+            onClick={() => setLocationView(false)}
+          />
+        </div>
+      </div>
+      <div
+        className='location-model'
+        style={categoryView ? {} : { display: "none" }}>
+        <div className='card'>
+          <div className='h5 p-1 text-center'>Select Category</div>
+          <img
+            src='./assets/svgs/close.svg'
+            className='close-btn'
+            alt=''
+            onClick={() => setCategoryView(false)}
+          />
+        </div>
+      </div>
+      <div
+        className='location-model'
+        style={subCategoryView ? {} : { display: "none" }}>
+        <div className='card'>
+          <div className='h5 p-1 text-center'>Select Sub-Category</div>
+          <img
+            src='./assets/svgs/close.svg'
+            className='close-btn'
+            alt=''
+            onClick={() => setSubCategoryView(false)}
+          />
         </div>
       </div>
 
@@ -147,10 +197,10 @@ const Home = () => {
         <div className='info-panel-main'>
           <div className='info-overlay'>
             <div className='row mx-auto'>
-              <div className='col-sm-4 d-flex justify-content-center align-items-center'>
+              <div className='col-md-4 d-flex justify-content-center align-items-center'>
                 <div className='info-panel-card'>
                   <div className='d-flex flex-fill'>
-                    <div>
+                    <div className='ip-img-div'>
                       <img src='/assets/svgs/ads.svg' alt='' />
                     </div>
                     <div className='mt-4'>
@@ -160,10 +210,10 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <div className='col-sm-4 d-flex justify-content-center align-items-center'>
+              <div className='col-md-4 d-flex justify-content-center align-items-center'>
                 <div className='info-panel-card'>
                   <div className='d-flex flex-fill'>
-                    <div>
+                    <div className='ip-img-div'>
                       <img src='/assets/svgs/users.svg' alt='' />
                     </div>
                     <div className='mt-4'>
@@ -173,10 +223,10 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <div className='col-sm-4 d-flex justify-content-center align-items-center'>
+              <div className='col-md-4 d-flex justify-content-center align-items-center'>
                 <div className='info-panel-card'>
                   <div className='d-flex flex-fill'>
-                    <div>
+                    <div className='ip-img-div'>
                       <img src='/assets/svgs/verified.svg' alt='' />
                     </div>
                     <div className='mt-4'>
@@ -188,6 +238,33 @@ const Home = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/*Our Pricing and Packages*/}
+      <div id='home-our-pricing'>
+        <div className='text-center py-4 mx-1'>
+          <div className='h2 fw-bold'>Our Pricing and Packages</div>
+        </div>
+        <div className='row mx-auto our-pricing-main'>
+          {new Array(4).fill(null).map((_, i) => (
+            <div className='col-xl-3 col-lg-4 col-md-6' key={i}>
+              <div className='our-pricing-card mx-auto'>
+                <div className='h4'>Free</div>
+                <div className='h1 pricing'>
+                  ₹ 0<span>/Per month</span>
+                </div>
+                <div className='op-features'>3 Regular Ads</div>
+                <div className='op-features'>No Featured Ads</div>
+                <div className='op-features'>No Top Ads</div>
+                <div className='op-features'>No Ads will be bumped up</div>
+                <div className='op-features'>Limited Support</div>
+                <div>
+                  <button>Register</button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

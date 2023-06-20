@@ -1,7 +1,16 @@
 :root {
+  /*colors*/
   --primary: #191645;
   --secondary: #43c6ac;
   --tertiary: #ffffff;
+
+  /*backgroud*/
+  --bg-color-secondary: hsla(168, 53%, 52%, 0.08);
+  --bg-color-secondary-hover: hsla(168, 53%, 52%, 0.2);
+
+  /*btn colors*/
+  --btn-color-secondary: hsl(168, 53%, 52%);
+  --btn-color-secondary-hover: hsl(168, 48%, 47%);
 }
 
 h1,
