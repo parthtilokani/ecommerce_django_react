@@ -1,12 +1,30 @@
-import React from "react";
-
+import React, { useState } from "react";
 // hooks
 import useAuth from "../../hooks/useAuth.js";
+import { isValid } from "../../utils/support.js";
+
+import FormInput from "../input/FormInput.js";
 
 export const SignIn = ({ setIsSignUp }) => {
   const { setAuth } = useAuth();
+  const [data, setData] = useState({
+    username: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  };
 
   const handleLogin = () => {
+    let obj = {
+      username: isValid("Username", data.username, "username"),
+      password: isValid("Password", data.password, "password"),
+    };
+    if (Object.values(obj).filter((e) => e !== "").length > 0)
+      return setErrors(obj);
+    setErrors({});
     setAuth({ token: "yes" });
   };
 
@@ -16,29 +34,27 @@ export const SignIn = ({ setIsSignUp }) => {
         <h3 className='fw-bold signup-head'>Welcome Back</h3>
       </div>
       <div className='mt-3'>
-        <label className='form-label' htmlFor='username'>
-          Username :
-        </label>
-        <input
+        <FormInput
+          labelName={"Username"}
           type='text'
-          className='form-control form-control-sm'
           id='username'
-          autoComplete='false'
+          value={data.username}
+          onChange={handleChange}
+          errors={errors}
         />
       </div>
-      <div>
-        <label className='form-label' htmlFor='password'>
-          Password :
-        </label>
-        <input
-          type='text'
-          className='form-control form-control-sm'
+      <div className='mt-1'>
+        <FormInput
+          labelName={"Password"}
+          type='password'
           id='password'
-          autoComplete='false'
+          value={data.password}
+          onChange={handleChange}
+          errors={errors}
         />
       </div>
-      <div>
-        <label className='form-label' htmlFor='otp'>
+      <div className='mt-1'>
+        <label className='form-label m-0' htmlFor='otp'>
           OTP :
         </label>
         <input

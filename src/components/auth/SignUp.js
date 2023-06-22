@@ -1,6 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
+
+import FormInput from "../input/FormInput.js";
+
+import { isValid } from "../../utils/support.js";
 
 const SignUp = ({ setIsSignUp }) => {
+  const [data, setData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    username: "",
+    phonenumber: "",
+  });
+  const [termsChecked, setTermsChecked] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  };
+
+  const handleSubmit = () => {
+    let obj = {
+      firstname: isValid("Firstname", data.firstname),
+      lastname: isValid("Lastname", data.lastname),
+      username: isValid("Username", data.username, "username"),
+      email: isValid("Email", data.email, "email"),
+      password: isValid("Password", data.password, "password"),
+      phonenumber: isValid("Phone number", data.phonenumber, "phonenumber"),
+    };
+    if (Object.values(obj).filter((e) => e !== "").length > 0)
+      return setErrors(obj);
+    setErrors({});
+  };
+
   return (
     <div className='signup-body flex-fill'>
       <div className='text-center'>
@@ -8,92 +41,95 @@ const SignUp = ({ setIsSignUp }) => {
       </div>
       <div className='row mt-3'>
         <div className='col-lg-6'>
-          <label className='form-label' htmlFor='firstname'>
-            Firstname :
-          </label>
-          <input
+          <FormInput
+            labelName={"Firstname"}
             type='text'
-            className='form-control form-control-sm'
             id='firstname'
-            autoComplete='false'
+            value={data.firstname}
+            onChange={handleChange}
+            errors={errors}
           />
         </div>
         <div className='col-lg-6'>
-          <label className='form-label' htmlFor='lastname'>
-            Lastname :
-          </label>
-          <input
+          <FormInput
+            labelName={"Lastname"}
             type='text'
-            className='form-control form-control-sm'
             id='lastname'
-            autoComplete='false'
+            value={data.lastname}
+            onChange={handleChange}
+            errors={errors}
           />
         </div>
       </div>
       <div>
-        <label className='form-label' htmlFor='username'>
-          Username :
-        </label>
-        <input
+        <FormInput
+          labelName={"Username"}
           type='text'
-          className='form-control form-control-sm'
           id='username'
-          autoComplete='false'
+          value={data.username}
+          onChange={handleChange}
+          errors={errors}
         />
       </div>
       <div>
-        <label className='form-label' htmlFor='email'>
-          Email :
-        </label>
-        <input
-          type='text'
-          className='form-control form-control-sm'
+        <FormInput
+          labelName={"Email"}
+          type='email'
           id='email'
-          autoComplete='false'
+          value={data.email}
+          onChange={handleChange}
+          errors={errors}
         />
       </div>
       <div>
-        <label className='form-label' htmlFor='phonenumber'>
-          Phone Number :
-        </label>
-        <input
+        <FormInput
+          labelName={"Phone Number"}
           type='text'
-          className='form-control form-control-sm'
           id='phonenumber'
-          autoComplete='false'
+          value={data.phonenumber}
+          onChange={handleChange}
+          errors={errors}
         />
       </div>
       <div>
-        <label className='form-label' htmlFor='password'>
-          Password :
-        </label>
-        <input
-          type='text'
-          className='form-control form-control-sm'
+        <FormInput
+          labelName={"Password"}
+          type='password'
           id='password'
-          autoComplete='false'
+          value={data.password}
+          onChange={handleChange}
+          errors={errors}
         />
       </div>
       <div>
-        <label className='form-label' htmlFor='otp'>
-          OTP :
-        </label>
-        <input
+        <FormInput
+          labelName={"OTP"}
           type='text'
-          className='form-control form-control-sm'
           id='otp'
-          autoComplete='false'
-          disabled
+          value={data.otp}
+          onChange={handleChange}
+          errors={errors}
         />
       </div>
       <div className='form-check mt-2'>
-        <input className='form-check-input' type='checkbox' id='terms' />
+        <input
+          className='form-check-input'
+          type='checkbox'
+          id='terms'
+          checked={termsChecked}
+          onChange={() => setTermsChecked((prev) => !prev)}
+        />
         <label className='form-check-label' htmlFor='terms'>
           By clicking, I agree...
         </label>
       </div>
       <div className='mt-3 text-center'>
-        <button className='btn btn-primary signup-btn'>Sign Up For Free</button>
+        <button
+          className='btn btn-primary signup-btn'
+          disabled={!termsChecked}
+          onClick={handleSubmit}>
+          Sign Up For Free
+        </button>
       </div>
       <div className='mt-1 already-user' onClick={() => setIsSignUp(false)}>
         Already a user? Sign In
