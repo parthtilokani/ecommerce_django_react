@@ -1,23 +1,90 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import DrawerNavigator from '../DrawerNavigator/DrawerNavigator.jsx';
-import Account from '../../screens/app/BottomTabScreens/Account.jsx';
 import Postad from '../../screens/app/BottomTabScreens/Postad.jsx';
 import Main from '../../screens/app/Main.jsx';
 import LocationScreen from '../../screens/app/StackScreens/LocationScreen.jsx';
 import AllCatagories from '../../screens/app/StackScreens/AllCatagories.jsx';
-import GobackHeader from '../../components/GobackHeader.jsx';
-import AppHeader from '../../components/AppHeader.jsx';
+import SignIn from '../../screens/auth/SignIn.jsx';
+import SignUp from '../../screens/auth/SignUp.jsx';
+import Splash from '../../screens/auth/Splash.jsx';
+import ForgotPassword from '../../screens/auth/ForgotPassword.jsx';
+import Category from '../../components/Categories/Category.jsx';
+import Appsetting from '../../screens/app/DrawerScreens/AppSetting.jsx';
+import StoreDetails from '../../screens/app/StackScreens/StoreDetails.jsx';
+import SubCategory from '../../screens/app/StackScreens/SubCategory.jsx';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Drawer" component={DrawerNavigator} />
-      <Stack.Screen name="Main" component={Main} />
-      <Stack.Screen name="Postad" component={Postad} />
-      <Stack.Screen name="AllCategories" component={AllCatagories} />
-      <Stack.Screen name="Location" component={LocationScreen} />
+    <Stack.Navigator
+      // screenOptions={{headerShown: false}}
+      initialRouteName="Splash">
+      <Stack.Screen
+        name="Drawer"
+        component={DrawerNavigator}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Main"
+        component={Main}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Postad"
+        component={Postad}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="AllCategories"
+        component={AllCatagories}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="SubCategory"
+        component={SubCategory}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Location"
+        component={LocationScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Splash"
+        component={Splash}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="SignIn"
+        component={SignIn}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUp}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPassword}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Category"
+        component={Category}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="AppSetting"
+        component={Appsetting}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="StoreDetails"
+        component={StoreDetails}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };

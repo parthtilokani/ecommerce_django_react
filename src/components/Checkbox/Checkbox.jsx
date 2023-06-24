@@ -1,36 +1,39 @@
 import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
+// import CheckBox from '@react-native-community/checkbox';
+import {Checkbox} from 'react-native-paper';
+
 import {COLORS, width} from '../../constant';
 
-const Checkbox = ({text, secondTxt}) => {
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
+const CheckboxComponent = ({
+  text,
+  secondTxt,
+  checkboxValue,
+  setCheckboxValue,
+}) => {
+  // const [toggleCheckBox, setToggleCheckBox] = useState(false);
   return (
     <View style={styles.container}>
-      <CheckBox
-        style={{marginRight:10,width:20,height:20}}
-        boxType={'square'}
-        animationDuration={0.1}
-        value={toggleCheckBox}
-        tintColors={{true: COLORS.tertiary, false: COLORS.gray}}
-        onCheckColor={{true: COLORS.tertiary, false: COLORS.gray}}
-        onFillColor={{true: COLORS.tertiary, false: COLORS.gray}}
-        onValueChange={() => setToggleCheckBox(!toggleCheckBox)}
+      <Checkbox.Android
+        // style={{marginRight: 10, width: 30, height: 30}}
+        color={COLORS.primary}
+        uncheckedColor={COLORS.gray}
+        status={checkboxValue ? 'checked' : 'unchecked'}
+        onPress={setCheckboxValue}
       />
-      
+
       <Text style={{color: COLORS.black}}>{text}</Text>
-      <Text style={{color: COLORS.tertiary}}>{secondTxt}</Text>
+      <Text style={{color: COLORS.primary}}>{secondTxt}</Text>
     </View>
   );
 };
 
-export default Checkbox;
+export default CheckboxComponent;
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: 'center',
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    alignItems: 'center',
     width: width * 0.9,
     flexDirection: 'row',
   },

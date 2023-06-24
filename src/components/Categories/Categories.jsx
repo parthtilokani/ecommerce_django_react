@@ -1,28 +1,54 @@
-import {FlatList, StyleSheet, Image, View, Text} from 'react-native';
-import React from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  Image,
+  View,
+  Text,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
+import React, {useState} from 'react';
 import {COLORS, FONTSIZE} from '../../constant/theme.js';
-import {height, width} from '../../constant/index.js';
+import {height, normalize, width} from '../../constant/index.js';
 import {itemData} from '../../../data/data.js';
+import {useNavigation} from '@react-navigation/native';
 
 const Categories = ({scrollEnabled}) => {
+  const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
   const Item = ({item}) => {
     return (
-      <View style={styles.item}>
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() =>
+          navigation.navigate('SubCategory', {item: item, category: true})
+        }>
         <Image source={{uri: item.image}} style={styles.imageStyle} />
         <Text style={styles.titleStyle}>{item.title}</Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 
   return (
-    <View>
-      <Text>Categories</Text>
+    <View style={styles.container}>
+      <Text style={styles.titleText}>Categories</Text>
       <FlatList
         data={itemData}
         numColumns={3}
         renderItem={Item}
         scrollEnabled={scrollEnabled}
-        // ListFooterComponent={<View style={{height: 100}} />}
+        refreshing={refreshing}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
@@ -32,21 +58,22 @@ const Categories = ({scrollEnabled}) => {
 export default Categories;
 
 const styles = StyleSheet.create({
-  app: {
-    flex: 4, // the number of columns you want to devide the screen into
-    marginHorizontal: 'auto',
-    width: 400,
+  container: {
+    marginHorizontal: 5,
+    // marginBottom: 90,
+  },
+  titleText: {
+    marginLeft: 10,
+    fontSize: normalize(FONTSIZE.xxSmall),
+    fontWeight: 'bold',
+    color: COLORS.black,
   },
   item: {
     flex: 1,
-    maxWidth: width * 0.3, // 100% devided by the number of rows you want
-    // width: width * 0.07,
+    maxWidth: width * 0.3,
     height: height * 0.15,
     alignItems: 'center',
     justifyContent: 'center',
-
-    // my visual styles; not important for the grid
-    // padding: 10,
     margin: 5,
     backgroundColor: COLORS.lightWhite,
     borderRadius: 8,
@@ -57,9 +84,8 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     color: COLORS.black,
-    fontSize: FONTSIZE.small,
+    fontSize: normalize(FONTSIZE.small),
     fontWeight: '500',
     textAlign: 'center',
-    // flexShrink: 1,
   },
 });

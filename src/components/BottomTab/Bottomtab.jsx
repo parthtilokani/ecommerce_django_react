@@ -13,9 +13,11 @@ import {
   SHADOWS,
   height,
   icons,
+  normalize,
   width,
 } from '../../constant/index.js';
 import {useNavigation} from '@react-navigation/native';
+import {FONTFAMILY} from '../../constant/theme.js';
 
 const Bottomtab = ({callBack, tabValue}) => {
   const navigation = useNavigation();
@@ -27,62 +29,63 @@ const Bottomtab = ({callBack, tabValue}) => {
       navigation.navigate('Postad');
       return;
     }
+    if (tab == 4) {
+      setSelectedTab(0);
+      navigation.navigate('SignIn');
+      return;
+    }
     setSelectedTab(tab);
     callBack(tab);
   };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.iconView}>
-        <Pressable style={[styles.pressable]} onPress={() => setTab(0)}>
+        <Pressable
+          style={[
+            styles.pressable,
+            selectedTab == 0 && {backgroundColor: COLORS.secondary},
+          ]}
+          onPress={() => setTab(0)}>
           <Image
             source={icons.home}
             style={[
               styles.icons,
-              selectedTab == 0 && {tintColor: COLORS.tertiary},
+              selectedTab == 0 && {tintColor: COLORS.primary},
             ]}
           />
-          <Text
-            style={[
-              styles.tabText,
-              selectedTab == 0 && {color: COLORS.tertiary},
-            ]}>
-            Home
-          </Text>
+          {selectedTab == 0 ? null : (
+            <Text
+              style={[
+                styles.tabText,
+                selectedTab == 0 && {color: COLORS.primary},
+              ]}>
+              Home
+            </Text>
+          )}
         </Pressable>
-        <Pressable style={styles.pressable} onPress={() => setTab(1)}>
+        {/* <Pressable style={styles.pressable} onPress={() => setTab(1)}>
           <Image
             source={icons.search}
             style={[
               styles.icons,
-              selectedTab == 1 && {tintColor: COLORS.tertiary},
+              selectedTab == 1 && {tintColor: COLORS.primary},
             ]}
           />
           <Text
             style={[
               styles.tabText,
-              selectedTab == 1 && {color: COLORS.tertiary},
+              selectedTab == 1 && {color: COLORS.primary},
             ]}>
             Search
           </Text>
-        </Pressable>
+        </Pressable> */}
 
-        <Pressable style={styles.pressable} onPress={() => setTab(2)}>
-          <Image
-            source={icons.plus}
-            style={[
-              styles.icons,
-              selectedTab == 2 && {tintColor: COLORS.tertiary},
-            ]}
-          />
-          <Text
-            style={[
-              styles.tabText,
-              selectedTab == 2 && {color: COLORS.tertiary},
-            ]}>
-            Post Ad
-          </Text>
-        </Pressable>
-        {/* <Pressable style={[styles.pressable]} onPress={() => setTab(2)}>
+        <Pressable
+          style={[
+            styles.pressable,
+            selectedTab == 2 && {backgroundColor: COLORS.secondary},
+          ]}
+          onPress={() => setTab(2)}>
           <View style={[styles.postAds, SHADOWS.medium]}>
             <Image
               source={icons.plus}
@@ -93,42 +96,49 @@ const Bottomtab = ({callBack, tabValue}) => {
             style={[
               styles.tabText,
               {bottom: 12},
-              selectedTab == 2 && {color: COLORS.tertiary},
+              selectedTab == 2 && {color: COLORS.primary},
             ]}>
-            Post Ad
+            {selectedTab == 2 ? '' : 'Post Ad'}
           </Text>
-        </Pressable> */}
-        <Pressable style={styles.pressable} onPress={() => setTab(3)}>
+        </Pressable>
+        {/* <Pressable style={styles.pressable} onPress={() => setTab(3)}>
           <Image
             source={icons.chat}
             style={[
               styles.icons,
-              selectedTab == 3 && {tintColor: COLORS.tertiary},
+              selectedTab == 3 && {tintColor: COLORS.primary},
             ]}
           />
           <Text
             style={[
               styles.tabText,
-              selectedTab == 3 && {color: COLORS.tertiary},
+              selectedTab == 3 && {color: COLORS.primary},
             ]}>
             Chats
           </Text>
-        </Pressable>
-        <Pressable style={styles.pressable} onPress={() => setTab(4)}>
+        </Pressable> */}
+        <Pressable
+          style={[
+            styles.pressable,
+            selectedTab == 4 && {backgroundColor: COLORS.secondary},
+          ]}
+          onPress={() => setTab(4)}>
           <Image
             source={icons.account}
             style={[
               styles.icons,
-              selectedTab == 4 && {tintColor: COLORS.tertiary},
+              selectedTab == 4 && {tintColor: COLORS.primary},
             ]}
           />
-          <Text
-            style={[
-              styles.tabText,
-              selectedTab == 4 && {color: COLORS.tertiary},
-            ]}>
-            Account
-          </Text>
+          {selectedTab == 4 ? null : (
+            <Text
+              style={[
+                styles.tabText,
+                selectedTab == 4 && {color: COLORS.primary},
+              ]}>
+              Account
+            </Text>
+          )}
         </Pressable>
       </View>
     </SafeAreaView>
@@ -146,6 +156,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   iconView: {
+    marginTop: 5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-evenly',
@@ -153,14 +164,15 @@ const styles = StyleSheet.create({
   pressable: {
     alignItems: 'center',
     justifyContent: 'center',
+    width: width * 0.2,
+    height: height * 0.067,
+    borderRadius: 30,
   },
   postAds: {
-    bottom: 15,
-    // marginBottom: -10,
-    width: width * 0.147,
-    borderRadius: width * 0.08,
-    height: height * 0.07,
-    backgroundColor: COLORS.tertiary,
+    bottom: 12,
+    padding: 13,
+    borderRadius: 30,
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -168,10 +180,11 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     tintColor: COLORS.gray2,
-    // alignSelf: 'center',
   },
   tabText: {
-    fontSize: FONTSIZE.medium,
+    fontFamily: FONTFAMILY.robotoRegular,
+    fontSize: normalize(FONTSIZE.xxSmall),
+    color: COLORS.black,
     fontWeight: '500',
   },
 });

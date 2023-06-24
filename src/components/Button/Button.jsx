@@ -1,10 +1,28 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {COLORS, FONTSIZE, SHADOWS, height, width} from '../../constant';
+import {
+  COLORS,
+  FONTSIZE,
+  SHADOWS,
+  height,
+  normalize,
+  width,
+} from '../../constant';
 
-const Button = ({icon, text, style, textStyle, onPress, tintColor}) => {
+const Button = ({
+  icon,
+  text,
+  style,
+  textStyle,
+  onPress,
+  tintColor,
+  disable = false,
+}) => {
   return (
-    <TouchableOpacity style={[styles.container, style]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.container, style]}
+      onPress={onPress}
+      disabled={disable}>
       {icon && (
         <Image source={icon} style={[styles.icon, {tintColor: tintColor}]} />
       )}
@@ -18,7 +36,7 @@ export default Button;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: COLORS.tertiary,
+    backgroundColor: COLORS.primary,
     width: width * 0.9,
     height: height * 0.055,
     borderRadius: 10,
@@ -26,12 +44,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    width: 25,
-    height: 25,
+    width: 20,
+    height: 20,
+    // right: -5,
     marginRight: 10,
   },
   text: {
-    fontSize: FONTSIZE.medium,
+    fontSize: normalize(FONTSIZE.xxSmall),
     color: COLORS.white,
     fontWeight: '500',
   },

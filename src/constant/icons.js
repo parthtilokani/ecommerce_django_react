@@ -14,6 +14,11 @@ import plus from '../assets/plus.png';
 import chat from '../assets/chat.png';
 import account from '../assets/account.png';
 import location from '../assets/location.png';
+import close from '../assets/close.png';
+import next from '../assets/next.png';
+import tag from '../assets/tag.png';
+import list_view from '../assets/list-view.png';
+import grid_view from '../assets/grid-view.png';
 
 export default {
   menu,
@@ -32,4 +37,9 @@ export default {
   chat,
   account,
   location,
+  close,
+  next,
+  tag,
+  list_view,
+  grid_view,
 };

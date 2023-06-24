@@ -5,13 +5,22 @@ import Categories from '../../../components/Categories/Categories.jsx';
 
 const AllCatagories = () => {
   return (
-    <View>
+    <View style={styles.container}>
       <GobackHeader resetBack bg title={'Select Category'} />
-      <Categories scrollEnabled={true} />
+      <View style={styles.CategoriesView}>
+        <Categories scrollEnabled={true} />
+      </View>
     </View>
   );
 };
 
 export default AllCatagories;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  CategoriesView: {
+    marginVertical: 10,
+  },
+});

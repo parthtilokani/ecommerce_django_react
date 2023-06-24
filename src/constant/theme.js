@@ -1,12 +1,11 @@
 const COLORS = {
-  primary: '#312651',
-  secondary: '#444262',
-  tertiary: '#FF7754',
+  primary: '#191645',
+  secondary: '#43C6AC',
 
   gray: '#83829A',
   gray2: '#C1C0C8',
 
-  white: '#F3F4F8',
+  white: '#FFFFFF',
   lightWhite: '#FAFAFC',
   black: '#000000',
 };
@@ -14,10 +13,16 @@ const COLORS = {
 const FONTSIZE = {
   xSmall: 10,
   small: 12,
+  xxSmall: 14,
   medium: 16,
   large: 20,
   xLarge: 24,
   xxLarge: 32,
+};
+
+const FONTFAMILY = {
+  robotoRegular: 'Roboto-Regular',
+  robotoItalic: 'Roboto-Italic',
 };
 
 const SHADOWS = {
@@ -43,4 +48,4 @@ const SHADOWS = {
   },
 };
 
-export {COLORS, FONTSIZE, SHADOWS};
+export {COLORS, FONTSIZE, SHADOWS, FONTFAMILY};

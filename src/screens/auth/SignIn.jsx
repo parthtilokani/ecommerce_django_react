@@ -9,60 +9,113 @@ import {
 import React, {useState} from 'react';
 import GobackHeader from '../../components/GobackHeader';
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
-import {COLORS, FONTSIZE, height, icons, width} from '../../constant';
+import {
+  COLORS,
+  FONTSIZE,
+  appName,
+  height,
+  icons,
+  normalize,
+  width,
+} from '../../constant';
 import Input from '../../components/Inputs/Input';
 import Button from '../../components/Button/Button';
+import {signIN} from '../../utils/customHook/backEndCalls.js';
+import {
+  isEmptyValue,
+  doesNotMatchRegEx,
+  isValid,
+} from '../../utils/supportFunctions.js';
 
 const SignIn = ({navigation}) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [formDetails, setFormDetails] = useState({userName: '', password: ''});
+  const [errors, setErrors] = useState({});
+
+  const handleInputChange = (field, value) => {
+    setFormDetails(prevState => ({...prevState, [field]: value}));
+  };
+
+  const onSignin = async () => {
+    let obj = {
+      username: isValid('Username', formDetails.userName, 'username'),
+      password: isValid('Password', formDetails.password, 'password'),
+    };
+    if (Object.values(obj).filter(e => e !== '').length > 0)
+      return setErrors(obj);
+    setErrors({});
+    // setAuth({token: 'yes'});
+    // if (
+    //   isEmptyValue(formDetails?.userName, 'Username', setErrors) ||
+    //   isEmptyValue(formDetails?.password, 'Password', setErrors) ||
+    //   doesNotMatchRegEx(formDetails?.password, 'Password', setErrors)
+    // )
+    //   return;
+    // setErrors({});
+    // navigation.replace('Drawer', {screen: 'Main'});
+  };
   return (
     <KeyboardAvoidingWrapper>
       <SafeAreaView style={{flex: 1}}>
-        <GobackHeader navigation={navigation} />
-        <View style={styles.mainContainer}>
-          <Text style={styles.logo}>CLASSIMA</Text>
-          <Text style={styles.pageName}>Sign In</Text>
-        </View>
-
-        {/* TextInput View */}
+        <GobackHeader resetBack navigation={navigation} />
         <View
           style={{
+            flex: 1,
             alignItems: 'center',
-            marginTop: height * 0.1,
+            justifyContent: 'center',
+            height: height - 100,
           }}>
-          <Input
-            placeholder={'Username'}
-            value={username}
-            onChangeText={v => setUsername(v)}
-            leftIcon={icons.user}
-            style={styles.input}
-          />
-          <Input
-            placeholder={'Password'}
-            value={password}
-            onChangeText={v => setPassword(v)}
-            leftIcon={icons.lock}
-            isPassword={true}
-            style={styles.input}
-          />
-          <Text style={styles.forgotPasswordTxt}>Forgot Password?</Text>
-          <Button
-            text={'Sign In'}
-            style={styles.signInbtn}
-            onPress={() => navigation.navigate('Main')}
-          />
-        </View>
+          <View>
+            <View style={styles.mainContainer}>
+              <Text style={styles.logo}>{appName}</Text>
+              <Text style={styles.pageName}>Sign In</Text>
+            </View>
 
-        {/* Login Optional View */}
-        <View style={styles.loginOptionalView}>
+            {/* TextInput View */}
+            <View
+              style={{
+                alignItems: 'center',
+              }}>
+              <Input
+                id={'username'}
+                errors={errors}
+                placeholder={'Username'}
+                value={formDetails.userName}
+                onChangeText={text => handleInputChange('userName', text)}
+                leftIcon={icons.user}
+                style={styles.input}
+              />
+              <Input
+                id={'password'}
+                errors={errors}
+                placeholder={'Password'}
+                value={formDetails.password}
+                onChangeText={text => handleInputChange('password', text)}
+                leftIcon={icons.lock}
+                isPassword={true}
+                style={styles.input}
+              />
+              <Text
+                style={styles.forgotPasswordTxt}
+                onPress={() => navigation.navigate('ForgotPassword')}>
+                Forgot Password?
+              </Text>
+              <Button
+                text={'Sign In'}
+                style={styles.signInbtn}
+                onPress={onSignin}
+              />
+            </View>
+
+            {/* Login Optional View */}
+
+            {/* <View style={styles.loginOptionalView}>
           <View style={styles.horizontalView} />
           <Text style={{color: COLORS.gray}}>Or Login With</Text>
           <View style={styles.horizontalView} />
-        </View>
+        </View> */}
 
-        {/* Login Optional Button View */}
-        <View style={styles.optionalLoginBtnView}>
+            {/* Login Optional Button View */}
+            {/* <View style={styles.optionalLoginBtnView}>
           <Button
             text={'Facebook'}
             icon={icons.facebook}
@@ -74,15 +127,23 @@ const SignIn = ({navigation}) => {
             textStyle={styles.optionalLoginBtnText}
             style={[styles.optionalLoginBtn, {backgroundColor: 'white'}]}
           />
-        </View>
-        {/* Create account view */}
-        <View style={styles.createAccountView}>
-          <Text style={{color: COLORS.gray}}>Don't have account? </Text>
-          <Text
-            style={{color: COLORS.tertiary}}
-            onPress={() => navigation.navigate('SignUp')}>
-            Create Account
-          </Text>
+        </View> */}
+            {/* Create account view */}
+            <View style={styles.createAccountView}>
+              <Text
+                style={{
+                  color: COLORS.gray,
+                  fontSize: normalize(FONTSIZE.small),
+                }}>
+                Don't have account?{' '}
+              </Text>
+              <Text
+                style={styles.createAccText}
+                onPress={() => navigation.navigate('SignUp')}>
+                Create Account
+              </Text>
+            </View>
+          </View>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingWrapper>
@@ -98,13 +159,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   logo: {
-    fontSize: FONTSIZE.xxLarge,
+    fontSize: normalize(FONTSIZE.xxLarge),
     fontWeight: 'bold',
-    color: COLORS.tertiary,
-    marginBottom: 20,
+    color: COLORS.primary,
+    // marginBottom: 20,
   },
   pageName: {
-    fontSize: FONTSIZE.large,
+    fontSize: normalize(FONTSIZE.large),
     fontWeight: '500',
     color: COLORS.black,
   },
@@ -112,7 +173,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   forgotPasswordTxt: {
-    fontSize: FONTSIZE.medium,
+    fontSize: normalize(FONTSIZE.small),
     color: COLORS.gray,
     margin: 15,
     alignSelf: 'flex-end',
@@ -146,6 +207,10 @@ const styles = StyleSheet.create({
   createAccountView: {
     flexDirection: 'row',
     alignSelf: 'center',
-    marginTop: height * 0.18,
+    marginTop: height * 0.02,
+  },
+  createAccText: {
+    color: COLORS.primary,
+    fontSize: normalize(FONTSIZE.small),
   },
 });
