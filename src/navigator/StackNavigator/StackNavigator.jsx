@@ -13,6 +13,7 @@ import Category from '../../components/Categories/Category.jsx';
 import Appsetting from '../../screens/app/DrawerScreens/AppSetting.jsx';
 import StoreDetails from '../../screens/app/StackScreens/StoreDetails.jsx';
 import SubCategory from '../../screens/app/StackScreens/SubCategory.jsx';
+import Profile from '../../screens/app/BottomTabScreens/Profile.jsx';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
@@ -68,6 +69,11 @@ const StackNavigator = () => {
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPassword}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
         options={{headerShown: false}}
       />
       <Stack.Screen
