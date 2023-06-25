@@ -26,7 +26,9 @@ const Button = ({
       {icon && (
         <Image source={icon} style={[styles.icon, {tintColor: tintColor}]} />
       )}
-      <Text style={[styles.text, textStyle]}>{text}</Text>
+      <Text style={[styles.text, textStyle]} numberOfLines={1}>
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -53,5 +55,6 @@ const styles = StyleSheet.create({
     fontSize: normalize(FONTSIZE.xxSmall),
     color: COLORS.white,
     fontWeight: '500',
+    overflow: 'hidden',
   },
 });
