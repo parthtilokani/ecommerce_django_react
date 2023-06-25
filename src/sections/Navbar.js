@@ -8,7 +8,7 @@ import "../styles/css/navbar.css";
 import useAuth from "../hooks/useAuth.js";
 
 const Navbar = () => {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -29,23 +29,46 @@ const Navbar = () => {
       <div id='app-menu' className={isOpen ? "menu-open" : ""}>
         <ul>
           <li>
-            <Link to='/home'>Home</Link>
+            <Link
+              to='/home'
+              style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
+              Home
+            </Link>
           </li>
           <li>
-            <Link>All Categories</Link>
+            <Link style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
+              All Categories
+            </Link>
           </li>
           <li>
-            <Link to='/contact'>Contact</Link>
+            <Link
+              to='/contact'
+              style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
+              Contact
+            </Link>
           </li>
           <li>
-            {auth?.token ? (
+            {auth?.accessToken ? (
               <Link to='/profile'>Profile</Link>
             ) : (
               <Link to='/signup'>Sign Up</Link>
             )}
           </li>
+          {auth?.accessToken && (
+            <li>
+              <Link
+                onClick={() => {
+                  setAuth({});
+                  localStorage.removeItem("auth");
+                }}>
+                LogOut
+              </Link>
+            </li>
+          )}
           <li>
-            <Link to='/post-new-ad'>
+            <Link
+              to='/post-new-ad'
+              style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
               <button className='nav-post-ad'>+ Post Your Ad</button>
             </Link>
           </li>

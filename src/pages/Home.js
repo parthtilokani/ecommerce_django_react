@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 
 // css
 import "../styles/css/home.css";
@@ -7,6 +8,72 @@ const Home = () => {
   const [locationView, setLocationView] = useState(false);
   const [categoryView, setCategoryView] = useState(false);
   const [subCategoryView, setSubCategoryView] = useState(false);
+
+  const [addressList, setAddressList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [selectedLocation, setSelectedLocation] = useState("");
+
+  useEffect(() => {
+    const loc = localStorage.getItem("location");
+    if (loc) setSelectedLocation(loc);
+  }, []);
+
+  const handleLocationSearch = () => {
+    setLoading(true);
+    setError("");
+
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        // const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
+        // const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+
+        try {
+          // const response = await fetch(url);
+          // const data = await response.json();
+
+          // if (data.status === "OK") {
+          //   setAddressList(data.results);
+          // } else {
+          //   setError("Unable to fetch location data");
+          // }
+          const query = new URLSearchParams({
+            locale: "en",
+            limit: "5",
+            reverse: "true",
+            debug: "false",
+            point: `${latitude},${longitude}`,
+            provider: "default",
+            key: "ca66e3f0-8610-4e3f-9088-384fcf1286f3",
+          }).toString();
+
+          const resp = await fetch(
+            `https://graphhopper.com/api/1/geocode?${query}`,
+            { method: "GET" }
+          );
+
+          const data = await resp.json();
+          setAddressList(data?.hits);
+        } catch (error) {
+          setError("Error fetching location data");
+        }
+
+        setLoading(false);
+      },
+      () => {
+        setError("Unable to retrieve your location");
+        setLoading(false);
+      }
+    );
+  };
 
   return (
     <div className='position-relative'>
@@ -18,11 +85,18 @@ const Home = () => {
               <div className='col-lg-6 col-xl-2 cols'>
                 <div
                   className='input-wrapper'
-                  onClick={() => setLocationView(true)}>
+                  onClick={() => {
+                    handleLocationSearch();
+                    setLocationView(true);
+                  }}>
                   <div>
                     <img src='/assets/svgs/location.svg' alt='location' />
                   </div>
-                  <div className='p-hldr'>Location</div>
+                  <div
+                    className='p-hldr'
+                    style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+                    {selectedLocation ? selectedLocation : "Location"}
+                  </div>
                 </div>
               </div>
               <div className='col-lg-6 col-xl-2 cols'>
@@ -73,7 +147,44 @@ const Home = () => {
         className='location-model'
         style={locationView ? {} : { display: "none" }}>
         <div className='card'>
-          <div className='h5 p-1 text-center'>Select Location</div>
+          <div className='h5 p-1 text-center mt-3'>Select Location</div>
+          {error && <div className='text-center text-danger'>{error}</div>}
+          {loading && <div className='text-center fw-bold'>Loading...</div>}
+          {selectedLocation && (
+            <div className='fw-bold px-4'>
+              Selected Location : <span>{selectedLocation}</span>
+            </div>
+          )}
+          {addressList.length > 0 && (
+            <div className='px-3'>
+              <ul
+                style={{
+                  listStyle: "none",
+                }}>
+                <hr className='m-1' />
+                {addressList.map((address, index) => (
+                  <li
+                    key={index}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setSelectedLocation(address?.name || address?.city);
+                      setLocationView(false);
+                      localStorage.setItem(
+                        "location",
+                        address?.name || address?.city
+                      );
+                    }}>
+                    <p
+                      style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                      className='mx-2'>{`${address?.name}, ${
+                      address?.city || address?.state
+                    }`}</p>
+                    <hr className='m-1' />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <img
             src='./assets/svgs/close.svg'
             className='close-btn'
