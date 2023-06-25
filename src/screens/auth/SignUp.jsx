@@ -27,16 +27,20 @@ import {
   doesNotMatchRegEx,
   isValid,
 } from '../../utils/supportFunctions.js';
+import {signUP} from '../../utils/customHook/backEndCalls.js';
+import Loader from '../../components/Loader/Loader.jsx';
 
 const SignUp = ({navigation}) => {
   const [formDetails, setFormDetails] = useState({
-    firstName: '',
-    lastName: '',
-    userName: '',
+    // firstName: '',
+    // lastName: '',
+    // userName: '',
+    name: '',
     email: '',
     phoneNumber: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [errors, setErrors] = useState({});
@@ -49,11 +53,9 @@ const SignUp = ({navigation}) => {
     setCheckboxValue(!checkboxValue);
   };
 
-  const onSignUp = () => {
+  const onSignUp = async () => {
     let obj = {
-      firstName: isValid('First name', formDetails.firstName, 'firstname'),
-      lastName: isValid('Last name', formDetails.lastName, 'lastname'),
-      userName: isValid('Username', formDetails.userName, 'username'),
+      name: isValid('Name', formDetails.name, 'name'),
       email: isValid('Email', formDetails.email, 'email'),
       phoneNumber: isValid(
         'Phone number',
@@ -66,18 +68,17 @@ const SignUp = ({navigation}) => {
       return setErrors(obj);
     setErrors({});
 
-    // if (
-    //   isEmptyValue(formDetails?.firstName, 'Firstname', setErrors) ||
-    //   isEmptyValue(formDetails?.lastName, 'Lastname', setErrors) ||
-    //   isEmptyValue(formDetails?.userName, 'Username', setErrors) ||
-    //   isEmptyValue(formDetails?.email, 'Email', setErrors) ||
-    //   isEmptyValue(formDetails?.phoneNumber, 'Phone number', setErrors) ||
-    //   isEmptyValue(formDetails?.password, 'Password', setErrors) ||
-    //   doesNotMatchRegEx(formDetails?.password, 'Password', setErrors)
-    // )
-    //   return;
+    const data = {
+      name: formDetails.name,
+      email: formDetails.email,
+      password: formDetails.password,
+    };
+    setLoading(true);
+    const res = await signUP(data);
+    setLoading(false);
 
-    // setErrors({});
+    if (res) return navigation.replace('Drawer');
+
     // setOtpModalVisible(true);
   };
 
@@ -88,15 +89,17 @@ const SignUp = ({navigation}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <Loader visible={loading} />
       <GobackHeader navigation={navigation} />
       <ScrollView
         style={{
           flex: 1,
 
-          height: height - 100,
+          height: height,
         }}
         contentContainerStyle={{
           alignItems: 'center',
+          marginVertical: height * 0.1,
           justifyContent: 'center',
         }}>
         <View>
@@ -110,11 +113,8 @@ const SignUp = ({navigation}) => {
             <View
               style={{
                 alignItems: 'center',
-                // justifyContent: 'center',
-                // marginTop: height * 0.05,
-              }}
-              contentContainerStyle={{alignItems: 'center'}}>
-              <Input
+              }}>
+              {/* <Input
                 id={'firstName'}
                 errors={errors}
                 placeholder={'First Name'}
@@ -131,13 +131,23 @@ const SignUp = ({navigation}) => {
                 onChangeText={text => handleInputChange('lastName', text)}
                 leftIcon={icons.user}
                 style={styles.input}
-              />
+              /> 
               <Input
                 id={'userName'}
                 errors={errors}
                 placeholder={'Username'}
                 value={formDetails.userName}
                 onChangeText={text => handleInputChange('userName', text)}
+                leftIcon={icons.user}
+                style={styles.input}
+              />
+              */}
+              <Input
+                id={'name'}
+                errors={errors}
+                placeholder={'Name'}
+                value={formDetails.name}
+                onChangeText={text => handleInputChange('name', text)}
                 leftIcon={icons.user}
                 style={styles.input}
               />
@@ -158,6 +168,8 @@ const SignUp = ({navigation}) => {
                 onChangeText={text => handleInputChange('phoneNumber', text)}
                 leftIcon={icons.phone}
                 style={styles.input}
+                maxLength={10}
+                keyboardType={'phone-pad'}
               />
               <Input
                 id={'password'}

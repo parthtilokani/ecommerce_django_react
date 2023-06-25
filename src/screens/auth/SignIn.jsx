@@ -26,10 +26,13 @@ import {
   doesNotMatchRegEx,
   isValid,
 } from '../../utils/supportFunctions.js';
+import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
+import Loader from '../../components/Loader/Loader.jsx';
 
 const SignIn = ({navigation}) => {
-  const [formDetails, setFormDetails] = useState({userName: '', password: ''});
+  const [formDetails, setFormDetails] = useState({email: '', password: ''});
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormDetails(prevState => ({...prevState, [field]: value}));
@@ -37,25 +40,32 @@ const SignIn = ({navigation}) => {
 
   const onSignin = async () => {
     let obj = {
-      username: isValid('Username', formDetails.userName, 'username'),
-      password: isValid('Password', formDetails.password, 'password'),
+      email: isValid('Email', formDetails.email, 'email'),
+      password: isValid('Password', formDetails.password),
     };
     if (Object.values(obj).filter(e => e !== '').length > 0)
       return setErrors(obj);
     setErrors({});
-    // setAuth({token: 'yes'});
-    // if (
-    //   isEmptyValue(formDetails?.userName, 'Username', setErrors) ||
-    //   isEmptyValue(formDetails?.password, 'Password', setErrors) ||
-    //   doesNotMatchRegEx(formDetails?.password, 'Password', setErrors)
-    // )
-    //   return;
-    // setErrors({});
-    // navigation.replace('Drawer', {screen: 'Main'});
+
+    const data = {email: formDetails.email, password: formDetails.password};
+
+    setLoading(true);
+    const res = await signIN(data);
+
+    setLoading(false);
+
+    if (res) return navigation.replace('Drawer');
   };
   return (
     <KeyboardAvoidingWrapper>
       <SafeAreaView style={{flex: 1}}>
+        <Loader visible={loading} />
+        {/* <CustomAlert
+          visible={customAlert}
+          onOkPress={() => setCustomAlert(false)}
+          title={'ALERT!'}
+          message={custoAlertMessage?.message}
+        /> */}
         <GobackHeader resetBack navigation={navigation} />
         <View
           style={{
@@ -76,11 +86,11 @@ const SignIn = ({navigation}) => {
                 alignItems: 'center',
               }}>
               <Input
-                id={'username'}
+                id={'email'}
                 errors={errors}
-                placeholder={'Username'}
-                value={formDetails.userName}
-                onChangeText={text => handleInputChange('userName', text)}
+                placeholder={'Email'}
+                value={formDetails.email}
+                onChangeText={text => handleInputChange('email', text)}
                 leftIcon={icons.user}
                 style={styles.input}
               />

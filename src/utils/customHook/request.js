@@ -4,9 +4,12 @@ import axios from 'axios';
 export const request = ({url, method, data, headers}) => {
   return axios({
     method: method || 'get',
-    url: `${Config.API_URL}${url}`,
+    url: url,
     data: data,
-    headers,
+    // headers: {
+    // 'Content-Type': 'multipart/form-data',
+    // Accept: 'application/json',
+    // },
   });
 };
 
@@ -23,3 +26,6 @@ export const request = ({url, method, data, headers}) => {
 //   axios.defaults.withCredentials = true;
 //   axios.defaults.headers.Authorization = token;
 // };
+
+// import React, {useState, useEffect} from 'react';
+// import axios from 'axios';
