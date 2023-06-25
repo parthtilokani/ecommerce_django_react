@@ -18,21 +18,23 @@ import {
 } from '../../constant/index.js';
 import {useNavigation} from '@react-navigation/native';
 import {FONTFAMILY} from '../../constant/theme.js';
+import {retrieveUserSession} from '../../utils/AsyncStorage/userSession.js';
 
 const Bottomtab = ({callBack, tabValue}) => {
   const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState(tabValue);
 
-  const setTab = tab => {
+  const setTab = async tab => {
     if (tab == 2) {
       setSelectedTab(0);
       navigation.navigate('Postad');
       return;
     }
     if (tab == 4) {
-      setSelectedTab(0);
-      navigation.navigate('SignIn');
-      return;
+      // setSelectedTab(4);
+      const userToken = await retrieveUserSession('userToken');
+      if (!userToken?.access || !userToken?.refresh)
+        return navigation.navigate('SignIn');
     }
     setSelectedTab(tab);
     callBack(tab);
