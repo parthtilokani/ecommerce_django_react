@@ -29,6 +29,8 @@ const Input = ({
   style,
   isSearch,
   placeholderTextColor = 'gray',
+  maxLength,
+  keyboardType = 'default',
 }) => {
   const [secure, setSecure] = useState(true);
   return (
@@ -44,6 +46,8 @@ const Input = ({
           autoCapitalize="none"
           value={value}
           onChangeText={onChangeText}
+          maxLength={maxLength}
+          keyboardType={keyboardType}
         />
         {isPassword && (
           <Pressable
