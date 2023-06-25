@@ -1,20 +1,21 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {COLORS, FONTSIZE} from '../../constant/theme.js';
 import Button from '../Button/Button.jsx';
 import {height, icons, width} from '../../constant/index.js';
 import Input from '../Inputs/Input.jsx';
 import {useNavigation} from '@react-navigation/native';
 import {Searchbar} from 'react-native-paper';
-const Header = ({isSearchInput, btnStyle}) => {
+const Header = ({isSearchInput, btnStyle, btnText = 'Location'}) => {
   const navigation = useNavigation();
+  const [searchValue, setSearchValue] = useState('');
   return (
     <View style={styles.container}>
       <Button
         icon={icons.location}
         style={[styles.btn, btnStyle]}
         tintColor={COLORS.secondary}
-        text={'Location'}
+        text={btnText}
         textStyle={styles.textStyle}
         onPress={() => navigation.navigate('Location')}
       />
@@ -26,7 +27,9 @@ const Header = ({isSearchInput, btnStyle}) => {
           placeholderTextColor={COLORS.black}
           icon={icons.search}
           iconColor={COLORS.secondary}
-          clearButtonMode="always"
+          // clearButtonMode="always"
+          value={searchValue}
+          onChangeText={v => setSearchValue(v)}
           inputStyle={{
             alignSelf: 'center',
           }}
@@ -63,6 +66,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: COLORS.black,
+    width: width * 0.2,
   },
   searchTextInput: {
     // fontSize: FONTSIZE.medium,
