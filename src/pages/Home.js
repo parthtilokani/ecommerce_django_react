@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // css
 import "../styles/css/home.css";
@@ -9,6 +8,7 @@ const Home = () => {
   const [categoryView, setCategoryView] = useState(false);
   const [subCategoryView, setSubCategoryView] = useState(false);
 
+  const locationQuery = useRef();
   const [addressList, setAddressList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -16,11 +16,15 @@ const Home = () => {
   const [selectedLocation, setSelectedLocation] = useState("");
 
   useEffect(() => {
-    const loc = localStorage.getItem("location");
-    if (loc) setSelectedLocation(loc);
+    (() => {
+      const loc = localStorage.getItem("location");
+      // if (loc) setSelectedLocation(loc);
+      // else
+      handleGetLocation();
+    })();
   }, []);
 
-  const handleLocationSearch = () => {
+  const handleGetLocation = () => {
     setLoading(true);
     setError("");
 
@@ -33,46 +37,65 @@ const Home = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        // const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
-        // const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
-
         try {
-          // const response = await fetch(url);
-          // const data = await response.json();
+          setLoading(true);
 
-          // if (data.status === "OK") {
-          //   setAddressList(data.results);
-          // } else {
-          //   setError("Unable to fetch location data");
-          // }
-          const query = new URLSearchParams({
-            locale: "en",
-            limit: "5",
-            reverse: "true",
-            debug: "false",
-            point: `${latitude},${longitude}`,
-            provider: "default",
-            key: "ca66e3f0-8610-4e3f-9088-384fcf1286f3",
-          }).toString();
+          const apiKey = "AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70";
+          const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&location_type=APPROXIMATE&key=${apiKey}`;
 
-          const resp = await fetch(
-            `https://graphhopper.com/api/1/geocode?${query}`,
-            { method: "GET" }
-          );
+          const res = await fetch(url, { method: "GET" });
 
-          const data = await resp.json();
-          setAddressList(data?.hits);
+          const data = await res.json();
+          console.log(data.results);
+          if (data.status === "OK") {
+            setSelectedLocation(data.results[0].formatted_address);
+            setAddressList(data.results);
+          } else {
+            setError("Unable to fetch location data");
+          }
+          setLoading(false);
         } catch (error) {
-          setError("Error fetching location data");
+          console.log(error);
+          setError("Unable to retrieve your location");
+          setLoading(false);
         }
-
-        setLoading(false);
       },
       () => {
         setError("Unable to retrieve your location");
         setLoading(false);
       }
     );
+  };
+
+  const handleLocationSearch = async () => {
+    try {
+      if (locationQuery.current.value.trim() === "") return;
+      setLoading(true);
+
+      const apiKey = "AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70";
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${locationQuery.current.value}&location_type=APPROXIMATE&result_type=street_address|route|intersection|locality|sublocality|premise&key=${apiKey}`;
+
+      const res = await fetch(url, { method: "GET" });
+
+      const data = await res.json();
+      console.log(data.results);
+      if (data.status === "OK") {
+        setError("");
+        setAddressList([...data.results]);
+      } else if (data.status === "ZERO_RESULTS") {
+        setError("");
+        setAddressList([]);
+      } else {
+        setAddressList([]);
+        setError("Unable to fetch location data");
+      }
+      setLoading(false);
+    } catch (error) {
+      setAddressList([]);
+      console.log(error);
+      setError("Unable to retrieve your location");
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,10 +108,7 @@ const Home = () => {
               <div className='col-lg-6 col-xl-2 cols'>
                 <div
                   className='input-wrapper'
-                  onClick={() => {
-                    handleLocationSearch();
-                    setLocationView(true);
-                  }}>
+                  onClick={() => setLocationView(true)}>
                   <div>
                     <img src='/assets/svgs/location.svg' alt='location' />
                   </div>
@@ -149,14 +169,47 @@ const Home = () => {
         <div className='card'>
           <div className='h5 p-1 text-center mt-3'>Select Location</div>
           {error && <div className='text-center text-danger'>{error}</div>}
-          {loading && <div className='text-center fw-bold'>Loading...</div>}
           {selectedLocation && (
             <div className='fw-bold px-4'>
               Selected Location : <span>{selectedLocation}</span>
             </div>
           )}
-          {addressList.length > 0 && (
-            <div className='px-3'>
+          {loading && <div className='text-center fw-bold'>Loading...</div>}
+          <div className='row mx-3 my-1'>
+            <div className='col-10 p-0 pe-1'>
+              <input
+                className='form-control form-control-sm'
+                placeholder='Search Location'
+                ref={locationQuery}
+              />
+            </div>
+            <div className='col-2 p-0'>
+              <div
+                style={{
+                  margin: "auto",
+                  backgroundColor: "#43c6ac",
+                  width: "100%",
+                  height: 30,
+                  textAlign: "center",
+                  borderRadius: 5,
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  if (loading) return;
+                  handleLocationSearch();
+                }}>
+                <img
+                  src='/assets/svgs/search.svg'
+                  alt='search'
+                  style={{ height: 25 }}
+                />
+              </div>
+            </div>
+          </div>
+          {addressList.length > 0 ? (
+            <div
+              className='px-3'
+              style={{ maxHeight: 200, overflowY: "scroll" }}>
               <ul
                 style={{
                   listStyle: "none",
@@ -167,23 +220,26 @@ const Home = () => {
                     key={index}
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      setSelectedLocation(address?.name || address?.city);
+                      setSelectedLocation(address.formatted_address);
                       setLocationView(false);
                       localStorage.setItem(
                         "location",
-                        address?.name || address?.city
+                        address.formatted_address
                       );
+                      locationQuery.current.value = "";
                     }}>
                     <p
                       style={{ overflow: "hidden", whiteSpace: "nowrap" }}
-                      className='mx-2'>{`${address?.name}, ${
-                      address?.city || address?.state
-                    }`}</p>
+                      className='mx-2'>
+                      {address.formatted_address}
+                    </p>
                     <hr className='m-1' />
                   </li>
                 ))}
               </ul>
             </div>
+          ) : (
+            <div className='text-center'>No location found!</div>
           )}
           <img
             src='./assets/svgs/close.svg'
