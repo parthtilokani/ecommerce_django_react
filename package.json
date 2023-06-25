@@ -20,6 +20,7 @@
     "react-native": "0.71.10",
     "react-native-config": "^1.5.1",
     "react-native-encrypted-asyncstorage": "^2.1.4",
+    "react-native-encrypted-storage": "^4.0.3",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "^2.11.0",
     "react-native-otp-textinput": "^1.0.1",

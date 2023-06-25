@@ -32,7 +32,7 @@ export async function CheckPermission(permission) {
       isPermissionGranted = true;
       break;
     case RESULTS.DENIED:
-      RequestPermission(permission);
+      await RequestPermission(permission);
       isPermissionGranted = false;
       break;
     case RESULTS.BLOCKED:
@@ -46,7 +46,7 @@ export async function CheckPermission(permission) {
   return isPermissionGranted;
 }
 
-async function RequestPermission(permission) {
+export async function RequestPermission(permission) {
   const result = await request(permission);
   if (result == 'blocked') {
     showAlert();

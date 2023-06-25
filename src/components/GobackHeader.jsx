@@ -8,8 +8,9 @@ const GobackHeader = ({title, bg, resetBack}) => {
   return (
     <View style={[styles.container, bg && {backgroundColor: COLORS.primary}]}>
       <Pressable
+        style={{position: 'absolute', left: 15}}
         onPress={() =>
-          resetBack ? navigation.goBack('Main') : navigation.goBack()
+          resetBack ? navigation.replace('Drawer') : navigation.goBack()
         }>
         <Image
           source={icons.back}
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 10,
   },
   icon: {
@@ -38,7 +40,6 @@ const styles = StyleSheet.create({
     tintColor: COLORS.primary,
   },
   title: {
-    marginLeft: width * 0.23,
     fontSize: normalize(FONTSIZE.large),
     fontWeight: '700',
     color: COLORS.white,
