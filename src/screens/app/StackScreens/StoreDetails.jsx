@@ -57,15 +57,15 @@ const StoreDetails = () => {
         contentContainerStyle={{alignItems: 'center'}}>
         <View style={[styles.detailHeaderView, SHADOWS.medium]}>
           <View style={{alignItems: 'center', height: height * 0.26}}>
-            <Image
+            {/* <Image
               source={require('../../../assets/bg.png')}
               style={styles.bgImage}
-            />
+            /> */}
             <View style={styles.logoImageView}>
-              <Image
+              {/* <Image
                 source={require('../../../assets/bg.png')}
                 style={styles.logoImage}
-              />
+              /> */}
             </View>
           </View>
           <View style={styles.detailHeaderBottomView}>
