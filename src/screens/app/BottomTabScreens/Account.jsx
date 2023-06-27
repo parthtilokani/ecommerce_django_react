@@ -10,14 +10,13 @@ import {
   Pressable,
 } from 'react-native';
 import React from 'react';
-import GobackHeader from '../../../components/GobackHeader.jsx';
-import {COLORS} from '../../../constant/theme.js';
+import {COLORS, FONTSIZE, SHADOWS} from '../../../constant/theme.js';
 import {removeUserSession} from '../../../utils/AsyncStorage/userSession.js';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome5.js';
 import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons.js';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons.js';
-import {height} from '../../../constant/index.js';
+import {height, normalize, width} from '../../../constant/index.js';
 
 const Account = () => {
   const navigation = useNavigation();
@@ -42,268 +41,94 @@ const Account = () => {
   };
   return (
     <ScrollView>
-      <View
-        style={{
-          backgroundColor: 'white',
-          margin: 10,
-          padding: 2,
-          borderRadius: 5,
-          flexDirection: 'row',
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-
-          elevation: 5,
-        }}>
-        <View
-          style={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'grey',
-            flexDirection: 'row',
-            overflow: 'hidden',
-          }}>
+      <View style={[styles.profileMainContainer, SHADOWS.small]}>
+        <View style={styles.profileView}>
           <Image
             source={{
               uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_xdDre4lqxczG2sdZ73IGUPaQlA4B0p9RhQdgkRbnCg&s',
             }}
-            style={{width: 95, height: 95, borderRadius: 50, margin: 5}}
+            style={styles.profileImage}
           />
         </View>
-        <View
-          style={{
-            marginLeft: 10,
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
+        <View style={styles.name_usernameView}>
           <View>
             <Text style={{color: 'black'}}>First name and Last name</Text>
             <Text style={{color: 'black'}}>UserName</Text>
           </View>
-          <Pressable
-            style={{
-              marginHorizontal: 30,
-            }}
-            onPress={() => navigation.navigate('Profile')}>
-            <Icon name="edit" size={25} color={COLORS.primary} />
-            {/* <Text>Edit</Text> */}
-          </Pressable>
         </View>
+        <Pressable
+          style={{
+            marginHorizontal: 20,
+            position: 'absolute',
+            right: 10,
+          }}
+          onPress={() => navigation.navigate('Profile')}>
+          <Icon name="edit" size={width * 0.06} color={COLORS.primary} />
+        </Pressable>
       </View>
 
-      <View
-        style={{
-          width: '95%',
-          borderRadius: 10,
-          marginBottom: height * 0.07,
-          backgroundColor: 'white',
-          alignSelf: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-
-          elevation: 5,
-        }}>
-        <TouchableOpacity style={styles.mainCategory}>
-          <View
-            style={{
-              width: 50,
-              height: 50,
-              backgroundColor: COLORS.secondary,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <MaterialIcons name="list" size={25} color={COLORS.primary} />
-          </View>
-          <Text style={{marginHorizontal: 10, color: 'black'}}>My Listing</Text>
-          {/* <Icon
-            name="angle-right"
-            style={{position: 'absolute', right: 15}}
-            size={25}
-            color={COLORS.black}
-          /> */}
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.mainCategory}>
-          <View
-            style={{
-              width: 50,
-              height: 50,
-              backgroundColor: COLORS.secondary,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            {/* <Image
-              source={{
-                uri: 'https://w7.pngwing.com/pngs/570/1019/png-transparent-computer-icons-heart-filled-love-heart-black.png',
-              }}
-              style={{width: 27, height: 27, resizeMode: 'contain'}}
-            /> */}
-            <MaterialIcons name="favorite" size={25} color={COLORS.primary} />
-          </View>
-          <Text style={{marginHorizontal: 10, color: 'black'}}>Favorites</Text>
-          {/* <Icon
-            name="angle-right"
-            style={{position: 'absolute', right: 15}}
-            size={25}
-            color={COLORS.black}
-          /> */}
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.mainCategory}>
-          <View
-            style={{
-              width: 50,
-              height: 50,
-              backgroundColor: COLORS.secondary,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            {/* <Image
-              source={{
-                uri: 'https://w7.pngwing.com/pngs/570/1019/png-transparent-computer-icons-heart-filled-love-heart-black.png',
-              }}
-              style={{width: 27, height: 27, resizeMode: 'contain'}}
-            /> */}
+      <View style={[styles.menuListingMainContainer, SHADOWS.small]}>
+        <TouchableOpacity style={styles.menuListingView}>
+          <View style={styles.menuIconView}>
             <MaterialIcons
-              name="wallet-membership"
-              size={25}
+              name="list"
+              size={width * 0.06}
               color={COLORS.primary}
             />
           </View>
-          <Text style={{marginHorizontal: 10, color: 'black'}}>
-            My Membership
-          </Text>
-          {/* <Icon
-            name="angle-right"
-            style={{position: 'absolute', right: 15}}
-            size={25}
-            color={COLORS.black}
-          /> */}
+          <Text style={styles.menuListingText}>My Listing</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.mainCategory}>
-          <View
-            style={{
-              width: 50,
-              height: 50,
-              backgroundColor: COLORS.secondary,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            {/* <Image
-              source={{
-                uri: 'https://w7.pngwing.com/pngs/570/1019/png-transparent-computer-icons-heart-filled-love-heart-black.png',
-              }}
-              style={{width: 27, height: 27, resizeMode: 'contain'}}
-            /> */}
-            <Ionicons name="ios-documents" size={25} color={COLORS.primary} />
+        <TouchableOpacity style={styles.menuListingView}>
+          <View style={styles.menuIconView}>
+            <MaterialIcons
+              name="favorite"
+              size={width * 0.06}
+              color={COLORS.primary}
+            />
           </View>
-          <Text style={{marginHorizontal: 10, color: 'black'}}>
-            My Documents
-          </Text>
-          {/* <Icon
-            name="angle-right"
-            style={{position: 'absolute', right: 15}}
-            size={25}
-            color={COLORS.black}
-          /> */}
+          <Text style={styles.menuListingText}>Favorites</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuListingView}>
+          <View style={styles.menuIconView}>
+            <MaterialIcons
+              name="wallet-membership"
+              size={width * 0.06}
+              color={COLORS.primary}
+            />
+          </View>
+          <Text style={styles.menuListingText}>My Membership</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuListingView}>
+          <View style={styles.menuIconView}>
+            <Ionicons
+              name="ios-documents"
+              size={width * 0.06}
+              color={COLORS.primary}
+            />
+          </View>
+          <Text style={styles.menuListingText}>My Documents</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.mainCategory} onPress={onLogout}>
-          <View
-            style={{
-              width: 50,
-              height: 50,
-              backgroundColor: COLORS.secondary,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            {/* <Image
-              source={{
-                uri: 'https://w7.pngwing.com/pngs/570/1019/png-transparent-computer-icons-heart-filled-love-heart-black.png',
-              }}
-              style={{width: 27, height: 27, resizeMode: 'contain'}}
-            /> */}
-            <MaterialIcons name="logout" size={25} color={COLORS.primary} />
+        <TouchableOpacity style={styles.menuListingView} onPress={onLogout}>
+          <View style={styles.menuIconView}>
+            <MaterialIcons
+              name="logout"
+              size={width * 0.06}
+              color={COLORS.primary}
+            />
           </View>
-          <Text style={{marginHorizontal: 10, color: 'black'}}>LogOut</Text>
-          {/* <Icon
-            name="angle-right"
-            style={{position: 'absolute', right: 15}}
-            size={25} 
-            color={COLORS.black}
-          /> */}
+          <Text style={styles.menuListingText}>LogOut</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.mainCategory}>
-          <View
-            style={{
-              width: 50,
-              height: 50,
-              backgroundColor: COLORS.secondary,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            {/* <Image
-              source={{
-                uri: 'https://w7.pngwing.com/pngs/570/1019/png-transparent-computer-icons-heart-filled-love-heart-black.png',
-              }}
-              style={{width: 27, height: 27, resizeMode: 'contain'}}
-            /> */}
-            <MaterialIcons name="delete" size={25} color={COLORS.primary} />
+        <TouchableOpacity style={styles.menuListingView}>
+          <View style={styles.menuIconView}>
+            <MaterialIcons
+              name="delete"
+              size={width * 0.06}
+              color={COLORS.primary}
+            />
           </View>
-          <Text style={{marginHorizontal: 10, color: 'black'}}>
-            Delete Account
-          </Text>
-          {/* <Icon
-            name="angle-right"
-            style={{position: 'absolute', right: 15}}
-            size={25}
-            color={COLORS.black}
-          /> */}
+          <Text style={styles.menuListingText}>Delete Account</Text>
         </TouchableOpacity>
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-evenly',
-          marginVertical: 25,
-        }}>
-        {/* <TouchableOpacity
-          onPress={onLogout}
-          style={{
-            backgroundColor: COLORS.primary,
-            padding: 15,
-            borderRadius: 15,
-          }}>
-          <Text style={{color: 'white', fontSize: 16}}>Logout</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            backgroundColor: COLORS.primary,
-            padding: 15,
-            borderRadius: 15,
-          }}>
-          <Text style={{color: 'white', fontSize: 16}}>Delete Account</Text>
-        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
@@ -312,12 +137,68 @@ const Account = () => {
 export default Account;
 
 const styles = StyleSheet.create({
-  mainCategory: {
+  profileMainContainer: {
+    backgroundColor: 'white',
+    width: width * 0.95,
+    margin: 10,
+    padding: 2,
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  profileView: {
+    aspectRatio: 1,
+    // width: width * 0.26,
+    // height: height * 0.12,
+    borderRadius: width * 0.1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.gray2,
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: width * 0.2,
+    height: height * 0.02,
+    borderRadius: width * 0.1,
+    margin: 2,
+    aspectRatio: 1,
+  },
+  name_usernameView: {
+    marginLeft: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  menuListingMainContainer: {
+    width: width * 0.95,
+    borderRadius: 10,
+    marginBottom: height * 0.05,
+    backgroundColor: 'white',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  menuListingView: {
     padding: 10,
     margin: 5,
     marginVertical: 4,
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
+  },
+  menuIconView: {
+    aspectRatio: 1,
+    width: width * 0.1,
+    height: height * 0.06,
+    backgroundColor: COLORS.secondary,
+    borderRadius: width * 0.1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuListingText: {
+    marginHorizontal: 10,
+    color: 'black',
+    fontSize: normalize(FONTSIZE.xxSmall),
   },
 });
