@@ -23,6 +23,7 @@ import {PERMISSIONS} from 'react-native-permissions';
 import {CheckPermission, RequestPermission} from '../../../utils/Permission.js';
 import {Getlocation} from '../../../utils/Getlocation.js';
 import useLocation from '../../../hooks/useLocation.js';
+import Loader from '../../../components/Loader/Loader.jsx';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -43,6 +44,7 @@ const Home = () => {
         : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
 
     const isPermissionGranted = await CheckPermission(permission);
+    setLoading(true);
     if (isPermissionGranted) {
       const position = await Getlocation();
       setLocation(position[0].formatted_address);
@@ -51,6 +53,7 @@ const Home = () => {
       const position = await Getlocation();
       setLocation(position[0].formatted_address);
     }
+    setLoading(false);
   };
   const data = ['1', '2', '3', '4', '5'];
 
@@ -67,6 +70,7 @@ const Home = () => {
 
   return (
     <View style={{flex: 1}}>
+      <Loader visible={loading} />
       <Header isSearchInput btnText={location} />
       <ScrollView
         ref={scrollViewRef}
