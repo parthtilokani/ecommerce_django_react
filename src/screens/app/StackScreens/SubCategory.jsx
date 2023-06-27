@@ -6,9 +6,10 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {COLORS} from '../../../constant/theme.js';
+import {COLORS, FONTSIZE} from '../../../constant/theme.js';
 import GobackHeader from '../../../components/GobackHeader.jsx';
 import {useNavigation} from '@react-navigation/native';
+import {normalize} from '../../../constant/index.js';
 
 const SubCategory = ({route}) => {
   const paramData = route?.params;
@@ -22,8 +23,8 @@ const SubCategory = ({route}) => {
         <TouchableOpacity
           style={styles.mainCategory}
           onPress={() => navigation.goBack()}>
-          <Text>{paramData?.item?.title}</Text>
-          <Text>X</Text>
+          <Text style={styles.tileTxt}>{paramData?.item?.title}</Text>
+          <Text style={styles.tileTxt}>X</Text>
         </TouchableOpacity>
         {data.map((item, index) => (
           <TouchableOpacity
@@ -35,7 +36,9 @@ const SubCategory = ({route}) => {
                 category: true,
               })
             }>
-            <Text>Show all of Business & Industry</Text>
+            <Text style={styles.subCategoryTxt}>
+              Show all of Business & Industry
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -59,5 +62,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginVertical: 5,
+  },
+  tileTxt: {
+    color: COLORS.black,
+    fontSize: normalize(FONTSIZE.medium),
+  },
+  subCategoryTxt: {
+    color: COLORS.black,
+    fontSize: normalize(FONTSIZE.xxSmall),
   },
 });
