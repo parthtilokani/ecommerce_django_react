@@ -57,21 +57,21 @@ const StoreDetails = () => {
         contentContainerStyle={{alignItems: 'center'}}>
         <View style={[styles.detailHeaderView, SHADOWS.medium]}>
           <View style={{alignItems: 'center', height: height * 0.26}}>
-            {/* <Image
+            <Image
               source={require('../../../assets/bg.png')}
               style={styles.bgImage}
-            /> */}
+            />
             <View style={styles.logoImageView}>
-              {/* <Image
+              <Image
                 source={require('../../../assets/bg.png')}
                 style={styles.logoImage}
-              /> */}
+              />
             </View>
           </View>
           <View style={styles.detailHeaderBottomView}>
             <View style={{alignItems: 'center'}}>
-              <Text>Redius Theme</Text>
-              <Text>Member Since: 23 Aug, 2019</Text>
+              <Text style={{color: 'black'}}>Redius Theme</Text>
+              <Text style={{color: 'black'}}>Member Since: 23 Aug, 2019</Text>
             </View>
             <View style={styles.seperatorView} />
             <View
@@ -81,15 +81,15 @@ const StoreDetails = () => {
               }}>
               <View style={styles.contactView}>
                 {/* Contact Icon */}
-                <Text>Contact</Text>
+                <Text style={{color: 'black'}}>Contact</Text>
               </View>
               <View style={styles.contactView}>
                 {/* Contact Icon */}
-                <Text>Email</Text>
+                <Text style={{color: 'black'}}>Email</Text>
               </View>
               <View style={styles.contactView}>
                 {/* Contact Icon */}
-                <Text>Website</Text>
+                <Text style={{color: 'black'}}>Website</Text>
               </View>
               {/* Social Media Icons  */}
             </View>
@@ -97,14 +97,16 @@ const StoreDetails = () => {
         </View>
 
         <View style={[styles.descriptionView, SHADOWS.medium]}>
-          <Text>Description</Text>
+          <Text style={{color: 'black'}}>Description</Text>
           <View style={styles.seperatorView} />
           <View>
-            <Text ref={textRef}>{showAll ? text : getTruncatedText()}</Text>
+            <Text style={{color: 'black'}} ref={textRef}>
+              {showAll ? text : getTruncatedText()}
+            </Text>
             <TouchableOpacity
               onPress={toggleShowAll}
               style={{alignSelf: 'center'}}>
-              <Text>
+              <Text style={{color: 'black'}}>
                 {text.length > maxLength && !showAll
                   ? 'Show More'
                   : 'Show Less'}
@@ -114,10 +116,10 @@ const StoreDetails = () => {
         </View>
 
         <View style={[styles.storeAddressView, SHADOWS.medium]}>
-          <Text>Store Address</Text>
+          <Text style={{color: 'black'}}>Store Address</Text>
           <View style={styles.seperatorView} />
-          <Text>Port Chester, New York</Text>
-          <Text>House#18, Road#07</Text>
+          <Text style={{color: 'black'}}>Port Chester, New York</Text>
+          <Text style={{color: 'black'}}>House#18, Road#07</Text>
         </View>
         <ListGridAds data={['1']} title={'Latest Ads'} />
       </ScrollView>
@@ -150,7 +152,7 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
   },
   logoImageView: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.gray2,
     height: 100,
     width: 100,
     borderRadius: width * 2,
@@ -158,7 +160,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: height * 0.145,
+    marginTop: height * 0.1232,
     position: 'absolute',
   },
   logoImage: {width: 100, height: 100, resizeMode: 'contain'},
