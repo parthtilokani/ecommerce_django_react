@@ -27,10 +27,11 @@ const Input = ({
   isPassword,
   onChangeText,
   style,
-  isSearch,
   placeholderTextColor = 'gray',
   maxLength,
   keyboardType = 'default',
+  onFocus,
+  showSoftInputOnFocus = true,
 }) => {
   const [secure, setSecure] = useState(true);
   return (
@@ -48,6 +49,8 @@ const Input = ({
           onChangeText={onChangeText}
           maxLength={maxLength}
           keyboardType={keyboardType}
+          onFocus={onFocus}
+          showSoftInputOnFocus={showSoftInputOnFocus}
         />
         {isPassword && (
           <Pressable

@@ -1,12 +1,15 @@
+import React, {useState} from 'react';
 import {
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  Modal,
 } from 'react-native';
-import React, {useState} from 'react';
+import {RadioButton} from 'react-native-paper';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import GobackHeader from '../../components/GobackHeader';
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
 import {
@@ -22,27 +25,27 @@ import Input from '../../components/Inputs/Input';
 import Button from '../../components/Button/Button';
 import CheckboxComponent from '../../components/Checkbox/Checkbox';
 import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
-import {
-  isEmptyValue,
-  doesNotMatchRegEx,
-  isValid,
-} from '../../utils/supportFunctions.js';
+import {isValid} from '../../utils/supportFunctions.js';
 import {signUP} from '../../utils/customHook/backEndCalls.js';
 import Loader from '../../components/Loader/Loader.jsx';
+import {forceTouchGestureHandlerProps} from 'react-native-gesture-handler/lib/typescript/handlers/ForceTouchGestureHandler.js';
 
 const SignUp = ({navigation}) => {
   const [formDetails, setFormDetails] = useState({
-    // firstName: '',
-    // lastName: '',
-    // userName: '',
     name: '',
+    userName: '',
     email: '',
     phoneNumber: '',
     password: '',
+    date: new Date(),
+    dob: '',
+    gender: '',
   });
   const [loading, setLoading] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const [show, setShow] = useState(false);
+  const [checked, setChecked] = useState('first');
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (field, value) => {
@@ -70,21 +73,38 @@ const SignUp = ({navigation}) => {
 
     const data = {
       name: formDetails.name,
+      username: formDetails.userName,
       email: formDetails.email,
+      phonenumber: formDetails.phoneNumber,
       password: formDetails.password,
+      dob: formDetails.dob,
+      gender: formDetails.gender,
     };
     setLoading(true);
     const res = await signUP(data);
     setLoading(false);
 
-    if (res) return navigation.replace('Drawer');
+    if (res) return navigation.replace('SignIn');
 
     // setOtpModalVisible(true);
   };
 
   const onOTPSubmitBtnPress = () => {
     setOtpModalVisible(false);
-    navigation.navigate('Drawer', {screen: 'Main'});
+    navigation.navigate('SignIn');
+  };
+
+  const onChange = (event, selectedDate) => {
+    setShow(false);
+    const formattedDate = new Date(selectedDate).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    setFormDetails(prevState => ({
+      ...prevState,
+      dob: formattedDate,
+    }));
   };
 
   return (
@@ -99,7 +119,7 @@ const SignUp = ({navigation}) => {
         }}
         contentContainerStyle={{
           alignItems: 'center',
-          marginVertical: height * 0.1,
+          marginVertical: height * 0.05,
           justifyContent: 'center',
         }}>
         <View>
@@ -114,40 +134,21 @@ const SignUp = ({navigation}) => {
               style={{
                 alignItems: 'center',
               }}>
-              {/* <Input
-                id={'firstName'}
-                errors={errors}
-                placeholder={'First Name'}
-                value={formDetails.firstName}
-                onChangeText={text => handleInputChange('firstName', text)}
-                leftIcon={icons.user}
-                style={styles.input}
-              />
-              <Input
-                id={'lastName'}
-                errors={errors}
-                placeholder={'Last Name'}
-                value={formDetails.lastName}
-                onChangeText={text => handleInputChange('lastName', text)}
-                leftIcon={icons.user}
-                style={styles.input}
-              /> 
-              <Input
-                id={'userName'}
-                errors={errors}
-                placeholder={'Username'}
-                value={formDetails.userName}
-                onChangeText={text => handleInputChange('userName', text)}
-                leftIcon={icons.user}
-                style={styles.input}
-              />
-              */}
               <Input
                 id={'name'}
                 errors={errors}
                 placeholder={'Name'}
                 value={formDetails.name}
                 onChangeText={text => handleInputChange('name', text)}
+                leftIcon={icons.user}
+                style={styles.input}
+              />
+              <Input
+                id={'userName'}
+                errors={errors}
+                placeholder={'Username'}
+                value={formDetails.userName}
+                onChangeText={text => handleInputChange('userName', text)}
                 leftIcon={icons.user}
                 style={styles.input}
               />
@@ -181,6 +182,60 @@ const SignUp = ({navigation}) => {
                 isPassword={true}
                 style={styles.input}
               />
+              <Input
+                id={'dob'}
+                errors={errors}
+                placeholder={'Date of Birth'}
+                value={formDetails.dob.toString()}
+                onChangeText={() => setShow(true)}
+                leftIcon={icons.calendar}
+                style={styles.input}
+                onFocus={() => {
+                  setShow(true);
+                  Keyboard.dismiss();
+                }}
+                showSoftInputOnFocus={false}
+              />
+
+              {show && (
+                <DateTimePicker
+                  display="default"
+                  value={formDetails.date}
+                  mode={'date'}
+                  onChange={onChange}
+                  themeVariant="light"
+                  maximumDate={
+                    new Date(
+                      new Date().setFullYear(new Date().getFullYear() - 18),
+                    )
+                  }
+                />
+              )}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Text style={{color: COLORS.black}}>Gender(Optional):</Text>
+                <RadioButton.Android
+                  value="Male"
+                  status={checked === 'Male' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('Male')}
+                />
+                <Text style={{color: COLORS.black}}>Male</Text>
+                <RadioButton.Android
+                  value="Female"
+                  status={checked === 'Female' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('Female')}
+                />
+                <Text style={{color: COLORS.black}}>Female</Text>
+                <RadioButton.Android
+                  value="Other"
+                  status={checked === 'Other' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('Other')}
+                />
+                <Text>Other</Text>
+              </View>
             </View>
           </KeyboardAvoidingWrapper>
           <View style={styles.checkboxView}>
@@ -261,5 +316,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     marginVertical: height * 0.02,
+    marginBottom: height * 0.07,
   },
 });
