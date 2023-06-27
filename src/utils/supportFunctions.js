@@ -29,12 +29,12 @@ export const doesNotMatchRegEx = (value, id, setErrors) => {
 export const isValid = (label, value, type) => {
   if (!value?.trim()) return `${label} is required`;
   if (!type) return '';
-  if (type === 'email' && !emailRegex.test(value)) return 'Invalid email';
+  if (type === 'email' && !emailRegex.test(value)) return 'Invalid email.';
   if (type === 'password' && !passwordRegex.test(value))
-    return 'Invalid password';
+    return 'Password must be at least 6 characters and contain at least 1 capital letter,1 small letter, 1 special character and 1 number.';
   if (type === 'username' && !usernameRegex.test(value))
-    return 'Invalid username';
+    return 'Invalid username.';
   if (type === 'phonenumber' && !phoneNumberRegex.test(value))
-    return 'Invalid phone number';
+    return 'Invalid phone number.';
   return '';
 };
