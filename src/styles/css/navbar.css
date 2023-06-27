@@ -137,8 +137,8 @@ nav {
     padding: 0 !important;
     border: none !important;
   }
-  #app-menu a {
-    color: white !important;
+  #app-menu li a {
+    color: white;
   }
   #app-menu a:hover {
     color: var(--secondary) !important;

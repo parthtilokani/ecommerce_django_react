@@ -24,7 +24,7 @@ const useRefreshToken = () => {
       return response.data.access;
     } catch (error) {
       setAuth({});
-      navigate("/signup", { replace: true });
+      navigate("/login", { replace: true });
       throw error;
     }
   };

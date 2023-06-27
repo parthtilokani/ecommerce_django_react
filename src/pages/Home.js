@@ -18,9 +18,8 @@ const Home = () => {
   useEffect(() => {
     (() => {
       const loc = localStorage.getItem("location");
-      // if (loc) setSelectedLocation(loc);
-      // else
-      handleGetLocation();
+      if (loc) setSelectedLocation(loc);
+      else handleGetLocation();
     })();
   }, []);
 
@@ -46,7 +45,6 @@ const Home = () => {
           const res = await fetch(url, { method: "GET" });
 
           const data = await res.json();
-          console.log(data.results);
           if (data.status === "OK") {
             setSelectedLocation(data.results[0].formatted_address);
             setAddressList(data.results);
@@ -73,12 +71,11 @@ const Home = () => {
       setLoading(true);
 
       const apiKey = "AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70";
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${locationQuery.current.value}&location_type=APPROXIMATE&result_type=street_address|route|intersection|locality|sublocality|premise&key=${apiKey}`;
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${locationQuery.current.value}&key=${apiKey}`;
 
       const res = await fetch(url, { method: "GET" });
 
       const data = await res.json();
-      console.log(data.results);
       if (data.status === "OK") {
         setError("");
         setAddressList([...data.results]);
@@ -147,7 +144,7 @@ const Home = () => {
                   <div>
                     <img src='/assets/svgs/text.svg' alt='text' />
                   </div>
-                  <input className='' placeholder='Search Keywords' />
+                  <input placeholder='Search Keywords' id='search' />
                 </div>
               </div>
               <div className='col-lg-12 col-xl-2 cols'>
@@ -181,6 +178,7 @@ const Home = () => {
                 className='form-control form-control-sm'
                 placeholder='Search Location'
                 ref={locationQuery}
+                id='location-search'
               />
             </div>
             <div className='col-2 p-0'>
@@ -245,7 +243,10 @@ const Home = () => {
             src='./assets/svgs/close.svg'
             className='close-btn'
             alt=''
-            onClick={() => setLocationView(false)}
+            onClick={() => {
+              setLocationView(false);
+              setError("");
+            }}
           />
         </div>
       </div>

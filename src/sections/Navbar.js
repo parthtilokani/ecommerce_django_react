@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // css
 import "../styles/css/navbar.css";
@@ -8,6 +8,7 @@ import "../styles/css/navbar.css";
 import useAuth from "../hooks/useAuth.js";
 
 const Navbar = () => {
+  const location = useLocation();
   const { auth, setAuth } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -31,27 +32,48 @@ const Navbar = () => {
           <li>
             <Link
               to='/home'
-              style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
+              style={{
+                color:
+                  location.pathname === "/home" || location.pathname === "/"
+                    ? "#43c6ac"
+                    : "",
+              }}
+              onClick={() => setIsOpen(false)}>
               Home
             </Link>
           </li>
           <li>
-            <Link style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
-              All Categories
-            </Link>
+            <Link>All Categories</Link>
           </li>
           <li>
             <Link
               to='/contact'
-              style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
+              style={{
+                color: location.pathname === "/contact" ? "#43c6ac" : "",
+              }}
+              onClick={() => setIsOpen(false)}>
               Contact
             </Link>
           </li>
           <li>
             {auth?.accessToken ? (
-              <Link to='/profile'>Profile</Link>
+              <Link
+                to='/profile'
+                style={{
+                  color: location.pathname === "/profile" ? "#43c6ac" : "",
+                }}
+                onClick={() => setIsOpen(false)}>
+                Profile
+              </Link>
             ) : (
-              <Link to='/signup'>Sign Up</Link>
+              <Link
+                to='/login'
+                style={{
+                  color: location.pathname === "/login" ? "#43c6ac" : "",
+                }}
+                onClick={() => setIsOpen(false)}>
+                Log In
+              </Link>
             )}
           </li>
           {auth?.accessToken && (
@@ -60,16 +82,22 @@ const Navbar = () => {
                 onClick={() => {
                   setAuth({});
                   localStorage.removeItem("auth");
+                  setIsOpen(false);
                 }}>
                 LogOut
               </Link>
             </li>
           )}
           <li>
-            <Link
-              to='/post-new-ad'
-              style={{ pointerEvents: auth?.accessToken ? "" : "none" }}>
-              <button className='nav-post-ad'>+ Post Your Ad</button>
+            <Link to='/post-new-ad'>
+              <button
+                className='nav-post-ad'
+                style={{
+                  color: location.pathname === "/post-new-ad" ? "#43c6ac" : "",
+                }}
+                onClick={() => setIsOpen(false)}>
+                + Post Your Ad
+              </button>
             </Link>
           </li>
         </ul>

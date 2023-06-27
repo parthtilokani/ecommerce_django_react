@@ -4,9 +4,11 @@ import useAuth from "../../hooks/useAuth.js";
 import { isValid } from "../../utils/support.js";
 import { axiosPrivate } from "../../utils/axios.js";
 
-export const SignInWithOTP = ({ setSignUpMethod }) => {
+export const LogInWithOTP = ({ setSignUpMethod }) => {
+  const [otpCount, setOtpCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [clock, setClock] = useState(120);
   const { setAuth } = useAuth();
   const [data, setData] = useState({
     phonenumber: "",
@@ -18,19 +20,33 @@ export const SignInWithOTP = ({ setSignUpMethod }) => {
     setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
-  const handleLogin = () => {
+  const handleGetOTP = () => {
     let obj = {
       phonenumber: isValid("Phone Number", data.phonenumber, "phonenumber"),
     };
     if (Object.values(obj).filter((e) => e !== "").length > 0)
       return setErrors(obj);
     setErrors({});
+    setOtpSent(true);
+    setOtpCount(1);
+    const newInterval = setInterval(() => {
+      setClock((prev) => {
+        if (prev === 0) return prev;
+        return prev - 1;
+      });
+    }, 1000);
+    setTimeout(() => {
+      clearInterval(newInterval);
+      setOtpSent(false);
+      setClock(120);
+    }, 12000);
+  };
+
+  const handleLogin = () => {
     // setLoading(true);
-    // axiosPrivate
-    //   .post("/tokenwithotp", { ...data })
-    //   .then((res) => {
-    //     setSignUpMethod(2);
-    //   })
+    // axiosPrivate.get().then((res) => {
+    //   setSignUpMethod(2);
+    // });
     //   .catch((err) => {
     //     const { name, email, password } = err?.response?.data;
     //     setErrors((prev) => ({
@@ -47,46 +63,52 @@ export const SignInWithOTP = ({ setSignUpMethod }) => {
   return (
     <div className='signup-body flex-fill'>
       <div className='text-center'>
-        <h3 className='fw-bold signup-head'>Welcome Back</h3>
+        <h3 className='fw-bold signup-head'>Log in to Classified Ads</h3>
       </div>
       <div className='mt-3'>
-        <label className='form-label mb-0' htmlFor='phonenumber'>
-          Phone Number :
-        </label>
         <div className='row pe-2'>
           <div className='col-sm-9 col-8'>
             <input
-              type={"text"}
+              type='tel'
               className={`form-control form-control-sm ${
                 errors?.phonenumber ? " is-invalid" : ""
               }`}
+              placeholder='Phone Number'
               autoComplete='off'
               id='phonenumber'
               value={data.phonenumber}
               onChange={handleChange}
+              style={{ padding: "14px 16px", fontSize: "17px" }}
             />
           </div>
           <button
-            className='col-sm-3 col-4 btn btn-sm btn-primary signup-btn'
-            onClick={handleLogin}>
-            Get OTP
+            className='col-sm-3 col-4 fw-bold btn btn-sm btn-primary signup-btn'
+            onClick={handleGetOTP}
+            disabled={loading || otpSent}>
+            {otpCount === 0 ? "Get OTP" : "Resend"}
           </button>
         </div>
-        {errors?.phonenumber && (
-          <div style={{ fontSize: "10px", color: "red" }}>
-            {errors?.phonenumber}
-          </div>
-        )}
+        <div style={{ minHeight: 20 }}>
+          {errors?.phonenumber && (
+            <div style={{ fontSize: "10px", color: "red" }}>
+              {errors?.phonenumber}
+            </div>
+          )}
+          {otpSent && (
+            <div style={{ fontSize: "12px" }} className='fw-bold'>
+              Resend otp in {clock} second/s.
+            </div>
+          )}
+        </div>
       </div>
       <div className='mt-1'>
-        <label className='form-label m-0' htmlFor='otp'>
-          OTP :
-        </label>
         <input
           type='text'
+          placeholder='Enter OTP here'
           className='form-control form-control-sm'
           id='otp'
-          autoComplete='false'
+          autoComplete='off'
+          style={{ padding: "14px 16px", fontSize: "17px" }}
           disabled
         />
       </div>
@@ -95,20 +117,21 @@ export const SignInWithOTP = ({ setSignUpMethod }) => {
       )}
       <div className='mt-3 text-center'>
         <button
-          className='btn btn-primary signup-btn'
+          className='btn btn-primary signup-btn fw-bold'
+          style={{ padding: "12px 16px" }}
           onClick={handleLogin}
           disabled={loading || !otpSent}>
-          Sign In
+          Log In
         </button>
       </div>
-      <div className='mt-1 already-user' onClick={() => setSignUpMethod(2)}>
-        Sign In with password!
+      <div className='mt-3 already-user' onClick={() => setSignUpMethod(2)}>
+        Log In with password
       </div>
       <div className='mt-1 already-user' onClick={() => setSignUpMethod(1)}>
-        Create a new Account!
+        Create a new Account
       </div>
     </div>
   );
 };
 
-export default SignInWithOTP;
+export default LogInWithOTP;

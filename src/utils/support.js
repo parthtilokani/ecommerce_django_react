@@ -3,6 +3,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
 const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
 const phoneNumberRegex = /^\d{10}$/;
+const otpRegex = /^\d{6}$/;
 
 export const isValid = (label, value, type) => {
   if (!value?.trim()) return `${label} is required`;
@@ -14,5 +15,6 @@ export const isValid = (label, value, type) => {
     return "Invalid username";
   if (type === "phonenumber" && !phoneNumberRegex.test(value))
     return "Invalid phone number";
+  if (type === "otp" && !otpRegex.test(value)) return "Invalid OTP";
   return "";
 };

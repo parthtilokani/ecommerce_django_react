@@ -4,9 +4,7 @@ import useAuth from "../../hooks/useAuth.js";
 import { isValid } from "../../utils/support.js";
 import { axiosPrivate } from "../../utils/axios.js";
 
-import FormInput from "../input/FormInput.js";
-
-export const SignIn = ({ setSignUpMethod, message, setMessage }) => {
+export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
   const { setAuth } = useAuth();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -47,6 +45,8 @@ export const SignIn = ({ setSignUpMethod, message, setMessage }) => {
         );
       })
       .catch((err) => {
+        if (!err?.response)
+          return setErrors({ message: "No internet connection!" });
         const { email, password, detail } = err?.response?.data;
         setErrors((prev) => ({
           ...prev,
@@ -61,7 +61,7 @@ export const SignIn = ({ setSignUpMethod, message, setMessage }) => {
   return (
     <div className='signup-body flex-fill'>
       <div className='text-center'>
-        <h3 className='fw-bold signup-head'>Welcome Back</h3>
+        <h3 className='fw-bold signup-head mb-2'>Log in to Classified Ads</h3>
       </div>
       <svg xmlns='http://www.w3.org/2000/svg' style={{ display: "none" }}>
         <symbol id='check-circle-fill' viewBox='0 0 16 16'>
@@ -83,45 +83,60 @@ export const SignIn = ({ setSignUpMethod, message, setMessage }) => {
         </div>
       )}
       <div className='mt-3'>
-        <FormInput
-          labelName={"Email"}
+        <input
           type='text'
           id='email'
+          placeholder='Email address'
+          className={`form-control ${errors?.email ? " is-invalid" : ""}`}
+          style={{ padding: "14px 16px", fontSize: "17px" }}
           value={data.email}
+          autoComplete='off'
           onChange={handleChange}
-          errors={errors}
         />
+        <div
+          style={{ fontSize: "10px", color: "red", height: 10 }}
+          className='mx-1'>
+          {errors?.email && errors?.email}
+        </div>
       </div>
-      <div className='mt-1'>
-        <FormInput
-          labelName={"Password"}
+      <div className='mt-3'>
+        <input
           type='password'
           id='password'
+          placeholder='Password'
+          className={`form-control ${errors?.password ? " is-invalid" : ""}`}
+          style={{ padding: "14px 16px", fontSize: "17px" }}
           value={data.password}
           onChange={handleChange}
-          errors={errors}
+          autoComplete='off'
         />
+        <div
+          style={{ fontSize: "10px", color: "red", height: 10 }}
+          className='mx-1'>
+          {errors?.password && errors?.password}
+        </div>
       </div>
       <div className='mt-1 already-user text-end'>Forgot Password?</div>
       {errors?.message && (
         <div style={{ fontSize: "10px", color: "red" }}>{errors?.message}</div>
       )}
-      <div className='mt-3 text-center'>
+      <div className='mt-1 text-center'>
         <button
-          className='btn btn-primary signup-btn'
+          className='btn btn-primary signup-btn fw-bold'
+          style={{ padding: "12px 16px" }}
           onClick={handleLogin}
           disabled={loading}>
-          Sign In
+          {loading ? "Logging In" : "Log In"}
         </button>
       </div>
-      <div className='mt-1 already-user' onClick={() => setSignUpMethod(3)}>
-        Sign In with OTP!
+      <div className='mt-3 already-user' onClick={() => setSignUpMethod(3)}>
+        Log In with OTP
       </div>
       <div className='mt-1 already-user' onClick={() => setSignUpMethod(1)}>
-        Create a new Account!
+        Create a new Account
       </div>
     </div>
   );
 };
 
-export default SignIn;
+export default LogIn;

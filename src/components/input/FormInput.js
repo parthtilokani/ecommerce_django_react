@@ -1,10 +1,27 @@
 import React from "react";
 
-const FormInput = ({ labelName, type, id, value, onChange, errors }) => {
+const FormInput = ({
+  labelName,
+  type,
+  id,
+  value,
+  onChange,
+  errors,
+  min,
+  max,
+  maxLength,
+  mandatory,
+  optional,
+}) => {
   return (
     <>
       <label className='form-label mb-0' htmlFor={id}>
-        {labelName} :
+        {labelName}
+        {mandatory && <span className='text-danger'>*</span>}
+        {optional && (
+          <span style={{ color: "grey", fontSize: 10 }}> (optional)</span>
+        )}{" "}
+        :
       </label>
       <input
         type={type || "text"}
@@ -15,10 +32,13 @@ const FormInput = ({ labelName, type, id, value, onChange, errors }) => {
         id={id}
         value={value}
         onChange={onChange}
+        min={min}
+        max={max}
+        maxLength={maxLength}
       />
-      {errors[id] && (
-        <div style={{ fontSize: "10px", color: "red" }}>{errors[id]}</div>
-      )}
+      <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+        {errors[id] && errors[id]}
+      </div>
     </>
   );
 };
