@@ -37,8 +37,10 @@ export const signUP = async values => {
     });
     if (response) {
       const {name, email, password} = values;
-      const signInResponse = await signIN({email, password});
-      return signInResponse;
+
+      return true;
+      // const signInResponse = await signIN({email, password});
+      // return signInResponse;
     }
   } catch (e) {
     console.log('error in signup', JSON.stringify(e?.response));
