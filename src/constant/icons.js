@@ -19,6 +19,7 @@ import next from '../assets/next.png';
 import tag from '../assets/tag.png';
 import list_view from '../assets/list-view.png';
 import grid_view from '../assets/grid-view.png';
+import calendar from '../assets/calendar.png';
 
 export default {
   menu,
@@ -42,4 +43,5 @@ export default {
   tag,
   list_view,
   grid_view,
+  calendar,
 };
