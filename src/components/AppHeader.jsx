@@ -43,13 +43,14 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   icon: {
-    position: 'absolute',
     left: 10,
     top: -7,
-    width: 20,
-    height: 20,
-    alignSelf: 'flex-start',
+    width: width * 0.05,
+    height: height * 0.03,
     tintColor: COLORS.white,
+    resizeMode: 'contain',
+    position: 'absolute',
+    alignSelf: 'flex-start',
   },
   logoImage: {
     width: width * 0.45,

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Keyboard,
   SafeAreaView,
@@ -7,6 +7,8 @@ import {
   Text,
   View,
   Modal,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
 import {RadioButton} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -26,21 +28,29 @@ import Button from '../../components/Button/Button';
 import CheckboxComponent from '../../components/Checkbox/Checkbox';
 import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
 import {isValid} from '../../utils/supportFunctions.js';
-import {signUP} from '../../utils/customHook/backEndCalls.js';
+import {
+  requestOtp,
+  signUP,
+  verifyOtp,
+} from '../../utils/customHook/backEndCalls.js';
 import Loader from '../../components/Loader/Loader.jsx';
-import {forceTouchGestureHandlerProps} from 'react-native-gesture-handler/lib/typescript/handlers/ForceTouchGestureHandler.js';
+import OTPTextView from 'react-native-otp-textinput';
 
 const SignUp = ({navigation}) => {
   const [formDetails, setFormDetails] = useState({
     name: '',
     userName: '',
     email: '',
+    areaCode: '',
     phoneNumber: '',
     password: '',
+    c_password: '',
     date: new Date(),
-    dob: '',
+    dob: undefined,
     gender: '',
   });
+  const [clock, setClock] = useState(50);
+  const [optValue, setOtpValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
@@ -59,14 +69,26 @@ const SignUp = ({navigation}) => {
   const onSignUp = async () => {
     let obj = {
       name: isValid('Name', formDetails.name, 'name'),
+      userName: isValid('Username', formDetails.userName, 'username'),
       email: isValid('Email', formDetails.email, 'email'),
+      areaCode: isValid('Area code', formDetails.areaCode),
       phoneNumber: isValid(
         'Phone number',
         formDetails.phoneNumber,
         'phonenumber',
       ),
       password: isValid('Password', formDetails.password, 'password'),
+      c_password: isValid(
+        'Confirm Password',
+        formDetails.c_password,
+        'c_password',
+      ),
     };
+    if (!obj?.c_password)
+      obj.c_password =
+        formDetails.password !== formDetails.c_password
+          ? "Password doen't match"
+          : '';
     if (Object.values(obj).filter(e => e !== '').length > 0)
       return setErrors(obj);
     setErrors({});
@@ -75,32 +97,84 @@ const SignUp = ({navigation}) => {
       name: formDetails.name,
       username: formDetails.userName,
       email: formDetails.email,
-      phonenumber: formDetails.phoneNumber,
+      phone_no: formDetails.phoneNumber,
+      area_code: formDetails?.areaCode || '91',
       password: formDetails.password,
-      dob: formDetails.dob,
       gender: formDetails.gender,
+      dob: formDetails.dob,
     };
     setLoading(true);
     const res = await signUP(data);
+    if (res) {
+      Alert.alert(
+        'ALERT!',
+        'Sign Up sucessful! \nOPT has been sent to your phone number.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              otpRequest();
+              setOtpModalVisible(true);
+            },
+          },
+        ],
+      );
+    }
     setLoading(false);
-
-    if (res) return navigation.replace('SignIn');
-
-    // setOtpModalVisible(true);
   };
 
-  const onOTPSubmitBtnPress = () => {
-    setOtpModalVisible(false);
-    navigation.navigate('SignIn');
+  const startTimer = () => {
+    setClock(50);
+    const newInterval = setInterval(() => {
+      setClock(prev => {
+        if (prev === 0) {
+          clearInterval(newInterval);
+          return prev;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const otpRequest = async () => {
+    const data = {phone: formDetails.phoneNumber};
+    const res = await requestOtp(data);
+    startTimer();
+    setOtpValue(res);
+  };
+  const resendOtpRequest = async () => {
+    const data = {phone: formDetails.phoneNumber};
+    setLoading(true);
+    const res = await requestOtp(data);
+    setLoading(false);
+    setOtpValue(res);
+  };
+  const verifyOTP = async () => {
+    const data = {phone: formDetails.phoneNumber, otp: optValue};
+    setLoading(true);
+    const res = await verifyOtp(data);
+    setLoading(false);
+    if (res) {
+      setOtpModalVisible(false);
+      Alert.alert('ALERT!', 'OTP verify sucessful! \nSignIn to continue.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            navigation.navigate('SignIn');
+          },
+        },
+      ]);
+    }
   };
 
   const onChange = (event, selectedDate) => {
     setShow(false);
-    const formattedDate = new Date(selectedDate).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    const formattedDate = new Date(selectedDate).toISOString().slice(0, 10);
+    // const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
+    //   day: '2-digit',
+    //   month: '2-digit',
+    //   year: 'numeric',
+    // });
     setFormDetails(prevState => ({
       ...prevState,
       dob: formattedDate,
@@ -119,7 +193,6 @@ const SignUp = ({navigation}) => {
         }}
         contentContainerStyle={{
           alignItems: 'center',
-          marginVertical: height * 0.05,
           justifyContent: 'center',
         }}>
         <View>
@@ -162,11 +235,26 @@ const SignUp = ({navigation}) => {
                 style={styles.input}
               />
               <Input
+                id={'areaCode'}
+                errors={errors}
+                placeholder={'+91'}
+                value={formDetails.areaCode}
+                onChangeText={text =>
+                  handleInputChange('areaCode', text.replace(/[^0-9]/, ''))
+                }
+                leftIcon={icons.phone}
+                style={styles.input}
+                maxLength={3}
+                keyboardType={'phone-pad'}
+              />
+              <Input
                 id={'phoneNumber'}
                 errors={errors}
                 placeholder={'Phone Number'}
                 value={formDetails.phoneNumber}
-                onChangeText={text => handleInputChange('phoneNumber', text)}
+                onChangeText={text =>
+                  handleInputChange('phoneNumber', text.replace(/[^0-9]/, ''))
+                }
                 leftIcon={icons.phone}
                 style={styles.input}
                 maxLength={10}
@@ -183,10 +271,20 @@ const SignUp = ({navigation}) => {
                 style={styles.input}
               />
               <Input
+                id={'c_password'}
+                errors={errors}
+                placeholder={'Confirm Password'}
+                value={formDetails.c_password}
+                onChangeText={text => handleInputChange('c_password', text)}
+                leftIcon={icons.lock}
+                isPassword={true}
+                style={styles.input}
+              />
+              <Input
                 id={'dob'}
                 errors={errors}
                 placeholder={'Date of Birth'}
-                value={formDetails.dob.toString()}
+                value={formDetails.dob?.toString()}
                 onChangeText={() => setShow(true)}
                 leftIcon={icons.calendar}
                 style={styles.input}
@@ -215,26 +313,51 @@ const SignUp = ({navigation}) => {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
+                  marginVertical: 5,
                 }}>
-                <Text style={{color: COLORS.black}}>Gender(Optional):</Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontSize: normalize(FONTSIZE.small),
+                  }}>
+                  Gender(Optional):
+                </Text>
                 <RadioButton.Android
                   value="Male"
                   status={checked === 'Male' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('Male')}
                 />
-                <Text style={{color: COLORS.black}}>Male</Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontSize: normalize(FONTSIZE.small),
+                  }}>
+                  Male
+                </Text>
                 <RadioButton.Android
                   value="Female"
                   status={checked === 'Female' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('Female')}
                 />
-                <Text style={{color: COLORS.black}}>Female</Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontSize: normalize(FONTSIZE.small),
+                  }}>
+                  Female
+                </Text>
                 <RadioButton.Android
                   value="Other"
                   status={checked === 'Other' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('Other')}
                 />
-                <Text>Other</Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontSize: normalize(FONTSIZE.small),
+                  }}>
+                  Other
+                </Text>
               </View>
             </View>
           </KeyboardAvoidingWrapper>
@@ -247,11 +370,70 @@ const SignUp = ({navigation}) => {
             />
           </View>
 
-          <CustomAlert
-            visible={otpModalVisible}
-            isOtpModal
-            onOkPress={onOTPSubmitBtnPress}
-          />
+          {/* OPT Modal */}
+          <Modal visible={otpModalVisible} transparent>
+            <View style={styles.container}>
+              <View style={styles.alert}>
+                <View>
+                  <View>
+                    <Text
+                      style={{
+                        color: COLORS.black,
+                        fontWeight: '700',
+                        textAlign: 'center',
+                        fontSize: normalize(FONTSIZE.medium),
+                      }}>
+                      Enter OPT
+                    </Text>
+                    <Text
+                      style={{
+                        color: COLORS.black,
+                        fontWeight: '700',
+                        textAlign: 'center',
+                        fontSize: normalize(FONTSIZE.medium),
+                      }}>
+                      Temperory OTP: {optValue}
+                    </Text>
+
+                    <OTPTextView
+                      tintColor={COLORS.primary}
+                      offTintColor={COLORS.secondary}
+                      containerStyle={styles.textInputContainer}
+                      textInputStyle={styles.otpTextInputStyle}
+                      defaultValue={optValue}
+                      handleTextChange={text => setOtpValue(text)}
+                      inputCount={6}
+                      keyboardType="numeric"
+                      autoFocus={true}
+                    />
+                    <Button
+                      text={'Verify'}
+                      disable={optValue.length == 6 ? false : true}
+                      style={styles.otpSubmitButton}
+                      onPress={verifyOTP}
+                    />
+
+                    <Text style={{color: 'black', alignSelf: 'center'}}>
+                      {clock} second/s
+                    </Text>
+                    <TouchableOpacity
+                      disabled={clock == 0 ? false : true}
+                      onPress={resendOtpRequest}>
+                      <Text
+                        style={{
+                          color: clock == 0 ? COLORS.black : COLORS.gray,
+                          fontWeight: '700',
+                          textAlign: 'center',
+                        }}>
+                        Resend OPT
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Modal>
+          {/* OPT Modal */}
 
           <Button
             text={'Sign Up'}
@@ -267,9 +449,18 @@ const SignUp = ({navigation}) => {
 
           {/* Create account view */}
           <View style={styles.createAccountView}>
-            <Text style={{color: COLORS.gray}}>Already have an account? </Text>
             <Text
-              style={{color: COLORS.primary}}
+              style={{
+                color: COLORS.gray,
+                fontSize: normalize(FONTSIZE.small),
+              }}>
+              Already have an account?{' '}
+            </Text>
+            <Text
+              style={{
+                color: COLORS.primary,
+                fontSize: normalize(FONTSIZE.small),
+              }}
               onPress={() => navigation.navigate('SignIn')}>
               Sign In
             </Text>
@@ -292,7 +483,6 @@ const styles = StyleSheet.create({
     fontSize: normalize(FONTSIZE.xxLarge),
     fontWeight: 'bold',
     color: COLORS.primary,
-    // marginBottom: 10,
   },
   pageName: {
     fontSize: normalize(FONTSIZE.large),
@@ -317,5 +507,38 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: height * 0.02,
     marginBottom: height * 0.07,
+  },
+
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  alert: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 5,
+    width: '80%',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: normalize(FONTSIZE.xxSmall),
+    fontWeight: 'bold',
+    color: COLORS.black,
+  },
+
+  textInputContainer: {
+    // width: 20,
+    // backgroundColor: 'red',
+  },
+  otpSubmitButton: {
+    width: width * 0.35,
+    alignSelf: 'center',
+    margin: 5,
+  },
+  otpTextInputStyle: {
+    fontSize: normalize(FONTSIZE.medium),
+    width: 35,
   },
 });

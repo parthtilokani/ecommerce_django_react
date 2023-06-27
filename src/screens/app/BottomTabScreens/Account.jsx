@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
   },
   menuListingMainContainer: {
     width: width * 0.95,
+    // height: height * 0.5,
     borderRadius: 10,
     marginBottom: height * 0.05,
     backgroundColor: 'white',

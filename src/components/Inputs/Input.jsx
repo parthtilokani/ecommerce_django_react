@@ -99,9 +99,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightWhite,
   },
   icon: {
-    width: 27,
-    height: 27,
+    width: width * 0.06,
+    height: height * 0.03,
     margin: 5,
+    resizeMode: 'contain',
     // tintColor: COLORS.black,
   },
   input: {

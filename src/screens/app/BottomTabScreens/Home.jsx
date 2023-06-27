@@ -24,6 +24,7 @@ import {CheckPermission, RequestPermission} from '../../../utils/Permission.js';
 import {Getlocation} from '../../../utils/Getlocation.js';
 import useLocation from '../../../hooks/useLocation.js';
 import Loader from '../../../components/Loader/Loader.jsx';
+import {height, width} from '../../../constant/index.js';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -88,24 +89,10 @@ const Home = () => {
           onPress={() => navigation.navigate('AllCategories')}
         />
         <ListGridAds data={data} title={'Latest Ads'} changeLayoutStyle />
-        {/* <Button
-          title="Scroll to Top"
-          onPress={handleScrollToTop}
-          style={styles.button}
-          icon={icons.back}
-        /> */}
         <Pressable
-          style={[styles.button, SHADOWS.medium]}
+          style={[styles.scrollUpButton, SHADOWS.medium]}
           onPress={handleScrollToTop}>
-          <Image
-            source={icons.back}
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: COLORS.white,
-              transform: [{rotate: '90deg'}],
-            }}
-          />
+          <Image source={icons.back} style={styles.scrollUpIcon} />
         </Pressable>
       </ScrollView>
     </View>
@@ -122,16 +109,21 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingVertical: 20,
   },
-  button: {
+  scrollUpButton: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
     backgroundColor: COLORS.secondary,
-    bottom: 80,
-    borderRadius: 30,
+    bottom: 120,
+    borderRadius: 40,
     right: 20,
     zIndex: 1,
-    width: 40,
-    height: 40,
+    padding: 15,
+  },
+  scrollUpIcon: {
+    width: width * 0.075,
+    height: height * 0.039,
+    tintColor: COLORS.white,
+    transform: [{rotate: '90deg'}],
   },
 });

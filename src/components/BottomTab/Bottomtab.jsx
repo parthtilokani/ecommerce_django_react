@@ -179,8 +179,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icons: {
-    width: 25,
-    height: 25,
+    width: width * 0.06,
+    height: height * 0.03,
+    resizeMode: 'contain',
     tintColor: COLORS.gray2,
   },
   tabText: {

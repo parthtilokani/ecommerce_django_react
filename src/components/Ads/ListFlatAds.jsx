@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightWhite,
     borderRadius: 5,
     width: width * 0.95,
+    height: height * 0.17,
     alignSelf: 'center',
     flexDirection: 'row',
     marginVertical: 7,
@@ -72,8 +73,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     position: 'absolute',
-    top: 25,
-    left: 45,
+    top: height * 0.03,
+    left: width * 0.134,
     zIndex: 1,
     justifyContent: 'flex-end',
     width: width * 0.3,
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   sold_outText: {
     color: COLORS.white,
     fontWeight: 'bold',
-    fontSize: normalize(FONTSIZE.xxSmall),
+    fontSize: normalize(FONTSIZE.xSmall),
   },
   titleText: {
     fontSize: normalize(FONTSIZE.xxSmall),
@@ -103,6 +104,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: COLORS.gray,
+    fontSize: normalize(FONTSIZE.small),
   },
   priceText: {
     color: COLORS.primary,

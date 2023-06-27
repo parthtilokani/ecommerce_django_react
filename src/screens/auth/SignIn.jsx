@@ -1,11 +1,4 @@
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import GobackHeader from '../../components/GobackHeader';
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
@@ -21,12 +14,7 @@ import {
 import Input from '../../components/Inputs/Input';
 import Button from '../../components/Button/Button';
 import {signIN} from '../../utils/customHook/backEndCalls.js';
-import {
-  isEmptyValue,
-  doesNotMatchRegEx,
-  isValid,
-} from '../../utils/supportFunctions.js';
-import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
+import {isValid} from '../../utils/supportFunctions.js';
 import Loader from '../../components/Loader/Loader.jsx';
 
 const SignIn = ({navigation}) => {
@@ -60,12 +48,6 @@ const SignIn = ({navigation}) => {
     <KeyboardAvoidingWrapper>
       <SafeAreaView style={{flex: 1}}>
         <Loader visible={loading} />
-        {/* <CustomAlert
-          visible={customAlert}
-          onOkPress={() => setCustomAlert(false)}
-          title={'ALERT!'}
-          message={custoAlertMessage?.message}
-        /> */}
         <GobackHeader resetBack navigation={navigation} />
         <View
           style={{
@@ -119,10 +101,16 @@ const SignIn = ({navigation}) => {
             {/* Login Optional View */}
 
             {/* <View style={styles.loginOptionalView}>
-          <View style={styles.horizontalView} />
-          <Text style={{color: COLORS.gray}}>Or Login With</Text>
-          <View style={styles.horizontalView} />
-        </View> */}
+              <View style={styles.horizontalView} />
+              <Text
+                style={{
+                  color: COLORS.gray,
+                  fontSize: normalize(FONTSIZE.small),
+                }}>
+                Or Login With
+              </Text>
+              <View style={styles.horizontalView} />
+            </View> */}
 
             {/* Login Optional Button View */}
             {/* <View style={styles.optionalLoginBtnView}>
@@ -155,6 +143,9 @@ const SignIn = ({navigation}) => {
             </View>
           </View>
         </View>
+        {/* Phone Number Modal */}
+
+        {/* Phone Number Modal */}
       </SafeAreaView>
     </KeyboardAvoidingWrapper>
   );
@@ -172,7 +163,6 @@ const styles = StyleSheet.create({
     fontSize: normalize(FONTSIZE.xxLarge),
     fontWeight: 'bold',
     color: COLORS.primary,
-    // marginBottom: 20,
   },
   pageName: {
     fontSize: normalize(FONTSIZE.large),
@@ -193,13 +183,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 15,
+    marginVertical: 20,
   },
   horizontalView: {
     width: width * 0.2,
     height: 0.5,
     backgroundColor: '#000',
     marginHorizontal: 5,
+  },
+  phoneBtn: {
+    width: width * 0.5,
+    alignSelf: 'center',
   },
   optionalLoginBtnView: {
     alignSelf: 'center',

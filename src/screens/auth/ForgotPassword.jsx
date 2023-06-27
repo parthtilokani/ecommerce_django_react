@@ -61,7 +61,13 @@ const ForgotPassword = ({navigation}) => {
               <Text style={styles.pageName}>Email Address</Text>
             </View>
 
-            <Text style={{color: COLORS.gray, textAlign: 'center'}}>
+            <Text
+              style={{
+                color: COLORS.gray,
+                textAlign: 'center',
+                fontSize: normalize(FONTSIZE.xxSmall),
+                marginVertical: 5,
+              }}>
               Enter your email address to reset password
             </Text>
 

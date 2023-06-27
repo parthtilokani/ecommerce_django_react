@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {baseURL} from '../Api.js';
 import {
   retrieveUserSession,
@@ -36,15 +37,43 @@ export const signUP = async values => {
       data: values,
     });
     if (response) {
-      const {name, email, password} = values;
-
       return true;
-      // const signInResponse = await signIN({email, password});
-      // return signInResponse;
     }
   } catch (e) {
     console.log('error in signup', JSON.stringify(e?.response));
     Alert.alert('ALERT!', e?.response?.data?.email[0]);
+    return false;
+  }
+};
+export const requestOtp = async values => {
+  try {
+    const response = await axios.get(`${baseURL}/otp`, {
+      params: {
+        phone: values.phone,
+      },
+    });
+
+    return await response?.data?.OTP;
+  } catch (e) {
+    Alert.alert('ALERT!', e?.response?.data?.detail || 'Failed to send OTP!');
+    return false;
+  }
+};
+export const verifyOtp = async values => {
+  try {
+    const response = request({
+      url: `${baseURL}/otp`,
+      method: 'POST',
+      data: values,
+    });
+
+    return true;
+    // return await response?.data?.OTP;
+  } catch (e) {
+    Alert.alert(
+      'ALERT!',
+      e?.response?.data?.detail || 'OPT verification faild!',
+    );
     return false;
   }
 };

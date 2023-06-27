@@ -4,7 +4,7 @@ import GridFlatAds from './GridFlatAds.jsx';
 import ListFlatAds from './ListFlatAds.jsx';
 import {COLORS, FONTSIZE, SHADOWS} from '../../constant/theme.js';
 import icons from '../../constant/icons.js';
-import {normalize, width} from '../../constant/index.js';
+import {height, normalize, width} from '../../constant/index.js';
 
 const ListGridAds = ({
   data,
@@ -76,6 +76,7 @@ const ListGridAds = ({
         key={isGrid ? 1 : 2}
         scrollEnabled={false}
         data={data}
+        style={{alignSelf: 'center'}}
         numColumns={isGrid ? 2 : 1}
         renderItem={() => (isGrid ? <GridFlatAds /> : <ListFlatAds />)}
         ListEmptyComponent={() => (
@@ -91,7 +92,7 @@ const ListGridAds = ({
 export default ListGridAds;
 
 const styles = StyleSheet.create({
-  container: {marginBottom: 50, alignSelf: 'center'},
+  container: {marginBottom: 90, alignSelf: 'center'},
   secondContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -117,12 +118,13 @@ const styles = StyleSheet.create({
   },
   iconView: {
     marginHorizontal: 10,
-    padding: 5,
+    padding: 7,
     borderRadius: 5,
   },
   icon: {
-    width: 20,
-    height: 20,
+    width: width * 0.05,
+    height: height * 0.027,
+    resizeMode: 'contain',
   },
   flatListEmptyComponent: {
     alignSelf: 'center',

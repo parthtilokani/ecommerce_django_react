@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from 'react-native';
 // import CheckBox from '@react-native-community/checkbox';
 import {Checkbox} from 'react-native-paper';
 
-import {COLORS, width} from '../../constant';
+import {COLORS, FONTSIZE, normalize, width} from '../../constant';
 
 const CheckboxComponent = ({
   text,
@@ -15,15 +15,24 @@ const CheckboxComponent = ({
   return (
     <View style={styles.container}>
       <Checkbox.Android
-        // style={{marginRight: 10, width: 30, height: 30}}
         color={COLORS.primary}
         uncheckedColor={COLORS.gray}
         status={checkboxValue ? 'checked' : 'unchecked'}
         onPress={setCheckboxValue}
       />
 
-      <Text style={{color: COLORS.black}}>{text}</Text>
-      <Text style={{color: COLORS.primary}}>{secondTxt}</Text>
+      <Text
+        style={{
+          color: COLORS.black,
+          fontSize: normalize(11),
+          width: width * 0.8,
+        }}>
+        {text}
+      </Text>
+      <Text
+        style={{color: COLORS.primary, fontSize: normalize(FONTSIZE.xxSmall)}}>
+        {secondTxt}
+      </Text>
     </View>
   );
 };

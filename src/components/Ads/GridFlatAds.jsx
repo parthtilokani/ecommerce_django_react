@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightWhite,
     borderRadius: 5,
     maxWidth: width * 0.5,
-    height: height * 0.32,
+    height: height * 0.34,
     alignSelf: 'center',
     // flexDirection: 'row',
     padding: 5,
@@ -59,10 +59,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: width * 0.43,
     height: height * 0.17,
-    // borderRadius: 10,
-    // width: 100,
-    // height: 100,
-    // backgroundColor: 'red',
   },
   bottomView: {
     flex: 1,
@@ -72,8 +68,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     position: 'absolute',
-    top: 25,
-    right: -25,
+    top: height * 0.029,
+    right: -width * 0.08,
     zIndex: 1,
     justifyContent: 'flex-end',
     width: width * 0.3,
@@ -83,13 +79,13 @@ const styles = StyleSheet.create({
   sold_outText: {
     color: COLORS.white,
     fontWeight: 'bold',
-    fontSize: normalize(FONTSIZE.xxSmall),
+    fontSize: normalize(10),
   },
   titleText: {
     fontSize: normalize(FONTSIZE.xxSmall),
     color: COLORS.black,
     fontWeight: 'bold',
-    width: width * 0.42,
+    width: width * 0.4,
   },
   category_locationContainer: {
     flexDirection: 'row',
@@ -105,13 +101,11 @@ const styles = StyleSheet.create({
   text: {
     color: COLORS.gray,
     marginVertical: 3,
+    fontSize: normalize(FONTSIZE.xxSmall),
   },
   priceText: {
     color: COLORS.primary,
     fontWeight: 'bold',
     fontSize: normalize(FONTSIZE.xxSmall),
-    // position: 'absolute',
-    // marginVertical: 5,
-    // bottom: 5,
   },
 });

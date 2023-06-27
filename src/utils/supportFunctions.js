@@ -27,11 +27,11 @@ export const doesNotMatchRegEx = (value, id, setErrors) => {
 };
 
 export const isValid = (label, value, type) => {
-  if (!value?.trim()) return `${label} is required`;
+  if (!value?.trim()) return `${label} is required.`;
   if (!type) return '';
   if (type === 'email' && !emailRegex.test(value)) return 'Invalid email.';
   if (type === 'password' && !passwordRegex.test(value))
-    return 'Password must be at least 6 characters and contain at least 1 capital letter,1 small letter, 1 special character and 1 number.';
+    return 'Password should contain at least one digit, one lowercase letter, one uppercase letter, and be at least 6 characters long.';
   if (type === 'username' && !usernameRegex.test(value))
     return 'Invalid username.';
   if (type === 'phonenumber' && !phoneNumberRegex.test(value))

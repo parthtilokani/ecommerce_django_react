@@ -2,7 +2,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import {COLORS, FONTSIZE} from '../../constant/theme.js';
 import Button from '../Button/Button.jsx';
-import {height, icons, width} from '../../constant/index.js';
+import {height, icons, normalize, width} from '../../constant/index.js';
 import Input from '../Inputs/Input.jsx';
 import {useNavigation} from '@react-navigation/native';
 import {Searchbar} from 'react-native-paper';
@@ -32,18 +32,11 @@ const Header = ({isSearchInput, btnStyle, btnText = 'Location'}) => {
           onChangeText={v => setSearchValue(v)}
           inputStyle={{
             alignSelf: 'center',
+            fontSize: normalize(FONTSIZE.xxSmall),
           }}
           loading={false}
         />
       )}
-      {/* {isSearchInput && (
-        <Input
-          placeholder={'Search...'}
-          leftIcon={icons.search}
-          style={styles.searchTextInput}
-          isSearch={true}
-        />
-      )} */}
     </View>
   );
 };

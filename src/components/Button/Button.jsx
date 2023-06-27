@@ -46,10 +46,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    width: 20,
-    height: 20,
-    // right: -5,
+    width: width * 0.05,
+    height: height * 0.027,
     marginRight: 10,
+    resizeMode: 'contain',
   },
   text: {
     fontSize: normalize(FONTSIZE.xxSmall),

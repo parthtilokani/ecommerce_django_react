@@ -35,7 +35,7 @@ const CustomAlert = ({
                   containerStyle={styles.textInputContainer}
                   textInputStyle={styles.otpTextInputStyle}
                   // handleTextChange={text => this.setState({otpInput: text})}
-                  inputCount={4}
+                  inputCount={6}
                   keyboardType="numeric"
                   autoFocus={true}
                 />
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   otpTextInputStyle: {
     fontSize: normalize(FONTSIZE.medium),
-    width: 40,
+    width: 35,
   },
 });
 

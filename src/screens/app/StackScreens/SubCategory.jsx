@@ -24,7 +24,7 @@ const SubCategory = ({route}) => {
           style={styles.mainCategory}
           onPress={() => navigation.goBack()}>
           <Text style={styles.tileTxt}>{paramData?.item?.title}</Text>
-          <Text style={styles.tileTxt}>X</Text>
+          <Text style={[styles.tileTxt, {color: 'red'}]}>X</Text>
         </TouchableOpacity>
         {data.map((item, index) => (
           <TouchableOpacity
