@@ -1,7 +1,6 @@
-import {Pressable, StyleSheet, Text, View, FlatList} from 'react-native';
+import {Pressable, StyleSheet, Text, View, FlatList, Image} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import GobackHeader from '../../../components/GobackHeader.jsx';
-import Button from '../../../components/Button/Button.jsx';
 import {
   COLORS,
   FONTSIZE,
@@ -16,7 +15,6 @@ import {Getlocation} from '../../../utils/Getlocation.js';
 import {PERMISSIONS} from 'react-native-permissions';
 import Loader from '../../../components/Loader/Loader.jsx';
 import useLocation from '../../../hooks/useLocation.js';
-import Input from '../../../components/Inputs/Input.jsx';
 import {Searchbar} from 'react-native-paper';
 
 const LocationScreen = ({navigation}) => {
@@ -29,6 +27,22 @@ const LocationScreen = ({navigation}) => {
   useEffect(() => {
     checkPermission();
   }, []);
+
+  let debounceTimeout;
+
+  useEffect(() => {
+    debounceSearch();
+
+    // Clean up the debounce timeout
+    return () => clearTimeout(debounceTimeout);
+  }, [searchValue]);
+
+  const debounceSearch = () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      onSearchLocation(searchValue);
+    }, 500);
+  };
 
   const checkPermission = async () => {
     const permission =
@@ -45,13 +59,12 @@ const LocationScreen = ({navigation}) => {
     }
   };
 
-  onSearchLocation = async () => {
+  const onSearchLocation = async text => {
     try {
       if (searchValue.trim() === '') return;
-      setLoading(true);
 
       const apiKey = 'AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70';
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${searchValue}&location_type=APPROXIMATE&result_type=street_address|route|intersection|locality|sublocality|premise&key=${apiKey}`;
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${text}&location_type=APPROXIMATE&result_type=street_address|route|intersection|locality|sublocality|premise&key=${apiKey}`;
 
       const res = await fetch(url, {method: 'GET'});
 
@@ -68,14 +81,13 @@ const LocationScreen = ({navigation}) => {
       }
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setAddressList([]);
       setError('Unable to retrieve your location');
       setLoading(false);
     }
   };
 
-  const renderFaltitems = ({item}) => {
+  const renderFlatItems = ({item}) => {
     return (
       <Pressable
         onPress={() => {
@@ -83,9 +95,9 @@ const LocationScreen = ({navigation}) => {
           navigation.navigate('Drawer');
         }}
         style={[styles.locationListContainer]}>
-        <Text style={{color: COLORS.black, fontSize: 16}}>
+        <Image style={styles.locationIcon} source={icons.location} />
+        <Text style={{color: COLORS.black, fontSize: 16, width: width * 0.8}}>
           {item?.formatted_address}
-          {/* {item?.name},{item?.city || item?.state} */}
         </Text>
       </Pressable>
     );
@@ -105,29 +117,41 @@ const LocationScreen = ({navigation}) => {
         }}>
         Selected Location : {location}
       </Text>
-      <View style={{margin: 10}}>
+      <View style={[{margin: 10}, SHADOWS.small]}>
         <Searchbar
-          style={[styles.searchTextInput, SHADOWS.small]}
+          style={[styles.searchTextInput]}
           mode="bar"
           placeholder="Search..."
           placeholderTextColor={COLORS.black}
           icon={icons.search}
           iconColor={COLORS.secondary}
-          // clearButtonMode="always"
           inputStyle={{
             alignSelf: 'center',
           }}
+          onClearIconPress={() => {
+            setSearchValue('');
+            setAddressList([]);
+          }}
           loading={false}
           value={searchValue}
-          onChangeText={v => setSearchValue(v)}
-          onSubmitEditing={onSearchLocation}
+          onChangeText={text => setSearchValue(text)}
+          onSubmitEditing={() => onSearchLocation(searchValue)}
         />
       </View>
       <FlatList
         data={addressList}
-        renderItem={renderFaltitems}
+        renderItem={renderFlatItems}
         ListEmptyComponent={() => (
           <Text style={styles.flatEmptyText}>{error}</Text>
+        )}
+        ItemSeparatorComponent={() => (
+          <View
+            style={{
+              height: 0.7,
+              backgroundColor: COLORS.gray,
+              marginHorizontal: 10,
+            }}
+          />
         )}
       />
     </View>
@@ -154,11 +178,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
   },
+  locationIcon: {
+    width: 25,
+    height: 25,
+    tintColor: COLORS.secondary,
+    marginRight: 5,
+  },
   locationListContainer: {
     backgroundColor: COLORS.white,
-    margin: 5,
-    padding: 10,
-    borderRadius: 5,
+    marginHorizontal: 10,
+    padding: 13,
+    flexDirection: 'row',
+    // borderRadius: 5,
   },
   flatEmptyText: {
     alignSelf: 'center',
