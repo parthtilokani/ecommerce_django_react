@@ -127,6 +127,7 @@ const LocationScreen = ({navigation}) => {
           iconColor={COLORS.secondary}
           inputStyle={{
             alignSelf: 'center',
+            fontSize: normalize(FONTSIZE.small),
           }}
           onClearIconPress={() => {
             setSearchValue('');
