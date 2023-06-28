@@ -26,16 +26,22 @@ const DrawerItems = ({onPress, leftIcon, title}) => {
       <Image
         source={leftIcon}
         style={{
-          width: 25,
-          height: 25,
+          width: width * 0.05,
+          height: height * 0.025,
           marginRight: 10,
           tintColor: COLORS.white,
+          resizeMode: 'contain',
         }}
       />
       <Text style={styles.drawerText}>{title}</Text>
       <Image
         source={icons.next}
-        style={{width: 20, height: 20, position: 'absolute', right: 10}}
+        style={{
+          width: width * 0.05,
+          height: height * 0.025,
+          position: 'absolute',
+          right: 10,
+        }}
       />
     </TouchableOpacity>
   );
@@ -77,19 +83,14 @@ const CustomDrawerContent = () => {
           <Image
             source={icons.close}
             style={{
-              width: 20,
-              height: 20,
+              width: width * 0.05,
+              height: height * 0.02,
               tintColor: COLORS.secondary,
               margin: 20,
               // position: 'absolute',
             }}
           />
         </Pressable>
-        {/* <Image
-          source={require('../../assets/logo-ecommerce.png')}
-          style={{width: width * 0.5, height: 50, resizeMode: 'stretch'}}
-        /> */}
-        {/* <Text style={styles.title}>Classified Ads</Text> */}
       </View>
       <FlatList
         data={drawerItemList}
