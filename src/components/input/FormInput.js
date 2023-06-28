@@ -12,6 +12,7 @@ const FormInput = ({
   maxLength,
   mandatory,
   optional,
+  placeholder,
 }) => {
   return (
     <>
@@ -35,6 +36,7 @@ const FormInput = ({
         min={min}
         max={max}
         maxLength={maxLength}
+        placeholder={placeholder}
       />
       <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
         {errors[id] && errors[id]}

@@ -84,7 +84,7 @@ const Navbar = () => {
                   localStorage.removeItem("auth");
                   setIsOpen(false);
                 }}>
-                LogOut
+                Log out
               </Link>
             </li>
           )}

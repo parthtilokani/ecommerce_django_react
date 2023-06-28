@@ -6,6 +6,7 @@ import { axiosPrivate } from "../../utils/axios.js";
 import { isValid } from "../../utils/support.js";
 
 const SignUp = ({ setSignUpMethod, setMessage }) => {
+  const [otpMessage, setOtpMessage] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [OTPView, setOTPView] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,16 +39,19 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
   };
 
   const handleGetOTP = () => {
+    setOtpMessage("");
     setLoading(true);
     axiosPrivate
       .get("/otp", { params: { phone: data.phone_no } })
       .then((res) => {
+        setOtpMessage("OTP sent successfully!");
         setOtpSent(true);
         setData((prev) => ({ ...prev, otp: res.data?.OTP }));
         setClock(50);
         const newInterval = setInterval(() => {
           setClock((prev) => {
             if (prev === 0) {
+              setErrors({});
               setOtpSent(false);
               clearInterval(newInterval);
               return prev;
@@ -57,6 +61,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
         }, 1000);
       })
       .catch((err) => {
+        setOtpMessage("");
         console.log(err.response);
         setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
       })
@@ -86,6 +91,8 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
         handleGetOTP();
       })
       .catch((err) => {
+        if (!err?.response)
+          return setErrors({ message: "No internet connection!" });
         const { name, username, email, phone_no, password } =
           err?.response?.data;
         setErrors((prev) => ({
@@ -101,6 +108,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
   };
 
   const handleOTPVerify = () => {
+    setOtpMessage("");
     let obj = {
       otp: isValid("OTP", data.otp, "otp"),
     };
@@ -113,6 +121,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
       .then((res) => {
         setSignUpMethod(2);
         setMessage("Registration successful. Log in to continue");
+        setTimeout(() => setMessage(""), 10000);
       })
       .catch((err) => {
         console.error(err);
@@ -130,6 +139,11 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
         style={OTPView ? {} : { display: "none" }}>
         <div className='card'>
           <div className='h5 p-1 text-center'>Enter OTP :</div>
+          <div
+            style={{ minHeight: 15, fontSize: 14 }}
+            className='text-success text-center'>
+            {otpMessage}
+          </div>
           <div className='mt-3'>
             <div className='row pe-2'>
               <div className='col-sm-9 col-8'>
@@ -199,6 +213,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
           onChange={handleChange}
           errors={errors}
           mandatory={true}
+          placeholder='name'
         />
       </div>
       <div>
@@ -210,6 +225,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
           onChange={handleChange}
           errors={errors}
           mandatory={true}
+          placeholder='username'
         />
       </div>
       <div>
@@ -221,6 +237,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
           onChange={handleChange}
           errors={errors}
           mandatory={true}
+          placeholder='email'
         />
       </div>
       <div>
@@ -241,7 +258,9 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
             <div className='col-9'>
               <input
                 type='tel'
-                className='form-control form-control-sm'
+                className={`form-control form-control-sm${
+                  errors?.phone_no && " is-invalid"
+                }`}
                 id='phone_no'
                 value={data.phone_no}
                 onChange={handleChange}
@@ -349,9 +368,9 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
           By clicking, I agree the Terms and Conditions.
         </label>
       </div>
-      {errors?.message && (
-        <div style={{ fontSize: "10px", color: "red" }}>{errors?.message}</div>
-      )}
+      <div style={{ fontSize: "10px", color: "red", minHeight: "12px" }}>
+        {errors?.message}
+      </div>
       <div className='mt-3 text-center'>
         <button
           className='btn btn-primary signup-btn fw-bold'
