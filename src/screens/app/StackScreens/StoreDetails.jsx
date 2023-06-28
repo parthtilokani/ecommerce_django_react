@@ -99,8 +99,11 @@ const StoreDetails = () => {
         <View style={[styles.descriptionView, SHADOWS.medium]}>
           <Text style={{color: 'black'}}>Description</Text>
           <View style={styles.seperatorView} />
-          <View>
-            <Text style={{color: 'black'}} ref={textRef}>
+          <View
+            style={{
+              width: width * 0.85,
+            }}>
+            <Text style={{color: 'black', alignSelf: 'center'}} ref={textRef}>
               {showAll ? text : getTruncatedText()}
             </Text>
             <TouchableOpacity
