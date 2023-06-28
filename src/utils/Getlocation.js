@@ -16,25 +16,6 @@ export const Getlocation = async () => {
           console.log(error);
           reject(error);
         }
-        // try {
-        //   const query = new URLSearchParams({
-        //     locale: 'en',
-        //     limit: '5',
-        //     reverse: 'true',
-        //     debug: 'false',
-        //     point: `${position?.coords?.latitude},${position?.coords?.longitude}`,
-        //     provider: 'default',
-        //     key: 'ca66e3f0-8610-4e3f-9088-384fcf1286f3',
-        //   }).toString();
-        //   const resp = await fetch(
-        //     `https://graphhopper.com/api/1/geocode?${query}`,
-        //     {method: 'GET'},
-        //   );
-        //   const data = await resp.json();
-        //   resolve(data);
-        // } catch (error) {
-        //   reject(error);
-        // }
       },
       error => {
         reject(error);
