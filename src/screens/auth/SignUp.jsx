@@ -26,8 +26,7 @@ import {
 import Input from '../../components/Inputs/Input';
 import Button from '../../components/Button/Button';
 import CheckboxComponent from '../../components/Checkbox/Checkbox';
-import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
-import {isValid} from '../../utils/supportFunctions.js';
+import {isConnectedToInternet, isValid} from '../../utils/supportFunctions.js';
 import {
   requestOtp,
   signUP,
@@ -103,26 +102,29 @@ const SignUp = ({navigation}) => {
       gender: formDetails.gender,
       dob: formDetails.dob,
     };
-    setLoading(true);
-    const res = await signUP(data);
-    if (res) {
-      Alert.alert(
-        'ALERT!',
-        'Sign Up sucessful! \nOPT has been sent to your phone number.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              otpRequest();
-              setOtpModalVisible(true);
+    if (await isConnectedToInternet()) {
+      setLoading(true);
+      const res = await signUP(data);
+      if (res) {
+        Alert.alert(
+          'ALERT!',
+          'Sign Up sucessful! \nOPT has been sent to your phone number.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                otpRequest();
+                setOtpModalVisible(true);
+              },
             },
-          },
-        ],
-      );
+          ],
+        );
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // OTP Timer
   const startTimer = () => {
     setClock(50);
     const newInterval = setInterval(() => {
@@ -136,12 +138,15 @@ const SignUp = ({navigation}) => {
     }, 1000);
   };
 
+  // OTP Request
   const otpRequest = async () => {
     const data = {phone: formDetails.phoneNumber};
     const res = await requestOtp(data);
     startTimer();
     setOtpValue(res);
   };
+
+  // Resend OTP
   const resendOtpRequest = async () => {
     const data = {phone: formDetails.phoneNumber};
     setLoading(true);
@@ -149,6 +154,7 @@ const SignUp = ({navigation}) => {
     setLoading(false);
     setOtpValue(res);
   };
+
   const verifyOTP = async () => {
     const data = {phone: formDetails.phoneNumber, otp: optValue};
     setLoading(true);
@@ -167,14 +173,18 @@ const SignUp = ({navigation}) => {
     }
   };
 
+  const onChangeCountry = country => {
+    console.log(country?.callingCode);
+    setFormDetails(prevState => ({
+      ...prevState,
+      areaCode: country?.callingCode,
+    }));
+  };
+
   const onChange = (event, selectedDate) => {
     setShow(false);
     const formattedDate = new Date(selectedDate).toISOString().slice(0, 10);
-    // const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
-    //   day: '2-digit',
-    //   month: '2-digit',
-    //   year: 'numeric',
-    // });
+
     setFormDetails(prevState => ({
       ...prevState,
       dob: formattedDate,
@@ -188,7 +198,6 @@ const SignUp = ({navigation}) => {
       <ScrollView
         style={{
           flex: 1,
-
           height: height,
         }}
         contentContainerStyle={{
@@ -210,7 +219,7 @@ const SignUp = ({navigation}) => {
               <Input
                 id={'name'}
                 errors={errors}
-                placeholder={'Name'}
+                placeholder={'Name*'}
                 value={formDetails.name}
                 onChangeText={text => handleInputChange('name', text)}
                 leftIcon={icons.user}
@@ -219,7 +228,7 @@ const SignUp = ({navigation}) => {
               <Input
                 id={'userName'}
                 errors={errors}
-                placeholder={'Username'}
+                placeholder={'Username*'}
                 value={formDetails.userName}
                 onChangeText={text => handleInputChange('userName', text)}
                 leftIcon={icons.user}
@@ -228,29 +237,17 @@ const SignUp = ({navigation}) => {
               <Input
                 id={'email'}
                 errors={errors}
-                placeholder={'Email'}
+                placeholder={'Email*'}
                 value={formDetails.email}
                 onChangeText={text => handleInputChange('email', text)}
                 leftIcon={icons.email}
                 style={styles.input}
               />
-              <Input
-                id={'areaCode'}
-                errors={errors}
-                placeholder={'+91'}
-                value={formDetails.areaCode}
-                onChangeText={text =>
-                  handleInputChange('areaCode', text.replace(/[^0-9]/, ''))
-                }
-                leftIcon={icons.phone}
-                style={styles.input}
-                maxLength={3}
-                keyboardType={'phone-pad'}
-              />
+
               <Input
                 id={'phoneNumber'}
                 errors={errors}
-                placeholder={'Phone Number'}
+                placeholder={'Phone Number*'}
                 value={formDetails.phoneNumber}
                 onChangeText={text =>
                   handleInputChange('phoneNumber', text.replace(/[^0-9]/, ''))
@@ -259,11 +256,12 @@ const SignUp = ({navigation}) => {
                 style={styles.input}
                 maxLength={10}
                 keyboardType={'phone-pad'}
+                onChangeCountry={onChangeCountry}
               />
               <Input
                 id={'password'}
                 errors={errors}
-                placeholder={'Password'}
+                placeholder={'Password*'}
                 value={formDetails.password}
                 onChangeText={text => handleInputChange('password', text)}
                 leftIcon={icons.lock}
@@ -273,7 +271,7 @@ const SignUp = ({navigation}) => {
               <Input
                 id={'c_password'}
                 errors={errors}
-                placeholder={'Confirm Password'}
+                placeholder={'Confirm Password*'}
                 value={formDetails.c_password}
                 onChangeText={text => handleInputChange('c_password', text)}
                 leftIcon={icons.lock}
@@ -283,7 +281,7 @@ const SignUp = ({navigation}) => {
               <Input
                 id={'dob'}
                 errors={errors}
-                placeholder={'Date of Birth'}
+                placeholder={'Date of Birth (Optional)'}
                 value={formDetails.dob?.toString()}
                 onChangeText={() => setShow(true)}
                 leftIcon={icons.calendar}
@@ -366,7 +364,6 @@ const SignUp = ({navigation}) => {
               checkboxValue={checkboxValue}
               setCheckboxValue={onCheckboxChange}
               text={'I have read and agree to the website Terms and Conditions'}
-              // secondTxt={' Terms and Conditions'}
             />
           </View>
 
@@ -374,62 +371,58 @@ const SignUp = ({navigation}) => {
           <Modal visible={otpModalVisible} transparent>
             <View style={styles.container}>
               <View style={styles.alert}>
-                <View>
-                  <View>
-                    <Text
-                      style={{
-                        color: COLORS.black,
-                        fontWeight: '700',
-                        textAlign: 'center',
-                        fontSize: normalize(FONTSIZE.medium),
-                      }}>
-                      Enter OPT
-                    </Text>
-                    <Text
-                      style={{
-                        color: COLORS.black,
-                        fontWeight: '700',
-                        textAlign: 'center',
-                        fontSize: normalize(FONTSIZE.medium),
-                      }}>
-                      Temperory OTP: {optValue}
-                    </Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontWeight: '700',
+                    textAlign: 'center',
+                    fontSize: normalize(FONTSIZE.medium),
+                  }}>
+                  Enter OPT
+                </Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontWeight: '700',
+                    textAlign: 'center',
+                    fontSize: normalize(FONTSIZE.medium),
+                  }}>
+                  Temperory OTP: {optValue}
+                </Text>
 
-                    <OTPTextView
-                      tintColor={COLORS.primary}
-                      offTintColor={COLORS.secondary}
-                      containerStyle={styles.textInputContainer}
-                      textInputStyle={styles.otpTextInputStyle}
-                      defaultValue={optValue}
-                      handleTextChange={text => setOtpValue(text)}
-                      inputCount={6}
-                      keyboardType="numeric"
-                      autoFocus={true}
-                    />
-                    <Button
-                      text={'Verify'}
-                      disable={optValue.length == 6 ? false : true}
-                      style={styles.otpSubmitButton}
-                      onPress={verifyOTP}
-                    />
+                <OTPTextView
+                  tintColor={COLORS.primary}
+                  offTintColor={COLORS.secondary}
+                  containerStyle={styles.textInputContainer}
+                  textInputStyle={styles.otpTextInputStyle}
+                  defaultValue={optValue}
+                  // handleTextChange={text => setOtpValue(text)}
+                  inputCount={6}
+                  keyboardType="numeric"
+                  autoFocus={true}
+                />
+                <Button
+                  text={'Verify'}
+                  disable={optValue.length == 6 ? false : true}
+                  style={styles.otpSubmitButton}
+                  onPress={verifyOTP}
+                />
 
-                    <Text style={{color: 'black', alignSelf: 'center'}}>
-                      {clock} second/s
-                    </Text>
-                    <TouchableOpacity
-                      disabled={clock == 0 ? false : true}
-                      onPress={resendOtpRequest}>
-                      <Text
-                        style={{
-                          color: clock == 0 ? COLORS.black : COLORS.gray,
-                          fontWeight: '700',
-                          textAlign: 'center',
-                        }}>
-                        Resend OPT
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <Text style={{color: 'black', alignSelf: 'center'}}>
+                  {clock} second/s
+                </Text>
+                <TouchableOpacity
+                  disabled={clock == 0 ? false : true}
+                  onPress={resendOtpRequest}>
+                  <Text
+                    style={{
+                      color: clock == 0 ? COLORS.black : COLORS.gray,
+                      fontWeight: '700',
+                      textAlign: 'center',
+                    }}>
+                    Resend OPT
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </Modal>

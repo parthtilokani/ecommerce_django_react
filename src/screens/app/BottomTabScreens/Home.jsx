@@ -13,10 +13,9 @@ import React, {useRef, useState, useEffect} from 'react';
 import Header from '../../../components/Header/Header.jsx';
 import Categories from '../../../components/Categories/Categories.jsx';
 import Button from '../../../components/Button/Button.jsx';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import ListFlatAds from '../../../components/Ads/ListFlatAds.jsx';
-import {COLORS, FONTSIZE, SHADOWS} from '../../../constant/theme.js';
-import GridFlatAds from '../../../components/Ads/GridFlatAds.jsx';
+import {useNavigation} from '@react-navigation/native';
+
+import {COLORS, SHADOWS} from '../../../constant/theme.js';
 import icons from '../../../constant/icons.js';
 import ListGridAds from '../../../components/Ads/ListGridAds.jsx';
 import {PERMISSIONS} from 'react-native-permissions';
@@ -25,17 +24,19 @@ import {Getlocation} from '../../../utils/Getlocation.js';
 import useLocation from '../../../hooks/useLocation.js';
 import Loader from '../../../components/Loader/Loader.jsx';
 import {height, width} from '../../../constant/index.js';
+import {isConnectedToInternet} from '../../../utils/supportFunctions.js';
 
 const Home = () => {
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
   const {location, setLocation} = useLocation();
   const scrollViewRef = useRef();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    checkPermission();
+    (async () => {
+      if (await isConnectedToInternet()) checkPermission();
+    })();
   }, []);
 
   const checkPermission = async () => {
@@ -45,8 +46,8 @@ const Home = () => {
         : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
 
     const isPermissionGranted = await CheckPermission(permission);
-    setLoading(true);
     if (isPermissionGranted) {
+      setLoading(true);
       const position = await Getlocation();
       setLocation(position[0].formatted_address);
     } else {

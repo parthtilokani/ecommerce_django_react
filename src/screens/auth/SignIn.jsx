@@ -14,7 +14,7 @@ import {
 import Input from '../../components/Inputs/Input';
 import Button from '../../components/Button/Button';
 import {signIN} from '../../utils/customHook/backEndCalls.js';
-import {isValid} from '../../utils/supportFunctions.js';
+import {isConnectedToInternet, isValid} from '../../utils/supportFunctions.js';
 import Loader from '../../components/Loader/Loader.jsx';
 
 const SignIn = ({navigation}) => {
@@ -36,13 +36,12 @@ const SignIn = ({navigation}) => {
     setErrors({});
 
     const data = {email: formDetails.email, password: formDetails.password};
-
-    setLoading(true);
-    const res = await signIN(data);
-
-    setLoading(false);
-
-    if (res) return navigation.replace('Drawer');
+    if (await isConnectedToInternet()) {
+      setLoading(true);
+      const res = await signIN(data);
+      setLoading(false);
+      if (res) return navigation.replace('Drawer');
+    }
   };
   return (
     <KeyboardAvoidingWrapper>
