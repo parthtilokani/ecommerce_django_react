@@ -38,3 +38,15 @@ export const isValid = (label, value, type) => {
     return 'Invalid phone number.';
   return '';
 };
+
+import NetInfo from '@react-native-community/netinfo';
+import {Alert} from 'react-native';
+export const isConnectedToInternet = async () => {
+  return NetInfo.fetch().then(state => {
+    if (!state.isConnected) {
+      Alert.alert('ALERT!', 'Please check your internet connection!');
+    }
+
+    return state.isConnected;
+  });
+};
