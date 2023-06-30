@@ -159,6 +159,9 @@ const SignUp = ({navigation}) => {
   };
 
   const verifyOTP = async () => {
+    if (optValue.length < 6) {
+      return Alert.alert('ALERT!', 'Please enter OPT');
+    }
     const data = {phone: formDetails.phoneNumber, otp: optValue};
     setLoading(true);
     const res = await verifyOtp(data);
