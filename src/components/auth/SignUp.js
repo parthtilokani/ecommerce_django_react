@@ -40,10 +40,12 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
 
   const handleGetOTP = () => {
     setOtpMessage("");
+    setErrors({});
     setLoading(true);
     axiosPrivate
       .get("/otp", { params: { phone: data.phone_no } })
       .then((res) => {
+        console.log(res.data);
         setOtpMessage("OTP sent successfully!");
         setOtpSent(true);
         setData((prev) => ({ ...prev, otp: res.data?.OTP }));
@@ -62,6 +64,8 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
       })
       .catch((err) => {
         setOtpMessage("");
+        if (!err?.response)
+          return setErrors({ message: "No internet connection!" });
         console.log(err.response);
         setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
       })
@@ -119,6 +123,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
     axiosPrivate
       .post("/otp", { phone: data.phone_no, otp: data.otp })
       .then((res) => {
+        console.log(res.data);
         setSignUpMethod(2);
         setMessage("Registration successful. Log in to continue");
         setTimeout(() => setMessage(""), 10000);

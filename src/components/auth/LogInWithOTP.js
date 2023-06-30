@@ -5,6 +5,7 @@ import { isValid } from "../../utils/support.js";
 import { axiosPrivate } from "../../utils/axios.js";
 
 export const LogInWithOTP = ({ setSignUpMethod }) => {
+  const [otpMessage, setOtpMessage] = useState("");
   const [otpCount, setOtpCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -27,43 +28,83 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
     if (Object.values(obj).filter((e) => e !== "").length > 0)
       return setErrors(obj);
     setErrors({});
-    setOtpSent(true);
-    setOtpCount(1);
-    const newInterval = setInterval(() => {
-      setClock((prev) => {
-        if (prev === 0) return prev;
-        return prev - 1;
-      });
-    }, 1000);
-    setTimeout(() => {
-      clearInterval(newInterval);
-      setOtpSent(false);
-      setClock(120);
-    }, 12000);
+    setOtpMessage("");
+    setLoading(true);
+    axiosPrivate
+      .get("/otp", { params: { phone: data.phone_no } })
+      .then((res) => {
+        console.log(res.data);
+        setOtpMessage("OTP sent successfully!");
+        setOtpSent(true);
+        setOtpCount(1);
+        setClock(50);
+        const newInterval = setInterval(() => {
+          setClock((prev) => {
+            if (prev === 0) {
+              setErrors({});
+              setOtpSent(false);
+              clearInterval(newInterval);
+              return prev;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      })
+      .catch((err) => {
+        setOtpMessage("");
+        if (!err?.response)
+          return setErrors({ message: "No internet connection!" });
+        console.log(err.response);
+        setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleLogin = () => {
-    // setLoading(true);
-    // axiosPrivate.get().then((res) => {
-    //   setSignUpMethod(2);
-    // });
-    //   .catch((err) => {
-    //     const { name, email, password } = err?.response?.data;
-    //     setErrors((prev) => ({
-    //       ...prev,
-    //       name: name && name?.length > 0 && name[0],
-    //       email: email && email?.length > 0 && email[0],
-    //       password: password && password?.length > 0 && password[0],
-    //     }));
-    //   })
-    //   .finally(() => setLoading(false));
-    // setAuth({ token: "yes" });
+    let obj = {
+      phonenumber: isValid("Phone Number", data.phonenumber, "phonenumber"),
+    };
+    if (Object.values(obj).filter((e) => e !== "").length > 0)
+      return setErrors(obj);
+    setErrors({});
+    setLoading(true);
+    axiosPrivate
+      .post("/token/withotp", { ...data })
+      .then((res) => {
+        setAuth({
+          accessToken: res?.data?.access,
+          refreshToken: res?.data?.refresh,
+        });
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({
+            accessToken: res?.data?.access,
+            refreshToken: res?.data?.refresh,
+          })
+        );
+      })
+      .catch((err) => {
+        if (!err?.response)
+          return setErrors({ message: "No internet connection!" });
+        const { phone_no, detail } = err?.response?.data;
+        setErrors((prev) => ({
+          ...prev,
+          phone_no: phone_no && phone_no?.length > 0 ? phone_no[0] : "",
+          message: detail || "",
+        }));
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
     <div className='signup-body flex-fill'>
       <div className='text-center'>
         <h3 className='fw-bold signup-head'>Log in to Classified Ads</h3>
+      </div>
+      <div
+        style={{ minHeight: 15, fontSize: 14 }}
+        className='text-success text-center'>
+        {otpMessage}
       </div>
       <div className='mt-3'>
         <div className='row pe-2'>
@@ -79,6 +120,7 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
               value={data.phonenumber}
               onChange={handleChange}
               style={{ padding: "14px 16px", fontSize: "17px" }}
+              disabled={otpSent}
             />
           </div>
           <button
@@ -109,7 +151,9 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
           id='otp'
           autoComplete='off'
           style={{ padding: "14px 16px", fontSize: "17px" }}
-          disabled
+          value={data.otp}
+          onChange={handleChange}
+          disabled={!otpSent}
         />
       </div>
       {errors?.message && (

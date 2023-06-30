@@ -29,7 +29,6 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
     axiosPrivate
       .post("/token", { ...data })
       .then((res) => {
-        setSignUpMethod(2);
         setAuth({
           accessToken: res?.data?.access,
           refreshToken: res?.data?.refresh,
