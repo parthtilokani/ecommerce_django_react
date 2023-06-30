@@ -40,11 +40,18 @@ export const signUP = async values => {
       return true;
     }
   } catch (e) {
-    console.log('error in signup', JSON.stringify(e?.response));
-    Alert.alert('ALERT!', e?.response?.data?.email[0]);
+    console.log('error in signup', JSON.stringify(e));
+    if (!e?.response) {
+      Alert.alert('ALERT!', 'No internet connection!');
+      return false;
+    }
+
+    Alert.alert('ALERT!', 'Something went wrong!');
+    //  e?.response?.data?.email[0]
     return false;
   }
 };
+
 export const requestOtp = async values => {
   try {
     const response = await axios.get(`${baseURL}/otp`, {
@@ -66,8 +73,9 @@ export const verifyOtp = async values => {
       method: 'POST',
       data: values,
     });
+    if (response) return true;
 
-    return true;
+    return false;
     // return await response?.data?.OTP;
   } catch (e) {
     Alert.alert(

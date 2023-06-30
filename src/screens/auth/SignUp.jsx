@@ -66,61 +66,64 @@ const SignUp = ({navigation}) => {
   };
 
   const onSignUp = async () => {
-    let obj = {
-      name: isValid('Name', formDetails.name, 'name'),
-      userName: isValid('Username', formDetails.userName, 'username'),
-      email: isValid('Email', formDetails.email, 'email'),
-      areaCode: isValid('Area code', formDetails.areaCode),
-      phoneNumber: isValid(
-        'Phone number',
-        formDetails.phoneNumber,
-        'phonenumber',
-      ),
-      password: isValid('Password', formDetails.password, 'password'),
-      c_password: isValid(
-        'Confirm Password',
-        formDetails.c_password,
-        'c_password',
-      ),
-    };
-    if (!obj?.c_password)
-      obj.c_password =
-        formDetails.password !== formDetails.c_password
-          ? "Password doen't match"
-          : '';
-    if (Object.values(obj).filter(e => e !== '').length > 0)
-      return setErrors(obj);
-    setErrors({});
+    try {
+      let obj = {
+        name: isValid('Name', formDetails.name, 'name'),
+        userName: isValid('Username', formDetails.userName, 'username'),
+        email: isValid('Email', formDetails.email, 'email'),
+        phoneNumber: isValid(
+          'Phone number',
+          formDetails.phoneNumber,
+          'phonenumber',
+        ),
+        password: isValid('Password', formDetails.password, 'password'),
+        c_password: isValid(
+          'Confirm Password',
+          formDetails.c_password,
+          'c_password',
+        ),
+      };
+      if (!obj?.c_password)
+        obj.c_password =
+          formDetails.password !== formDetails.c_password
+            ? "Password doen't match"
+            : '';
+      if (Object.values(obj).filter(e => e !== '').length > 0)
+        return setErrors(obj);
+      setErrors({});
 
-    const data = {
-      name: formDetails.name,
-      username: formDetails.userName,
-      email: formDetails.email,
-      phone_no: formDetails.phoneNumber,
-      area_code: formDetails?.areaCode || '91',
-      password: formDetails.password,
-      gender: formDetails.gender,
-      dob: formDetails.dob,
-    };
-    if (await isConnectedToInternet()) {
-      setLoading(true);
-      const res = await signUP(data);
-      if (res) {
-        Alert.alert(
-          'ALERT!',
-          'Sign Up sucessful! \nOPT has been sent to your phone number.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                otpRequest();
-                setOtpModalVisible(true);
+      const data = {
+        name: formDetails.name,
+        username: formDetails.userName,
+        email: formDetails.email,
+        phone_no: formDetails.phoneNumber,
+        area_code: formDetails?.areaCode || '91',
+        password: formDetails.password,
+        gender: formDetails.gender,
+        dob: formDetails.dob,
+      };
+      if (await isConnectedToInternet()) {
+        setLoading(true);
+        const res = await signUP(data);
+        if (res) {
+          Alert.alert(
+            'ALERT!',
+            'Sign Up sucessful! \nOPT has been sent to your phone number.',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  otpRequest();
+                  setOtpModalVisible(true);
+                },
               },
-            },
-          ],
-        );
+            ],
+          );
+        }
+        setLoading(false);
       }
-      setLoading(false);
+    } catch (err) {
+      console.log('asdasdasdas', err);
     }
   };
 
@@ -380,16 +383,6 @@ const SignUp = ({navigation}) => {
                   }}>
                   Enter OPT
                 </Text>
-                <Text
-                  style={{
-                    color: COLORS.black,
-                    fontWeight: '700',
-                    textAlign: 'center',
-                    fontSize: normalize(FONTSIZE.medium),
-                  }}>
-                  Temperory OTP: {optValue}
-                </Text>
-
                 <OTPTextView
                   tintColor={COLORS.primary}
                   offTintColor={COLORS.secondary}
@@ -399,11 +392,11 @@ const SignUp = ({navigation}) => {
                   // handleTextChange={text => setOtpValue(text)}
                   inputCount={6}
                   keyboardType="numeric"
-                  autoFocus={true}
+                  // autoFocus={true}
                 />
                 <Button
                   text={'Verify'}
-                  disable={optValue.length == 6 ? false : true}
+                  // disable={optValue?.length == 6 ? false : true}
                   style={styles.otpSubmitButton}
                   onPress={verifyOTP}
                 />
