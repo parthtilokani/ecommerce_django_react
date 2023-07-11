@@ -29,7 +29,6 @@
   font-size: smaller;
   color: var(--secondary);
   text-decoration: underline;
-  text-align: center;
   cursor: pointer;
   font-weight: bold;
 }

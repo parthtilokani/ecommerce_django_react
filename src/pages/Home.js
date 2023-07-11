@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 // css
 import "../styles/css/home.css";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   const [locationView, setLocationView] = useState(false);
   const [categoryView, setCategoryView] = useState(false);
   const [subCategoryView, setSubCategoryView] = useState(false);
@@ -147,7 +150,9 @@ const Home = () => {
                   <input placeholder='Search Keywords' id='search' />
                 </div>
               </div>
-              <div className='col-lg-12 col-xl-2 cols'>
+              <div
+                className='col-lg-12 col-xl-2 cols'
+                onClick={() => navigate("/search")}>
                 <div className='input-wrapper search-btn justify-content-center'>
                   <div>
                     <img src='/assets/svgs/search.svg' alt='search' />

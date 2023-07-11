@@ -1,0 +1,108 @@
+#post-new-ad {
+  min-height: calc(100vh - 64px);
+  background-color: hsla(168, 53%, 85%, 0.2);
+  padding: 2rem;
+}
+#post-new-ad .pya-main {
+  background-color: white;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+  box-shadow: 0 0 15px -7px;
+}
+#post-new-ad .categories,
+#post-new-ad .sub-categories {
+  list-style: none;
+}
+#post-new-ad .categories > li {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#post-new-ad .categories > li .c-name {
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: var(--bg-color-secondary);
+}
+#post-new-ad .categories .c-toggle {
+  position: absolute;
+  right: 15px;
+  top: 7px;
+}
+#post-new-ad .sub-categories {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.5s ease;
+}
+#post-new-ad .sub-categories li {
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: hsla(168, 53%, 58%, 0.06);
+  margin-top: 5px;
+}
+#post-new-ad .categories li > .active {
+  max-height: 1000px;
+}
+#post-new-ad .img-input {
+  display: flex;
+  flex-wrap: wrap;
+}
+#post-new-ad .img-input .img-input-col {
+  flex: 0 0 auto;
+  width: 50%;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#post-new-ad .img-input .img-input-col .img-placeholder {
+  width: 90%;
+  aspect-ratio: 1;
+  background-color: beige;
+  margin-bottom: 5px;
+  border: 1px solid grey;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#post-new-ad .img-input .img-input-col .img-placeholder img {
+  width: 40px;
+}
+#post-new-ad .img-input .img-input-col .img-wrapper {
+  width: 90%;
+  aspect-ratio: 1;
+  margin-bottom: 5px;
+  position: relative;
+}
+#post-new-ad .img-input .img-input-col .img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+}
+#post-new-ad .img-input .img-input-col .img-wrapper span {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  background-color: white;
+  height: 11px;
+  width: 11px;
+  cursor: pointer;
+  line-height: 7px;
+  color: #43c6ac;
+  font-weight: bold;
+}
+@media (width>350px) {
+  #post-new-ad .img-input .img-input-col {
+    width: 33%;
+  }
+}
+@media (width>500px) {
+  #post-new-ad .img-input .img-input-col {
+    width: 25%;
+  }
+}

@@ -264,7 +264,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
               <input
                 type='tel'
                 className={`form-control form-control-sm${
-                  errors?.phone_no && " is-invalid"
+                  errors?.phone_no ? " is-invalid" : ""
                 }`}
                 id='phone_no'
                 value={data.phone_no}
@@ -384,11 +384,13 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
           {!loading ? "Sign Up For Free" : "Signing Up"}
         </button>
       </div>
-      <div
-        className='mt-2 already-user'
-        onClick={() => setSignUpMethod(2)}
-        disabled={loading}>
-        Already a user? Log In
+      <div className='mt-2 text-center'>
+        <span
+          className='already-user'
+          onClick={() => setSignUpMethod(2)}
+          disabled={loading}>
+          Already a user? Log In
+        </span>
       </div>
     </div>
   );

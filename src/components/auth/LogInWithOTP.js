@@ -13,6 +13,7 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
   const { setAuth } = useAuth();
   const [data, setData] = useState({
     phonenumber: "",
+    phone_no: "",
     otp: "",
   });
   const [errors, setErrors] = useState({});
@@ -22,6 +23,7 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
   };
 
   const handleGetOTP = () => {
+    setData((prev) => ({ ...prev, phone_no: prev.phonenumber }));
     let obj = {
       phonenumber: isValid("Phone Number", data.phonenumber, "phonenumber"),
     };
@@ -31,9 +33,8 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
     setOtpMessage("");
     setLoading(true);
     axiosPrivate
-      .get("/otp", { params: { phone: data.phone_no } })
+      .get("/otp", { params: { phone: data.phonenumber } })
       .then((res) => {
-        console.log(res.data);
         setOtpMessage("OTP sent successfully!");
         setOtpSent(true);
         setOtpCount(1);
@@ -61,15 +62,10 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
   };
 
   const handleLogin = () => {
-    let obj = {
-      phonenumber: isValid("Phone Number", data.phonenumber, "phonenumber"),
-    };
-    if (Object.values(obj).filter((e) => e !== "").length > 0)
-      return setErrors(obj);
     setErrors({});
     setLoading(true);
     axiosPrivate
-      .post("/token/withotp", { ...data })
+      .post("/token/withotp", { ...data, phone_no: data.phone_no })
       .then((res) => {
         setAuth({
           accessToken: res?.data?.access,
@@ -120,14 +116,15 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
               value={data.phonenumber}
               onChange={handleChange}
               style={{ padding: "14px 16px", fontSize: "17px" }}
-              disabled={otpSent}
             />
           </div>
           <button
             className='col-sm-3 col-4 fw-bold btn btn-sm btn-primary signup-btn'
             onClick={handleGetOTP}
             disabled={loading || otpSent}>
-            {otpCount === 0 ? "Get OTP" : "Resend"}
+            {otpCount === 0 || data.phone_no !== data.phonenumber
+              ? "Get OTP"
+              : "Resend"}
           </button>
         </div>
         <div style={{ minHeight: 20 }}>
@@ -168,11 +165,15 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
           Log In
         </button>
       </div>
-      <div className='mt-3 already-user' onClick={() => setSignUpMethod(2)}>
-        Log In with password
+      <div className='mt-3 text-center'>
+        <span className='already-user' onClick={() => setSignUpMethod(2)}>
+          Log In with password
+        </span>
       </div>
-      <div className='mt-1 already-user' onClick={() => setSignUpMethod(1)}>
-        Create a new Account
+      <div className='mt-1 text-center'>
+        <span className='already-user' onClick={() => setSignUpMethod(1)}>
+          Create a new Account
+        </span>
       </div>
     </div>
   );

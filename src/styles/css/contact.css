@@ -1,0 +1,14 @@
+#contact-main {
+  min-height: calc(100vh - 64px);
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+#contact-main .contact-body {
+  max-width: 1000px;
+  margin: auto;
+  padding: 40px;
+  background-color: white;
+}
+#contact-main .contact-map {
+  height: 400px;
+}

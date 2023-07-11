@@ -59,6 +59,9 @@
   outline: none;
 }
 @media (width > 991px) {
+  #home-search {
+    margin: 0 !important;
+  }
   #home-search .row {
     max-width: 800px;
   }

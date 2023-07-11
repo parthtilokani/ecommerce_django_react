@@ -89,16 +89,35 @@ const Navbar = () => {
             </li>
           )}
           <li>
-            <Link to='/post-new-ad'>
-              <button
-                className='nav-post-ad'
-                style={{
-                  color: location.pathname === "/post-new-ad" ? "#43c6ac" : "",
-                }}
-                onClick={() => setIsOpen(false)}>
-                + Post Your Ad
-              </button>
-            </Link>
+            {auth?.accessToken ? (
+              <Link to='/post-new-ad'>
+                <button
+                  className='nav-post-ad'
+                  style={{
+                    backgroundColor:
+                      location.pathname === "/post-new-ad"
+                        ? "rgb(62, 176, 154)"
+                        : "",
+                  }}
+                  onClick={() => setIsOpen(false)}>
+                  + Post Your Ad
+                </button>
+              </Link>
+            ) : (
+              <Link to='/login'>
+                <button
+                  className='nav-post-ad'
+                  style={{
+                    backgroundColor:
+                      location.pathname === "/post-new-ad"
+                        ? "rgb(62, 176, 154)"
+                        : "",
+                  }}
+                  onClick={() => setIsOpen(false)}>
+                  + Post Your Ad
+                </button>
+              </Link>
+            )}
           </li>
         </ul>
       </div>

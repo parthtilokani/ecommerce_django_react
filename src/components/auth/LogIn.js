@@ -115,7 +115,9 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
           {errors?.password && errors?.password}
         </div>
       </div>
-      <div className='mt-1 already-user text-end'>Forgot Password?</div>
+      <div className='mt-1 text-end'>
+        <span className='already-user'>Forgot Password?</span>
+      </div>
       {errors?.message && (
         <div style={{ fontSize: "10px", color: "red" }}>{errors?.message}</div>
       )}
@@ -128,11 +130,15 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
           {loading ? "Logging In" : "Log In"}
         </button>
       </div>
-      <div className='mt-3 already-user' onClick={() => setSignUpMethod(3)}>
-        Log In with OTP
+      <div className='mt-3 text-center'>
+        <span className='already-user' onClick={() => setSignUpMethod(3)}>
+          Log In with OTP
+        </span>
       </div>
-      <div className='mt-1 already-user' onClick={() => setSignUpMethod(1)}>
-        Create a new Account
+      <div className='mt-1 text-center'>
+        <span className='already-user' onClick={() => setSignUpMethod(1)}>
+          Create a new Account
+        </span>
       </div>
     </div>
   );
