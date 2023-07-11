@@ -11,6 +11,7 @@ import phone from '../assets/phone-call.png';
 import home from '../assets/home.png';
 import search from '../assets/search.png';
 import plus from '../assets/plus.png';
+import minus from '../assets/minus.png';
 import chat from '../assets/chat.png';
 import account from '../assets/account.png';
 import location from '../assets/location.png';
@@ -35,6 +36,7 @@ export default {
   home,
   search,
   plus,
+  minus,
   chat,
   account,
   location,

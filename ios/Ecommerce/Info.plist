@@ -26,17 +26,22 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
 		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
 			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
+				<key>localhost</key>
+					<dict>
+						<key>NSExceptionAllowsInsecureHTTPLoads</key>
+						<true/>
+					</dict>
+			</dict> 
 	</dict>
+	
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>The Ecommerce Application need Location permission</string>
+	<string>The Classified Ads Application need Location permission</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>The Classified Ads Application need Gallery permission</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SimpleLineIcons.ttf</string>

@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
+
 import {
   COLORS,
   FONTSIZE,
@@ -25,17 +26,19 @@ const Bottomtab = ({callBack, tabValue}) => {
   const [selectedTab, setSelectedTab] = useState(tabValue);
 
   const setTab = async tab => {
+    const userToken = await retrieveUserSession('userToken');
     if (tab == 2) {
       setSelectedTab(0);
-      navigation.navigate('Postad');
-      return;
+      if (userToken?.access) {
+        return navigation.navigate('Postad');
+      } else {
+        return navigation.navigate('SignIn');
+      }
     }
     if (tab == 4) {
-      // setSelectedTab(4);
-      const userToken = await retrieveUserSession('userToken');
-      if (!userToken?.access || !userToken?.refresh)
-        return navigation.navigate('SignIn');
+      if (!userToken?.access) return navigation.navigate('SignIn');
     }
+
     setSelectedTab(tab);
     callBack(tab);
   };

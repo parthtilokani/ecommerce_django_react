@@ -1,4 +1,4 @@
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {Alert, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import GobackHeader from '../../components/GobackHeader';
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
@@ -13,14 +13,24 @@ import {
 } from '../../constant';
 import Input from '../../components/Inputs/Input';
 import Button from '../../components/Button/Button';
-import {signIN} from '../../utils/customHook/backEndCalls.js';
+import {signIN, verifyOtp} from '../../utils/customHook/backEndCalls.js';
 import {isConnectedToInternet, isValid} from '../../utils/supportFunctions.js';
 import Loader from '../../components/Loader/Loader.jsx';
+import useAuth from '../../hooks/useAuth.js';
+import {retrieveUserSession} from '../../utils/AsyncStorage/userSession.js';
+import PhoneOtpModal from '../../components/PhoneOtpModal/PhoneOtpModal.jsx';
 
 const SignIn = ({navigation}) => {
-  const [formDetails, setFormDetails] = useState({email: '', password: ''});
+  const [formDetails, setFormDetails] = useState({
+    email: '',
+    password: '',
+    phoneNumber: '',
+  });
+  const [optValue, setOtpValue] = useState('');
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [phoneOtpModal, setPhoneOtpModal] = useState(false);
+  // const {setAuth} = useAuth();
 
   const handleInputChange = (field, value) => {
     setFormDetails(prevState => ({...prevState, [field]: value}));
@@ -40,7 +50,31 @@ const SignIn = ({navigation}) => {
       setLoading(true);
       const res = await signIN(data);
       setLoading(false);
-      if (res) return navigation.replace('Drawer');
+      if (res) {
+        return navigation.replace('Drawer');
+      }
+    }
+  };
+
+  const verifyOTP = async () => {
+    console.log(formDetails.phoneNumber);
+    if (optValue.length < 6) {
+      return Alert.alert('ALERT!', 'Please enter OPT');
+    }
+    const data = {phone: formDetails.phoneNumber, otp: optValue};
+    setLoading(true);
+    const res = await verifyOtp(data, 'token/withotp');
+    setLoading(false);
+    if (res) {
+      Alert.alert('ALERT!', 'OTP verify sucessful!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setPhoneOtpModal(false);
+            navigation.replace('Drawer');
+          },
+        },
+      ]);
     }
   };
   return (
@@ -99,7 +133,7 @@ const SignIn = ({navigation}) => {
 
             {/* Login Optional View */}
 
-            {/* <View style={styles.loginOptionalView}>
+            <View style={styles.loginOptionalView}>
               <View style={styles.horizontalView} />
               <Text
                 style={{
@@ -109,7 +143,24 @@ const SignIn = ({navigation}) => {
                 Or Login With
               </Text>
               <View style={styles.horizontalView} />
-            </View> */}
+            </View>
+            <Button
+              text={'Phone Number'}
+              style={[styles.phoneBtn]}
+              onPress={() => setPhoneOtpModal(true)}
+            />
+            <PhoneOtpModal
+              visible={phoneOtpModal}
+              onModalClose={() => setPhoneOtpModal(false)}
+              verifyOTP={verifyOTP}
+              handleOTPvalueChange={(text, phoneNumber) => {
+                setFormDetails(prevState => ({
+                  ...prevState,
+                  phoneNumber: phoneNumber,
+                }));
+                setOtpValue(text);
+              }}
+            />
 
             {/* Login Optional Button View */}
             {/* <View style={styles.optionalLoginBtnView}>

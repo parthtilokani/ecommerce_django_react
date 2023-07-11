@@ -26,6 +26,7 @@ const Input = ({
   value,
   isPassword,
   onChangeText,
+  inputStyle,
   style,
   placeholderTextColor = 'gray',
   maxLength,
@@ -33,12 +34,14 @@ const Input = ({
   onFocus,
   showSoftInputOnFocus = true,
   onChangeCountry,
+  multiline,
+  onContentSizeChange,
 }) => {
   const [secure, setSecure] = useState(true);
   return (
     <>
       <View style={[styles.container, SHADOWS.small, style]}>
-        {id != 'phoneNumber' && <Image source={leftIcon} style={styles.icon} />}
+        {leftIcon && <Image source={leftIcon} style={styles.icon} />}
         {id == 'phoneNumber' ? (
           <PhoneInput
             defaultCode="IN"
@@ -48,6 +51,7 @@ const Input = ({
             textInputStyle={{alignSelf: 'center'}}
             textContainerStyle={styles.phoneTextContainer}
             value={value}
+            disableArrowIcon
             textInputProps={{
               onChangeText: onChangeText,
               value: value,
@@ -64,15 +68,17 @@ const Input = ({
             id={id}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
-            style={styles.input}
+            style={[styles.input, inputStyle]}
             secureTextEntry={secure && isPassword}
             autoCapitalize="none"
             value={value}
             onChangeText={onChangeText}
             maxLength={maxLength}
+            multiline={multiline}
             keyboardType={keyboardType}
             onFocus={onFocus}
             showSoftInputOnFocus={showSoftInputOnFocus}
+            onContentSizeChange={onContentSizeChange}
           />
         )}
         {isPassword && (

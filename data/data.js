@@ -52,7 +52,7 @@ const drawerItemList = [
   {
     title: 'All Stores',
     icon: icons.chat,
-    screen: 'StoreDetails',
+    screen: 'AllStores',
   },
   // {
   //   title: 'FAQ',
@@ -91,6 +91,197 @@ const drawerItemList = [
   },
 ];
 
-export {itemData, drawerItemList};
+const postAdData = [
+  {
+    id: 1,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 2,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 3,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+      {
+        id: 3,
+        title: 'Sub Category',
+      },
+      {
+        id: 4,
+        title: 'Sub Category',
+      },
+      {
+        id: 5,
+        title: 'Sub Category',
+      },
+      {
+        id: 6,
+        title: 'Sub Category',
+      },
+      {
+        id: 7,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 4,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+      {
+        id: 3,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 5,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 6,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+      {
+        id: 3,
+        title: 'Sub Category',
+      },
+      {
+        id: 4,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 7,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+      {
+        id: 3,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 8,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 9,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+      {
+        id: 2,
+        title: 'Sub Category',
+      },
+      {
+        id: 3,
+        title: 'Sub Category',
+      },
+      {
+        id: 4,
+        title: 'Sub Category',
+      },
+    ],
+  },
+  {
+    id: 10,
+    category: 'Business & Technology',
+    subCategory: [
+      {
+        id: 1,
+        title: 'Sub Category',
+      },
+    ],
+  },
+];
+
+export {itemData, drawerItemList, postAdData};
 
 // https://github.com/parthtilokani/ecommerce_django_react

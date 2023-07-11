@@ -33,7 +33,7 @@ import {
   verifyOtp,
 } from '../../utils/customHook/backEndCalls.js';
 import Loader from '../../components/Loader/Loader.jsx';
-import OTPTextView from 'react-native-otp-textinput';
+import PhoneOtpModal from '../../components/PhoneOtpModal/PhoneOtpModal.jsx';
 
 const SignUp = ({navigation}) => {
   const [formDetails, setFormDetails] = useState({
@@ -48,13 +48,12 @@ const SignUp = ({navigation}) => {
     dob: undefined,
     gender: '',
   });
-  const [clock, setClock] = useState(50);
   const [optValue, setOtpValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [show, setShow] = useState(false);
-  const [checked, setChecked] = useState('first');
+  const [checked, setChecked] = useState('');
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (field, value) => {
@@ -106,56 +105,33 @@ const SignUp = ({navigation}) => {
         setLoading(true);
         const res = await signUP(data);
         if (res) {
-          Alert.alert(
-            'ALERT!',
-            'Sign Up sucessful! \nOPT has been sent to your phone number.',
-            [
-              {
-                text: 'OK',
-                onPress: () => {
-                  otpRequest();
-                  setOtpModalVisible(true);
-                },
-              },
-            ],
-          );
+          otpRequest();
         }
         setLoading(false);
       }
     } catch (err) {
-      console.log('asdasdasdas', err);
+      console.log('error in SignUp.JSX', err);
     }
-  };
-
-  // OTP Timer
-  const startTimer = () => {
-    setClock(50);
-    const newInterval = setInterval(() => {
-      setClock(prev => {
-        if (prev === 0) {
-          clearInterval(newInterval);
-          return prev;
-        }
-        return prev - 1;
-      });
-    }, 1000);
   };
 
   // OTP Request
   const otpRequest = async () => {
     const data = {phone: formDetails.phoneNumber};
     const res = await requestOtp(data);
-    startTimer();
-    setOtpValue(res);
-  };
-
-  // Resend OTP
-  const resendOtpRequest = async () => {
-    const data = {phone: formDetails.phoneNumber};
-    setLoading(true);
-    const res = await requestOtp(data);
-    setLoading(false);
-    setOtpValue(res);
+    if (res) {
+      Alert.alert(
+        'ALERT!',
+        'Sign Up sucessful! \nOPT has been sent to your phone number.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setOtpModalVisible(true);
+            },
+          },
+        ],
+      );
+    }
   };
 
   const verifyOTP = async () => {
@@ -164,14 +140,14 @@ const SignUp = ({navigation}) => {
     }
     const data = {phone: formDetails.phoneNumber, otp: optValue};
     setLoading(true);
-    const res = await verifyOtp(data);
+    const res = await verifyOtp(data, 'otp');
     setLoading(false);
     if (res) {
-      setOtpModalVisible(false);
       Alert.alert('ALERT!', 'OTP verify sucessful! \nSignIn to continue.', [
         {
           text: 'OK',
           onPress: () => {
+            setOtpModalVisible(false);
             navigation.navigate('SignIn');
           },
         },
@@ -190,7 +166,6 @@ const SignUp = ({navigation}) => {
   const onChange = (event, selectedDate) => {
     setShow(false);
     const formattedDate = new Date(selectedDate).toISOString().slice(0, 10);
-
     setFormDetails(prevState => ({
       ...prevState,
       dob: formattedDate,
@@ -313,58 +288,30 @@ const SignUp = ({navigation}) => {
                   }
                 />
               )}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginVertical: 5,
-                }}>
-                <Text
-                  style={{
-                    color: COLORS.black,
-                    fontSize: normalize(FONTSIZE.small),
-                  }}>
-                  Gender(Optional):
-                </Text>
+              <View style={styles.radioBtnView}>
+                <Text style={styles.radioBtnText}>Gender(Optional):</Text>
                 <RadioButton.Android
                   value="Male"
                   status={checked === 'Male' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('Male')}
                 />
-                <Text
-                  style={{
-                    color: COLORS.black,
-                    fontSize: normalize(FONTSIZE.small),
-                  }}>
-                  Male
-                </Text>
+                <Text style={styles.radioBtnText}>Male</Text>
                 <RadioButton.Android
                   value="Female"
                   status={checked === 'Female' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('Female')}
                 />
-                <Text
-                  style={{
-                    color: COLORS.black,
-                    fontSize: normalize(FONTSIZE.small),
-                  }}>
-                  Female
-                </Text>
+                <Text style={styles.radioBtnText}>Female</Text>
                 <RadioButton.Android
                   value="Other"
                   status={checked === 'Other' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('Other')}
                 />
-                <Text
-                  style={{
-                    color: COLORS.black,
-                    fontSize: normalize(FONTSIZE.small),
-                  }}>
-                  Other
-                </Text>
+                <Text style={styles.radioBtnText}>Other</Text>
               </View>
             </View>
           </KeyboardAvoidingWrapper>
+          {/* CheckBox */}
           <View style={styles.checkboxView}>
             <CheckboxComponent
               checkboxValue={checkboxValue}
@@ -373,61 +320,20 @@ const SignUp = ({navigation}) => {
             />
           </View>
 
-          {/* OPT Modal */}
-          <Modal visible={otpModalVisible} transparent>
-            <View style={styles.container}>
-              <View style={styles.alert}>
-                <Text
-                  style={{
-                    color: COLORS.black,
-                    fontWeight: '700',
-                    textAlign: 'center',
-                    fontSize: normalize(FONTSIZE.medium),
-                  }}>
-                  Enter OPT
-                </Text>
-                <OTPTextView
-                  tintColor={COLORS.primary}
-                  offTintColor={COLORS.secondary}
-                  containerStyle={styles.textInputContainer}
-                  textInputStyle={styles.otpTextInputStyle}
-                  defaultValue={optValue}
-                  // handleTextChange={text => setOtpValue(text)}
-                  inputCount={6}
-                  keyboardType="numeric"
-                  // autoFocus={true}
-                />
-                <Button
-                  text={'Verify'}
-                  // disable={optValue?.length == 6 ? false : true}
-                  style={styles.otpSubmitButton}
-                  onPress={verifyOTP}
-                />
-
-                <Text style={{color: 'black', alignSelf: 'center'}}>
-                  {clock} second/s
-                </Text>
-                <TouchableOpacity
-                  disabled={clock == 0 ? false : true}
-                  onPress={resendOtpRequest}>
-                  <Text
-                    style={{
-                      color: clock == 0 ? COLORS.black : COLORS.gray,
-                      fontWeight: '700',
-                      textAlign: 'center',
-                    }}>
-                    Resend OPT
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
+          {/* OTP Modal */}
+          <PhoneOtpModal
+            visible={otpModalVisible}
+            isVisibleOTPView
+            onModalClose={() => setOtpModalVisible(false)}
+            verifyOTP={verifyOTP}
+            handleOTPvalueChange={text => setOtpValue(text)}
+          />
           {/* OPT Modal */}
 
           <Button
             text={'Sign Up'}
             style={[
-              styles.signInbtn,
+              styles.signUpbtn,
               {
                 backgroundColor: !checkboxValue ? COLORS.gray : COLORS.primary,
               },
@@ -482,9 +388,18 @@ const styles = StyleSheet.create({
     height: height * 0.0634,
     marginVertical: 5,
   },
-  signInbtn: {
+  signUpbtn: {
     marginVertical: 5,
     alignSelf: 'center',
+  },
+  radioBtnView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  radioBtnText: {
+    color: COLORS.black,
+    fontSize: normalize(FONTSIZE.small),
   },
   checkboxView: {
     margin: 10,

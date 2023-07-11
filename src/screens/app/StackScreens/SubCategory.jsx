@@ -1,4 +1,5 @@
 import {
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -9,11 +10,10 @@ import React from 'react';
 import {COLORS, FONTSIZE} from '../../../constant/theme.js';
 import GobackHeader from '../../../components/GobackHeader.jsx';
 import {useNavigation} from '@react-navigation/native';
-import {normalize} from '../../../constant/index.js';
+import {height, icons, normalize, width} from '../../../constant/index.js';
 
 const SubCategory = ({route}) => {
   const paramData = route?.params;
-  console.log('dasdsad', paramData);
   const navigation = useNavigation();
   const data = ['1', '2', '3'];
   return (
@@ -24,7 +24,7 @@ const SubCategory = ({route}) => {
           style={styles.mainCategory}
           onPress={() => navigation.goBack()}>
           <Text style={styles.tileTxt}>{paramData?.item?.title}</Text>
-          <Text style={[styles.tileTxt, {color: 'red'}]}>X</Text>
+          <Image source={icons.close} style={styles.closeIcon} />
         </TouchableOpacity>
         {data.map((item, index) => (
           <TouchableOpacity
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -62,6 +63,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginVertical: 5,
+  },
+  closeIcon: {
+    width: width * 0.04,
+    height: height * 0.02,
+    tintColor: 'red',
   },
   tileTxt: {
     color: COLORS.black,

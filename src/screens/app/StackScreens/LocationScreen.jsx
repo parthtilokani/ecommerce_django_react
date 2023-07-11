@@ -104,7 +104,7 @@ const LocationScreen = ({navigation}) => {
   };
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <Loader visible={loading} />
       <GobackHeader bg title={'Select Location'} />
       <Text

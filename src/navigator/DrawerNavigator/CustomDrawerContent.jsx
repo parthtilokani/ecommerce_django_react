@@ -79,14 +79,20 @@ const CustomDrawerContent = () => {
     <View style={styles.container}>
       <View style={styles.headerContent}>
         <Pressable
+          style={{
+            width: width * 0.06,
+            height: height * 0.03,
+            margin: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
           onPress={() => navigation.dispatch(DrawerActions.closeDrawer())}>
           <Image
             source={icons.close}
             style={{
               width: width * 0.05,
-              height: height * 0.02,
+              height: height * 0.025,
               tintColor: COLORS.secondary,
-              margin: 20,
               // position: 'absolute',
             }}
           />

@@ -14,6 +14,9 @@ import Appsetting from '../../screens/app/DrawerScreens/AppSetting.jsx';
 import StoreDetails from '../../screens/app/StackScreens/StoreDetails.jsx';
 import SubCategory from '../../screens/app/StackScreens/SubCategory.jsx';
 import Profile from '../../screens/app/BottomTabScreens/Profile.jsx';
+import PostSubCategory from '../../screens/app/StackScreens/PostCategory/PostSubCategory.jsx';
+import PostAdDetails from '../../screens/app/StackScreens/PostCategory/PostAdDetails.jsx';
+import AllStores from '../../screens/app/StackScreens/AllStores.jsx';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
@@ -39,6 +42,11 @@ const StackNavigator = () => {
       <Stack.Screen
         name="AllCategories"
         component={AllCatagories}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="AllStores"
+        component={AllStores}
         options={{headerShown: false}}
       />
       <Stack.Screen
@@ -89,6 +97,16 @@ const StackNavigator = () => {
       <Stack.Screen
         name="StoreDetails"
         component={StoreDetails}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PostSubCategory"
+        component={PostSubCategory}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PostAdDetails"
+        component={PostAdDetails}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

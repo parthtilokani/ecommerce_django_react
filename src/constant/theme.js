@@ -5,8 +5,11 @@ const COLORS = {
   gray: '#83829A',
   gray2: '#C1C0C8',
 
+  lightBlue: '#F0FAF9',
+
   white: '#FFFFFF',
   lightWhite: '#FAFAFC',
+
   black: '#000000',
 };
 

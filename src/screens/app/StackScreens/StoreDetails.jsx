@@ -57,15 +57,15 @@ const StoreDetails = () => {
         contentContainerStyle={{alignItems: 'center'}}>
         <View style={[styles.detailHeaderView, SHADOWS.medium]}>
           <View style={{alignItems: 'center', height: height * 0.26}}>
-            {/* <Image
-              source={require('../../../assets/bg.png')}
+            <Image
+              source={require('../../../assets/background.png')}
               style={styles.bgImage}
-            /> */}
+            />
             <View style={styles.logoImageView}>
-              {/* <Image
-                source={require('../../../assets/bg.png')}
+              <Image
+                source={require('../../../assets/background.png')}
                 style={styles.logoImage}
-              /> */}
+              />
             </View>
           </View>
           <View style={styles.detailHeaderBottomView}>
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   bgImage: {
     width: width * 0.9,
     height: height * 0.22,
-    resizeMode: 'stretch',
+    resizeMode: 'cover',
   },
   logoImageView: {
     backgroundColor: COLORS.gray2,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     marginTop: height * 0.1232,
     position: 'absolute',
   },
-  logoImage: {width: 100, height: 100, resizeMode: 'contain'},
+  logoImage: {width: 100, height: 100, resizeMode: 'stretch'},
   descriptionView: {
     width: width * 0.9,
     padding: 10,
