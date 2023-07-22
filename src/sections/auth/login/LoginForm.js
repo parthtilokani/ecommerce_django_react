@@ -21,13 +21,19 @@ export default function LoginForm() {
   const handleClick = () => {
     if (!email.trim() || !password.trim()) return;
     setAuth({ email: email.trim(), accessToken: '' });
-    navigate('/dashboard', { replace: true });
+    navigate('/master', { replace: true });
   };
 
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <TextField
+          name="email"
+          label="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="off"
+        />
 
         <TextField
           name="password"
@@ -44,6 +50,7 @@ export default function LoginForm() {
               </InputAdornment>
             ),
           }}
+          autoComplete="off"
         />
       </Stack>
 

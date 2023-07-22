@@ -13,11 +13,19 @@ NavSection.propTypes = {
 };
 
 export default function NavSection({ data = [], ...other }) {
+  const [navItemOpen, setNavItemOpen] = useState('');
+
   return (
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
         {data.map((item) => (
-          <NavItem key={item.title} item={item} />
+          <NavItem
+            key={item.title}
+            index={item.title}
+            item={item}
+            navItemOpen={navItemOpen}
+            setNavItemOpen={setNavItemOpen}
+          />
         ))}
       </List>
     </Box>
@@ -27,18 +35,19 @@ export default function NavSection({ data = [], ...other }) {
 // ----------------------------------------------------------------------
 
 NavItem.propTypes = {
+  index: PropTypes.string,
   item: PropTypes.object,
+  navItemOpen: PropTypes.string,
+  setNavItemOpen: PropTypes.func,
 };
 
-function NavItem({ item }) {
+function NavItem({ index, item, navItemOpen, setNavItemOpen }) {
   const { title, path, icon, info, subItems } = item;
-
-  const [isOpen, setIsOpen] = useState(false);
 
   const hasSubItems = subItems && subItems.length > 0;
 
   const toggleSubMenu = () => {
-    setIsOpen((prevOpen) => !prevOpen);
+    setNavItemOpen((prev) => (prev === index ? '' : index));
   };
 
   if (hasSubItems) {
@@ -52,15 +61,19 @@ function NavItem({ item }) {
               bgcolor: 'action.selected',
               fontWeight: 'fontWeightBold',
             },
-            bgcolor: isOpen ? 'rgba(0,0,0,0.02)' : '',
-            color: isOpen ? 'text.primary' : '',
+            bgcolor: navItemOpen === index ? 'rgba(0,0,0,0.02)' : '',
+            color: navItemOpen === index ? 'text.primary' : '',
+            postion: 'relative',
           }}
         >
           <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
           <ListItemText disableTypography primary={title} />
+          <div style={{ position: 'absolute', right: '20px' }}>
+            {navItemOpen === index ? <>&#x25B2;</> : <>&#x25BC;</>}
+          </div>
           {info && info}
         </StyledNavItem>
-        {isOpen && (
+        {navItemOpen === index && (
           <SubMenuList>
             {subItems.map((subItem) => (
               <SubMenuItem

@@ -1,4 +1,4 @@
-import { useState, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
@@ -34,18 +34,22 @@ const Main = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-
   return (
     <StyledRoot>
-      <Header onOpenNav={() => setOpen(true)} />
-
-      <Nav openNav={open} onCloseNav={() => setOpen(false)} />
-
-      <Main>
-        <Suspense fallback={'Loading...'}>
-          <Outlet />
-        </Suspense>
-      </Main>
+      <MemoizedHeader onOpenNav={() => setOpen(true)} />
+      <MemoizedNav openNav={open} onCloseNav={() => setOpen(false)} />
+      <MainSection />
     </StyledRoot>
   );
 }
+
+const MainSection = () => (
+  <Main>
+    <Suspense fallback={'Loading...'}>
+      <Outlet />
+    </Suspense>
+  </Main>
+);
+
+const MemoizedHeader = React.memo(Header);
+const MemoizedNav = React.memo(Nav);

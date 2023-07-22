@@ -18,7 +18,7 @@ const MenuProps = {
   },
 };
 
-export default function CustomSelect({ id, label, data, value, handleChange }) {
+export default function CustomSelect({ id, label, data, value, handleChange, className }) {
   return (
     <div>
       <FormControl sx={{ width: '100%' }}>
@@ -30,9 +30,10 @@ export default function CustomSelect({ id, label, data, value, handleChange }) {
           onChange={(e) => handleChange({ target: { id, value: e.target.value } })}
           input={<OutlinedInput label={label} />}
           MenuProps={MenuProps}
+          className={className}
         >
-          {data.map((d) => (
-            <MenuItem key={d.value} value={d.value}>
+          {data.map((d, i) => (
+            <MenuItem key={i} value={d.value}>
               {d.label}
             </MenuItem>
           ))}

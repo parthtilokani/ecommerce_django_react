@@ -6,15 +6,20 @@ import SvgColor from '../../../components/svg-color';
 const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
 const navConfig = [
-  {
-    title: 'dashboard',
-    path: '/dashboard/app',
-    icon: icon('ic_analytics'),
-  },
+  // {
+  //   title: 'dashboard',
+  //   path: '/dashboard/app',
+  //   icon: icon('ic_analytics'),
+  // },
   {
     title: 'master',
     icon: icon('ic_user'),
     subItems: [
+      {
+        title: 'input-fields',
+        path: '/master/inputfields',
+        icon: icon('ic_user'),
+      },
       {
         title: 'categories',
         path: '/master/categories',
@@ -27,21 +32,21 @@ const navConfig = [
       },
     ],
   },
-  {
-    title: 'user',
-    path: '/dashboard/user',
-    icon: icon('ic_user'),
-  },
-  {
-    title: 'product',
-    path: '/dashboard/products',
-    icon: icon('ic_cart'),
-  },
-  {
-    title: 'blog',
-    path: '/dashboard/blog',
-    icon: icon('ic_blog'),
-  },
+  // {
+  //   title: 'user',
+  //   path: '/dashboard/user',
+  //   icon: icon('ic_user'),
+  // },
+  // {
+  //   title: 'product',
+  //   path: '/dashboard/products',
+  //   icon: icon('ic_cart'),
+  // },
+  // {
+  //   title: 'blog',
+  //   path: '/dashboard/blog',
+  //   icon: icon('ic_blog'),
+  // },
 ];
 
 export default navConfig;
