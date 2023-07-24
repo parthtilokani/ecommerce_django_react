@@ -78,9 +78,9 @@ export default function SubCategories() {
   const [newField, setNewField] = useState(initialDF);
 
   const { data: categories } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ['category'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/category/');
+      const { data } = await axiosPrivate.get('/ads/category');
       return data || [];
     },
   });
@@ -89,14 +89,14 @@ export default function SubCategories() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['subcategories'],
+    queryKey: ['subcategory'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/subcategory/');
+      const { data } = await axiosPrivate.get('/ads/subcategory');
       return data || [];
     },
   });
   const { mutate: postSubCategory, isLoading: isSaving } = useMutation({
-    mutationFn: (body) => axiosPrivate.post('/ads/subcategory/', { ...body }),
+    mutationFn: (body) => axiosPrivate.post('/ads/subcategory', { ...body }),
     onSuccess: () => {
       toast.success('Subcategory saved!');
       refetch();
@@ -104,7 +104,7 @@ export default function SubCategories() {
     onError: () => toast.error('Something went wrong! Retry'),
   });
   const { mutate: patchSubCategory, isLoading: isUpdating } = useMutation({
-    mutationFn: ({ body, id }) => axiosPrivate.patch(`/ads/subcategory/${id}/`, { ...body }),
+    mutationFn: ({ body, id }) => axiosPrivate.patch(`/ads/subcategory/${id}`, { ...body }),
     onSuccess: () => {
       toast.success('Subcategory updated!');
       refetch();
@@ -112,7 +112,7 @@ export default function SubCategories() {
     onError: () => toast.error('Something went wrong! Retry'),
   });
   const { mutate: deleteSubCategory, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => axiosPrivate.delete(`/ads/subcategory/${id}/`),
+    mutationFn: (id) => axiosPrivate.delete(`/ads/subcategory/${id}`),
     onSuccess: () => {
       toast.success('Subcategory deleted!');
       refetch();
@@ -148,6 +148,7 @@ export default function SubCategories() {
     if (!newField?.field_name?.trim() || !newField?.field_type) return;
     if (newField.field_type === 'Select' && !newField?.options?.trim()) return;
     if (newField?.options) newField.options = newField.options.split(',').map((e) => e.trim());
+    console.log(newField);
     if (newField?.idx) {
       const clone = newFields;
       clone[newField.idx - 1] = newField;

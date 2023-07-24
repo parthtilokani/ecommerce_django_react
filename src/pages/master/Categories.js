@@ -80,15 +80,15 @@ export default function Categories() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ['category'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/category/');
+      const { data } = await axiosPrivate.get('/ads/category');
       return data || [];
     },
   });
   const { mutate: postCategory, isLoading: isSaving } = useMutation({
     mutationFn: (formData) =>
-      axiosPrivate.post('/ads/category/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+      axiosPrivate.post('/ads/category', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
     onSuccess: () => {
       toast.success('Category saved!');
       refetch();
@@ -97,7 +97,7 @@ export default function Categories() {
   });
   const { mutate: patchCategory, isLoading: isUpdating } = useMutation({
     mutationFn: ({ formData, id }) => {
-      axiosPrivate.patch(`/ads/category/${id}/`, formData, {
+      axiosPrivate.patch(`/ads/category/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     },
@@ -108,7 +108,7 @@ export default function Categories() {
     onError: () => toast.error('Something went wrong! Retry'),
   });
   const { mutate: deleteCategory, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => axiosPrivate.delete(`/ads/category/${id}/`),
+    mutationFn: (id) => axiosPrivate.delete(`/ads/category/${id}`),
     onSuccess: () => {
       toast.success('Category deleted!');
       refetch();
