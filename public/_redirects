@@ -1,2 +1,2 @@
-/apiredirect/* http://classified-ads-1-env.eba-b3qpdjap.us-west-2.elasticbeanstalk.com/:splat 200
-/* /index.html 200
+/apiredirect/*  http://classified-ads.us-west-2.elasticbeanstalk.com/:splat  200
+/*  /index.html  200

@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import "../styles/css/viewad.css";
-import { axiosOpen } from "../utils/axios.js";
 import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
+import { URI } from "../utils/API.js";
 
 const ViewAd = () => {
   const axiosPrivate = useAxiosPrivate();
   const { id: adId } = useParams();
   const [currentImage, setCurrentImage] = useState(0);
-  const { data: ad, isLoading: isLoadingAd } = useQuery({
+  const { data: ad } = useQuery({
     queryKey: ["single_ad", adId],
     queryFn: async () => {
       const { data } = await axiosPrivate.get(`/ads/ads/${adId}`);
@@ -52,7 +52,7 @@ const ViewAd = () => {
                       ad?.images?.map(({ image }, index) => (
                         <div key={index} className='image-wrapper'>
                           <img
-                            src={"http://localhost:8000/" + image}
+                            src={URI + "/" + image}
                             alt={`${index + 1}`}
                             className='carousel-image'
                           />

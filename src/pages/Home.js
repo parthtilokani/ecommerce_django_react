@@ -6,6 +6,7 @@ import { axiosOpen } from "../utils/axios.js";
 
 // css
 import "../styles/css/home.css";
+import { URI } from "../utils/API.js";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -305,23 +306,24 @@ const Home = () => {
                 listStyle: "none",
               }}>
               <hr className='m-1' />
-              {categories?.map((category, idx) => (
-                <li
-                  key={idx}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    setSelectedCategory(category);
-                    setSelectedSubCategory("");
-                    setCategoryView(false);
-                  }}>
-                  <p
-                    style={{ overflow: "hidden", whiteSpace: "nowrap" }}
-                    className='mx-2'>
-                    {category.name}
-                  </p>
-                  <hr className='m-1' />
-                </li>
-              ))}
+              {categories?.length > 0 &&
+                categories?.map((category, idx) => (
+                  <li
+                    key={idx}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setSelectedSubCategory("");
+                      setCategoryView(false);
+                    }}>
+                    <p
+                      style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                      className='mx-2'>
+                      {category.name}
+                    </p>
+                    <hr className='m-1' />
+                  </li>
+                ))}
             </ul>
           </div>
           <img
@@ -343,28 +345,29 @@ const Home = () => {
                 listStyle: "none",
               }}>
               <hr className='m-1' />
-              {subcategories
-                ?.filter((subc) =>
-                  selectedCategory?.id
-                    ? subc?.category === selectedCategory?.id
-                    : true
-                )
-                ?.map((subcategory, idx) => (
-                  <li
-                    key={idx}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      setSelectedSubCategory(subcategory);
-                      setSubCategoryView(false);
-                    }}>
-                    <p
-                      style={{ overflow: "hidden", whiteSpace: "nowrap" }}
-                      className='mx-2'>
-                      {subcategory.name}
-                    </p>
-                    <hr className='m-1' />
-                  </li>
-                ))}
+              {subcategories?.length > 0 &&
+                subcategories
+                  ?.filter((subc) =>
+                    selectedCategory?.id
+                      ? subc?.category === selectedCategory?.id
+                      : true
+                  )
+                  ?.map((subcategory, idx) => (
+                    <li
+                      key={idx}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setSelectedSubCategory(subcategory);
+                        setSubCategoryView(false);
+                      }}>
+                      <p
+                        style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                        className='mx-2'>
+                        {subcategory.name}
+                      </p>
+                      <hr className='m-1' />
+                    </li>
+                  ))}
             </ul>
           </div>
           <img
@@ -382,24 +385,30 @@ const Home = () => {
           <div className='h2 fw-bold'>Popular Categories</div>
         </div>
         <div className='categories-main row mx-auto'>
-          {categories?.slice(0, 8)?.map((category, i) => (
-            <div key={i} className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3'>
-              <div className='c-card d-flex flex-column justify-content-center align-items-center'>
-                <div className='img-wrapper'>
-                  <img
-                    src={category?.icon || "/assets/svgs/subcategory.svg"}
-                    alt=''
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/assets/svgs/subcategory.svg";
-                    }}
-                  />
+          {categories?.length > 0 &&
+            categories?.slice(0, 8)?.map((category, i) => (
+              <div key={i} className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3'>
+                <div className='c-card d-flex flex-column justify-content-center align-items-center'>
+                  <div className='img-wrapper'>
+                    <img
+                      // src={category?.icon || "/assets/svgs/subcategory.svg"}
+                      src={
+                        URI +
+                        "/ads_category_icon" +
+                        category?.icon?.split("ads_category_icon")[1]
+                      }
+                      alt=''
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/assets/svgs/subcategory.svg";
+                      }}
+                    />
+                  </div>
+                  <div className='h5'>{category?.name}</div>
+                  <div className='h6'>17 Ads</div>
                 </div>
-                <div className='h5'>{category?.name}</div>
-                <div className='h6'>17 Ads</div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 

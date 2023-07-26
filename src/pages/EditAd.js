@@ -11,6 +11,7 @@ import { isValid } from "../utils/support.js";
 
 //css
 import "../styles/css/postnewad.css";
+import { URI } from "../utils/API.js";
 
 const EditAd = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -349,7 +350,7 @@ const EditAd = () => {
                         <img
                           src={
                             images[i].image[0] === "/"
-                              ? "http://localhost:8000/" + images[i].image
+                              ? URI + "/" + images[i].image
                               : images[i].image
                           }
                           alt=''

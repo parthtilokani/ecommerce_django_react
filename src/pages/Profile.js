@@ -7,6 +7,7 @@ import "../styles/css/profile.css";
 // import { axiosOpen } from "../utils/axios.js";
 import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
 import { Link, useNavigate } from "react-router-dom";
+import { URI } from "../utils/API.js";
 
 const DeleteAdPostToast = ({ closeToast, deleteAd }) => (
   <div>
@@ -95,7 +96,7 @@ const Profile = () => {
                       ad?.images?.length > 0 &&
                       ad?.images[0] &&
                       ad?.images[0]?.image
-                        ? "http://localhost:8000/" + ad?.images[0].image
+                        ? URI + "/" + ad?.images[0].image
                         : "https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/themes/classima/assets/img/noimage-listing-thumb.jpg"
                     }
                     alt=''
