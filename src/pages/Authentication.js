@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 // css
 import "../styles/css/signup.css";
@@ -13,6 +14,7 @@ import LogInWithOTP from "../components/auth/LogInWithOTP.js";
 import { useNavigate } from "react-router-dom";
 
 const Authentication = () => {
+  const location = useLocation();
   const { auth } = useAuth();
   const [signUpMethod, setSignUpMethod] = useState(2);
   const [message, setMessage] = useState("");
@@ -22,7 +24,8 @@ const Authentication = () => {
     if (auth?.accessToken) {
       navigate("/");
     }
-  }, [auth, navigate]);
+    setSignUpMethod(location.state?.page || 2);
+  }, [auth, navigate, location]);
 
   return (
     <div id='signup-bg'>

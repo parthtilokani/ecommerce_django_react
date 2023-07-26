@@ -16,14 +16,17 @@ const Footer = () => {
             </div>
             <div className='f-icons-group d-flex mt-3'>
               {[
-                "./assets/svgs/facebook.svg",
-                "./assets/svgs/twitter.svg",
-                "./assets/svgs/mail.svg",
-                "./assets/svgs/linkedin.svg",
-                "./assets/svgs/pinterest.svg",
-              ].map((e, i) => (
+                "facebook.svg",
+                "twitter.svg",
+                "mail.svg",
+                "linkedin.svg",
+                "pinterest.svg",
+              ].map((fileName, i) => (
                 <div key={i} className='f-icon-div mt-1 me-1'>
-                  <img src={e} alt='' />
+                  <img
+                    src={`${process.env.PUBLIC_URL}/assets/svgs/${fileName}`}
+                    alt=''
+                  />
                 </div>
               ))}
             </div>

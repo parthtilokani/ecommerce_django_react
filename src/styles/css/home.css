@@ -119,6 +119,12 @@
   background-color: white;
   position: relative;
 }
+.location-model .m-card-body {
+  max-height: 300px;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 .location-model .close-btn {
   position: absolute;
   width: 25px;

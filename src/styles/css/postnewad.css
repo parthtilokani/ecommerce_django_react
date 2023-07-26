@@ -6,10 +6,11 @@
 #post-new-ad .pya-main {
   background-color: white;
   border-radius: 10px;
-  max-width: 500px;
+  max-width: 1000px;
   margin: auto;
   padding: 20px;
   box-shadow: 0 0 15px -7px;
+  min-height: 60vh;
 }
 #post-new-ad .categories,
 #post-new-ad .sub-categories {
@@ -22,9 +23,21 @@
 #post-new-ad .categories > li .c-name {
   cursor: pointer;
   position: relative;
-  padding: 10px;
+  padding: 10px 12px;
   border-radius: 10px;
   background-color: var(--bg-color-secondary);
+  transition: all 0.3s ease;
+}
+#post-new-ad .categories > li .c-name.active {
+  background-color: var(--secondary);
+  color: white;
+}
+#post-new-ad .categories > li .c-name.disabled {
+  pointer-events: none;
+}
+#post-new-ad .categories > li .c-name:hover {
+  background-color: var(--secondary);
+  color: white;
 }
 #post-new-ad .categories .c-toggle {
   position: absolute;
@@ -95,6 +108,12 @@
   line-height: 7px;
   color: #43c6ac;
   font-weight: bold;
+}
+#post-new-ad .btn-back {
+  background-color: var(--primary);
+}
+#post-new-ad .btn-submit {
+  background-color: var(--secondary);
 }
 @media (width>350px) {
   #post-new-ad .img-input .img-input-col {

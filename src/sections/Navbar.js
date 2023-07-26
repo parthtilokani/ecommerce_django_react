@@ -68,6 +68,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to='/login'
+                state={{ page: 2 }}
                 style={{
                   color: location.pathname === "/login" ? "#43c6ac" : "",
                 }}

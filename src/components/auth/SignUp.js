@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import FormInput from "../input/FormInput.js";
 
-import { axiosPrivate } from "../../utils/axios.js";
+import { axiosOpen } from "../../utils/axios.js";
 import { isValid } from "../../utils/support.js";
 
 const SignUp = ({ setSignUpMethod, setMessage }) => {
@@ -10,7 +10,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
   const [otpSent, setOtpSent] = useState(false);
   const [OTPView, setOTPView] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [clock, setClock] = useState(50);
+  const [clock, setClock] = useState(10 * 60);
   const [data, setData] = useState({
     name: "",
     username: "",
@@ -42,14 +42,12 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
     setOtpMessage("");
     setErrors({});
     setLoading(true);
-    axiosPrivate
-      .get("/otp", { params: { phone: data.phone_no } })
+    axiosOpen
+      .get("/user/otp", { params: { phone: data.phone_no } })
       .then((res) => {
-        console.log(res.data);
         setOtpMessage("OTP sent successfully!");
         setOtpSent(true);
-        setData((prev) => ({ ...prev, otp: res.data?.OTP }));
-        setClock(50);
+        setClock(10 * 60);
         const newInterval = setInterval(() => {
           setClock((prev) => {
             if (prev === 0) {
@@ -88,8 +86,8 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
       return setErrors(obj);
     setErrors({});
     setLoading(true);
-    axiosPrivate
-      .post("/register", { ...data, area_code: data.area_code || "91" })
+    axiosOpen
+      .post("/user/register", { ...data, area_code: data.area_code || "91" })
       .then(() => {
         setOTPView(true);
         handleGetOTP();
@@ -120,10 +118,9 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
       return setErrors(obj);
     setErrors({});
     setLoading(true);
-    axiosPrivate
-      .post("/otp", { phone: data.phone_no, otp: data.otp })
+    axiosOpen
+      .post("/user/otp", { phone: data.phone_no, otp: data.otp })
       .then((res) => {
-        console.log(res.data);
         setSignUpMethod(2);
         setMessage("Registration successful. Log in to continue");
         setTimeout(() => setMessage(""), 10000);

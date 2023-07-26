@@ -1,3 +1,77 @@
 #profile {
   min-height: calc(100vh - 64px);
+  max-width: 1300px;
+  margin: auto;
+}
+#profile-hero > div {
+  position: relative;
+  background-color: var(--bg-color-secondary);
+  min-height: 100px;
+  margin-top: 100px;
+  border-radius: 10px 10px 0 0;
+}
+#profile-hero .profile-img {
+  background-color: white;
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+/*Pricing*/
+#price-and-packages {
+  min-height: calc(100vh - 64px);
+  padding: 40px 0;
+}
+#price-and-packages .our-pricing-main {
+  max-width: 1300px;
+}
+#price-and-packages .our-pricing-card {
+  width: 300px;
+  text-align: center;
+  background-color: var(--bg-color-secondary);
+  margin-bottom: 30px;
+  transition: all 0.3s ease-out;
+  cursor: pointer;
+}
+#price-and-packages .our-pricing-card div {
+  padding: 17px;
+}
+#price-and-packages .our-pricing-card .pricing {
+  background-color: var(--secondary);
+  color: white;
+}
+#price-and-packages .our-pricing-card .pricing span {
+  font-size: 15px;
+}
+#price-and-packages .our-pricing-card .op-features {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+#price-and-packages .our-pricing-card button {
+  height: 50px;
+  width: 200px;
+  background-color: var(--secondary);
+  border: none;
+  color: white;
+}
+#price-and-packages .our-pricing-card:hover {
+  background-color: var(--bg-color-secondary-hover);
+}
+#price-and-packages .our-pricing-card:hover .pricing,
+#price-and-packages .our-pricing-card:hover button {
+  background-color: var(--btn-color-secondary-hover);
+}
+
+#profile .btn-c-secondary {
+  background-color: var(--secondary);
+  color: white;
+}
+
+/*pagination*/
+.bg-secondary {
+  background-color: var(--secondary) !important;
+  color: white !important;
 }

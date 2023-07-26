@@ -1,14 +1,31 @@
 import { createContext, useState, useEffect } from "react";
+import { axiosOpen } from "../utils/axios.js";
 
 const AuthContext = createContext({});
 
-export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({});
+export default AuthContext;
 
+export const AuthProvider = ({ children }) => {
+  const [auth, setAuth] = useState(
+    localStorage.getItem("auth")
+      ? { ...JSON.parse(localStorage.getItem("auth")) }
+      : {}
+  );
   useEffect(() => {
-    const stored = localStorage.getItem("auth");
-    if (stored) setAuth({ ...JSON.parse(stored) });
-  }, []);
+    let twoMinutes = 1000 * 60 * 2;
+
+    let interval = setInterval(() => {
+      if (auth?.refreshToken) {
+        console.log("Found Auth");
+        axiosOpen
+          .post("/user/token/refresh", { refresh: auth?.refreshToken })
+          .then(({ data }) => {
+            setAuth((prev) => ({ ...prev, accessToken: data?.access }));
+          });
+      }
+    }, twoMinutes);
+    return () => clearInterval(interval);
+  }, [auth]);
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
@@ -16,5 +33,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export default AuthContext;

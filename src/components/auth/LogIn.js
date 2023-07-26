@@ -1,12 +1,16 @@
 import React, { useState } from "react";
+
+import ForgotPassword from "./ForgotPassword.js";
+
 // hooks
 import useAuth from "../../hooks/useAuth.js";
 import { isValid } from "../../utils/support.js";
-import { axiosPrivate } from "../../utils/axios.js";
+import { axiosOpen } from "../../utils/axios.js";
 
-export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
+export const LogIn = ({ setSignUpMethod, message }) => {
   const { setAuth } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordView, setForgotPasswordView] = useState(false);
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -19,15 +23,15 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
 
   const handleLogin = () => {
     let obj = {
-      email: isValid("Email", data.email, "email"),
+      email: isValid("Email", data.email),
       password: isValid("Password", data.password),
     };
     if (Object.values(obj).filter((e) => e !== "").length > 0)
       return setErrors(obj);
     setErrors({});
     setLoading(true);
-    axiosPrivate
-      .post("/token", { ...data })
+    axiosOpen
+      .post("/user/token", { ...data })
       .then((res) => {
         setAuth({
           accessToken: res?.data?.access,
@@ -47,6 +51,8 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
         const { email, password, detail } = err?.response?.data;
+        if (!email && !password && !detail)
+          return setErrors({ message: "Something went wrong! Retry" });
         setErrors((prev) => ({
           ...prev,
           email: email && email?.length > 0 ? email[0] : "",
@@ -85,7 +91,7 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
         <input
           type='text'
           id='email'
-          placeholder='Email address'
+          placeholder='Email address / Username'
           className={`form-control ${errors?.email ? " is-invalid" : ""}`}
           style={{ padding: "14px 16px", fontSize: "17px" }}
           value={data.email}
@@ -116,7 +122,11 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
         </div>
       </div>
       <div className='mt-1 text-end'>
-        <span className='already-user'>Forgot Password?</span>
+        <span
+          className='already-user'
+          onClick={() => setForgotPasswordView(true)}>
+          Forgot Password?
+        </span>
       </div>
       {errors?.message && (
         <div style={{ fontSize: "10px", color: "red" }}>{errors?.message}</div>
@@ -140,6 +150,9 @@ export const LogIn = ({ setSignUpMethod, message, setMessage }) => {
           Create a new Account
         </span>
       </div>
+      {forgotPasswordView && (
+        <ForgotPassword setForgotPasswordView={setForgotPasswordView} />
+      )}
     </div>
   );
 };

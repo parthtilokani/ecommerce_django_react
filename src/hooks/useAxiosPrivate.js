@@ -1,72 +1,41 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+
+import useAuth from "./useAuth.js";
 import { axiosPrivate } from "../utils/axios.js";
-import useAuth from "./useAuth";
-
-const useRefreshToken = () => {
-  const { auth, setAuth } = useAuth();
-  const navigate = useNavigate();
-
-  const { refreshToken } = auth;
-
-  const refresh = async () => {
-    try {
-      const response = await axiosPrivate.post("/token/refresh", {
-        refresh: refreshToken,
-      });
-      setAuth((prev) => {
-        return { ...prev, accessToken: response.data.accessToken };
-      });
-      localStorage.setItem("auth", {
-        ...auth,
-        accessToken: response.data.access,
-      });
-      return response.data.access;
-    } catch (error) {
-      setAuth({});
-      navigate("/login", { replace: true });
-      throw error;
-    }
-  };
-  return refresh;
-};
 
 const useAxiosPrivate = () => {
-  const refresh = useRefreshToken();
   const { auth } = useAuth();
 
-  useEffect(() => {
-    const requestIntercept = axiosPrivate.interceptors.request.use(
-      (config) => {
-        if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
+  // Create a new instance of axiosOpen only when auth changes
+  const axiosInstance = useMemo(() => {
+    const instance = axiosPrivate;
+    instance.interceptors.request.use((config) => {
+      if (!config.headers["Authorization"]) {
+        config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
+      }
+      return config;
+    });
 
-    const responseIntercept = axiosPrivate.interceptors.response.use(
+    instance.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const prevRequest = error?.config;
-        if (error?.response?.status === 403 && !prevRequest?.sent) {
-          prevRequest.sent = true;
-          const newAccessToken = await refresh();
-          prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-          return axiosPrivate(prevRequest);
-        }
+        // Handle authentication-related errors or refresh token flow here
         return Promise.reject(error);
       }
     );
 
-    return () => {
-      axiosPrivate.interceptors.request.eject(requestIntercept);
-      axiosPrivate.interceptors.response.eject(responseIntercept);
-    };
-  }, [auth, refresh]);
+    return instance;
+  }, [auth]);
 
-  return axiosPrivate;
+  useEffect(() => {
+    return () => {
+      // Eject the interceptors on cleanup
+      axiosInstance.interceptors.request.eject();
+      axiosInstance.interceptors.response.eject();
+    };
+  }, [axiosInstance]);
+
+  return axiosInstance;
 };
 
 export default useAxiosPrivate;

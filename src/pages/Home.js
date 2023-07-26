@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+
+import { axiosOpen } from "../utils/axios.js";
 
 // css
 import "../styles/css/home.css";
@@ -17,6 +20,34 @@ const Home = () => {
   const [error, setError] = useState("");
 
   const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedSubCategory, setSelectedSubCategory] = useState();
+
+  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/category");
+      setFetchedQueries((prev) => {
+        prev[0] = true;
+        return [...prev];
+      });
+      return data || [];
+    },
+    enabled: !fetchedQueries[0],
+  });
+  const { data: subcategories } = useQuery({
+    queryKey: ["subcategories"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/subcategory");
+      setFetchedQueries((prev) => {
+        prev[1] = true;
+        return [...prev];
+      });
+      return data || [];
+    },
+    enabled: !fetchedQueries[1],
+  });
 
   useEffect(() => {
     (() => {
@@ -126,7 +157,11 @@ const Home = () => {
                   <div>
                     <img src='/assets/svgs/category.svg' alt='category' />
                   </div>
-                  <div className='p-hldr'>Category</div>
+                  <div className='p-hldr'>
+                    {selectedCategory?.name
+                      ? selectedCategory?.name
+                      : "Category"}
+                  </div>
                 </div>
               </div>
               <div className='col-lg-6 col-xl-2 cols'>
@@ -139,7 +174,11 @@ const Home = () => {
                       alt='sub-category'
                     />
                   </div>
-                  <div className='p-hldr'>Sub-Category</div>
+                  <div className='p-hldr'>
+                    {selectedSubCategory?.name
+                      ? selectedSubCategory?.name
+                      : "Sub-Category"}
+                  </div>
                 </div>
               </div>
               <div className='col-lg-6 col-xl-4 cols'>
@@ -260,6 +299,31 @@ const Home = () => {
         style={categoryView ? {} : { display: "none" }}>
         <div className='card'>
           <div className='h5 p-1 text-center'>Select Category</div>
+          <div className='px-3 m-card-body'>
+            <ul
+              style={{
+                listStyle: "none",
+              }}>
+              <hr className='m-1' />
+              {categories?.map((category, idx) => (
+                <li
+                  key={idx}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setSelectedCategory(category);
+                    setSelectedSubCategory("");
+                    setCategoryView(false);
+                  }}>
+                  <p
+                    style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                    className='mx-2'>
+                    {category.name}
+                  </p>
+                  <hr className='m-1' />
+                </li>
+              ))}
+            </ul>
+          </div>
           <img
             src='./assets/svgs/close.svg'
             className='close-btn'
@@ -273,6 +337,36 @@ const Home = () => {
         style={subCategoryView ? {} : { display: "none" }}>
         <div className='card'>
           <div className='h5 p-1 text-center'>Select Sub-Category</div>
+          <div className='px-3' style={{ maxHeight: 200, overflowY: "scroll" }}>
+            <ul
+              style={{
+                listStyle: "none",
+              }}>
+              <hr className='m-1' />
+              {subcategories
+                ?.filter((subc) =>
+                  selectedCategory?.id
+                    ? subc?.category === selectedCategory?.id
+                    : true
+                )
+                ?.map((subcategory, idx) => (
+                  <li
+                    key={idx}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setSelectedSubCategory(subcategory);
+                      setSubCategoryView(false);
+                    }}>
+                    <p
+                      style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                      className='mx-2'>
+                      {subcategory.name}
+                    </p>
+                    <hr className='m-1' />
+                  </li>
+                ))}
+            </ul>
+          </div>
           <img
             src='./assets/svgs/close.svg'
             className='close-btn'
@@ -288,13 +382,20 @@ const Home = () => {
           <div className='h2 fw-bold'>Popular Categories</div>
         </div>
         <div className='categories-main row mx-auto'>
-          {new Array(8).fill(null).map((_, i) => (
+          {categories?.slice(0, 8)?.map((category, i) => (
             <div key={i} className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3'>
               <div className='c-card d-flex flex-column justify-content-center align-items-center'>
                 <div className='img-wrapper'>
-                  <img src='/assets/svgs/subcategory.svg' alt='' />
+                  <img
+                    src={category?.icon || "/assets/svgs/subcategory.svg"}
+                    alt=''
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/assets/svgs/subcategory.svg";
+                    }}
+                  />
                 </div>
-                <div className='h5'>Bussiness & Industry</div>
+                <div className='h5'>{category?.name}</div>
                 <div className='h6'>17 Ads</div>
               </div>
             </div>

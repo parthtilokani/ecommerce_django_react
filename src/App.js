@@ -8,9 +8,11 @@ import RequireAuth from "./components/auth/RequiredAuth.js";
 // pages - preloaded
 import Authentication from "./pages/Authentication.js";
 import Home from "./pages/Home.js";
-//pages - lazyloaded
+// pages - lazyloaded
 const Search = lazy(() => import("./pages/Search.js"));
-const PostNewAdd = lazy(() => import("./pages/PostNewAdd.js"));
+const ViewAd = lazy(() => import("./pages/ViewAd.js"));
+const PostNewAd = lazy(() => import("./pages/PostNewAdd.js"));
+const EditAd = lazy(() => import("./pages/EditAd.js"));
 const Profile = lazy(() => import("./pages/Profile.js"));
 const Contact = lazy(() => import("./pages/Contact.js"));
 
@@ -22,10 +24,12 @@ const App = () => {
         <Route path='/' element={<Home />} />
         <Route path='/home' element={<Home />} />
         <Route path='/search' element={<Search />} />
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/ads/view/:id' element={<ViewAd />} />
+        <Route path='/ads/edit/:id' element={<EditAd />} />
         <Route element={<RequireAuth />}>
-          <Route path='/post-new-ad' element={<PostNewAdd />} />
+          <Route path='/post-new-ad' element={<PostNewAd />} />
           <Route path='/Profile' element={<Profile />} />
-          <Route path='/contact' element={<Contact />} />
         </Route>
         <Route path='*' element={<Home />} />
       </Route>

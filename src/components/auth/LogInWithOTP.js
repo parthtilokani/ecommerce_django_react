@@ -2,14 +2,14 @@ import React, { useState } from "react";
 // hooks
 import useAuth from "../../hooks/useAuth.js";
 import { isValid } from "../../utils/support.js";
-import { axiosPrivate } from "../../utils/axios.js";
+import { axiosOpen } from "../../utils/axios.js";
 
 export const LogInWithOTP = ({ setSignUpMethod }) => {
   const [otpMessage, setOtpMessage] = useState("");
   const [otpCount, setOtpCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [clock, setClock] = useState(120);
+  const [clock, setClock] = useState(10 * 60);
   const { setAuth } = useAuth();
   const [data, setData] = useState({
     phonenumber: "",
@@ -32,13 +32,13 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
     setErrors({});
     setOtpMessage("");
     setLoading(true);
-    axiosPrivate
-      .get("/otp", { params: { phone: data.phonenumber } })
+    axiosOpen
+      .get("/user/otp", { params: { phone: data.phonenumber } })
       .then((res) => {
         setOtpMessage("OTP sent successfully!");
         setOtpSent(true);
         setOtpCount(1);
-        setClock(50);
+        setClock(10 * 60);
         const newInterval = setInterval(() => {
           setClock((prev) => {
             if (prev === 0) {
@@ -56,16 +56,24 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
         console.log(err.response);
-        setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
+        if (typeof err.response?.data === "string")
+          setErrors({
+            phonenumber: err?.response?.data,
+          });
+        else
+          setErrors({
+            message: "Something went wrong!",
+          });
       })
       .finally(() => setLoading(false));
   };
 
   const handleLogin = () => {
+    if (!data.otp?.trim()) return setErrors({ otp: "Please enter OTP." });
     setErrors({});
     setLoading(true);
-    axiosPrivate
-      .post("/token/withotp", { ...data, phone_no: data.phone_no })
+    axiosOpen
+      .post("/user/token/withotp", { ...data, phone_no: data.phone_no })
       .then((res) => {
         setAuth({
           accessToken: res?.data?.access,
@@ -82,11 +90,11 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
       .catch((err) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
-        const { phone_no, detail } = err?.response?.data;
+        const { phone_no, detail, Details } = err?.response?.data;
         setErrors((prev) => ({
           ...prev,
           phone_no: phone_no && phone_no?.length > 0 ? phone_no[0] : "",
-          message: detail || "",
+          message: Details || detail || "",
         }));
       })
       .finally(() => setLoading(false));
@@ -144,7 +152,9 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
         <input
           type='text'
           placeholder='Enter OTP here'
-          className='form-control form-control-sm'
+          className={`form-control form-control-sm ${
+            errors?.otp ? " is-invalid" : ""
+          }`}
           id='otp'
           autoComplete='off'
           style={{ padding: "14px 16px", fontSize: "17px" }}
@@ -152,6 +162,11 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
           onChange={handleChange}
           disabled={!otpSent}
         />
+      </div>
+      <div style={{ minHeight: 20 }}>
+        {errors?.otp && (
+          <div style={{ fontSize: "10px", color: "red" }}>{errors?.otp}</div>
+        )}
       </div>
       {errors?.message && (
         <div style={{ fontSize: "10px", color: "red" }}>{errors?.message}</div>
