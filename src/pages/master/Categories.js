@@ -65,6 +65,7 @@ export default function Categories() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
+  const [fetchedQueries, setFetchedQueries] = useState(false);
 
   const initialCategory = {
     id: '',
@@ -83,8 +84,10 @@ export default function Categories() {
     queryKey: ['category'],
     queryFn: async () => {
       const { data } = await axiosPrivate.get('/ads/category');
+      setFetchedQueries(true);
       return data || [];
     },
+    enabled: !fetchedQueries,
   });
   const { mutate: postCategory, isLoading: isSaving } = useMutation({
     mutationFn: (formData) =>

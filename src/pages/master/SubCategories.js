@@ -66,6 +66,7 @@ export default function SubCategories() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
+  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
 
   const initialSubCategory = { name: '', category: '' };
   const [subCategory, setSubCategory] = useState(initialSubCategory);
@@ -81,8 +82,13 @@ export default function SubCategories() {
     queryKey: ['category'],
     queryFn: async () => {
       const { data } = await axiosPrivate.get('/ads/category');
+      setFetchedQueries((prev) => {
+        prev[0] = true;
+        return [...prev];
+      });
       return data || [];
     },
+    enabled: !fetchedQueries[0],
   });
   const {
     data: subCategories,
@@ -92,8 +98,13 @@ export default function SubCategories() {
     queryKey: ['subcategory'],
     queryFn: async () => {
       const { data } = await axiosPrivate.get('/ads/subcategory');
+      setFetchedQueries((prev) => {
+        prev[1] = true;
+        return [...prev];
+      });
       return data || [];
     },
+    enabled: !fetchedQueries[1],
   });
   const { mutate: postSubCategory, isLoading: isSaving } = useMutation({
     mutationFn: (body) => axiosPrivate.post('/ads/subcategory', { ...body }),
