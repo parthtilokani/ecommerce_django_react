@@ -33,9 +33,10 @@ const Home = () => {
         prev[0] = true;
         return [...prev];
       });
-      return data || [];
+      return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[0],
+    initialData: [],
   });
   const { data: subcategories } = useQuery({
     queryKey: ["subcategories"],
@@ -45,9 +46,10 @@ const Home = () => {
         prev[1] = true;
         return [...prev];
       });
-      return data || [];
+      return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[1],
+    initialData: [],
   });
 
   useEffect(() => {

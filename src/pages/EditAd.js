@@ -39,7 +39,7 @@ const EditAd = () => {
         prev[0] = true;
         return [...prev];
       });
-      return data || [];
+      return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[0],
   });
@@ -51,7 +51,7 @@ const EditAd = () => {
         prev[1] = true;
         return [...prev];
       });
-      return data || [];
+      return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[1],
   });

@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 
 //css
 import "../styles/css/profile.css";
-// import { axiosOpen } from "../utils/axios.js";
 import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
 import { Link, useNavigate } from "react-router-dom";
 import { URI } from "../utils/API.js";
@@ -30,11 +29,7 @@ const Profile = () => {
   const [totalData, setTotalData] = useState(0);
 
   const [fetchedQueries, setFetchedQueries] = useState([false, false]);
-  const {
-    data: myAds,
-
-    refetch,
-  } = useQuery({
+  const { data: myAds, refetch } = useQuery({
     queryKey: ["my_ads"],
     queryFn: async () => {
       const { data } = await axiosPrivate.get("/ads/ads/get_current_user_ads", {

@@ -37,7 +37,7 @@ const PostNewAdd = () => {
         prev[0] = true;
         return [...prev];
       });
-      return data || [];
+      return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[0],
   });
@@ -49,7 +49,7 @@ const PostNewAdd = () => {
         prev[1] = true;
         return [...prev];
       });
-      return data || [];
+      return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[1],
   });
