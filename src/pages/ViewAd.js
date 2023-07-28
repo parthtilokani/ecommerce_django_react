@@ -10,7 +10,7 @@ const ViewAd = () => {
   const axiosPrivate = useAxiosPrivate();
   const { id: adId } = useParams();
   const [currentImage, setCurrentImage] = useState(0);
-  const { data: ad } = useQuery({
+  const { data: ad, isLoading } = useQuery({
     queryKey: ["single_ad", adId],
     queryFn: async () => {
       const { data } = await axiosPrivate.get(`/ads/ads/${adId}`);
@@ -41,8 +41,15 @@ const ViewAd = () => {
           <div className='col-md-9 mb-2'>
             <div className='card'>
               <div className='card-body'>
-                <div className='h4 fw-bold my-2'>{ad?.ad_title}</div>
-                <div className='carousel-container'>
+                {isLoading ? (
+                  <>
+                    <div className='skeleton skeleton-text h4'></div>
+                    <div className='skeleton skeleton-text h4'></div>
+                  </>
+                ) : (
+                  <div className='h4 fw-bold my-2'>{ad?.ad_title}</div>
+                )}
+                <div className='carousel-container skeleton'>
                   <div
                     className='carousel-wrapper'
                     style={{
@@ -59,11 +66,11 @@ const ViewAd = () => {
                         </div>
                       ))
                     ) : (
-                      <img
-                        src='https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/themes/classima/assets/img/noimage-listing-thumb.jpg'
-                        alt='default'
-                        className='carousel-image'
-                      />
+                      <div className='image-wrapper'>
+                        <div
+                          className='carousel-image skeleton'
+                          style={{ height: "300px" }}></div>
+                      </div>
                     )}
                   </div>
                   <button className='carousel-button prev' onClick={prevSlide}>
@@ -76,17 +83,23 @@ const ViewAd = () => {
                 <div className='d-flex my-2'>
                   <div className='d-flex align-items-center me-3'>
                     <img src='/assets/svgs/time.svg' className='icon' alt='' />
-                    <span>
-                      {ad?.posted_on &&
-                        new Date(ad?.posted_on).toLocaleString("en-IN", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "numeric",
-                          hour12: true,
-                        })}
-                    </span>
+                    {isLoading ? (
+                      <div
+                        className='skeleton skeleton-text h4'
+                        style={{ width: "200px" }}></div>
+                    ) : (
+                      <span>
+                        {ad?.posted_on &&
+                          new Date(ad?.posted_on).toLocaleString("en-IN", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "numeric",
+                            hour12: true,
+                          })}
+                      </span>
+                    )}
                   </div>
                   <div className='d-flex align-items-center'>
                     <img
@@ -94,14 +107,39 @@ const ViewAd = () => {
                       className='icon'
                       alt=''
                     />
-                    <span>Denmark</span>
+                    {isLoading ? (
+                      <div
+                        className='skeleton skeleton-text h4'
+                        style={{ width: "200px" }}></div>
+                    ) : (
+                      <span>Denmark</span>
+                    )}
                   </div>
                 </div>
-                <div className='h4 fw-bold'>₹ {ad?.price}</div>
+                <div className='h4 fw-bold'>
+                  {isLoading ? (
+                    <div
+                      className='skeleton skeleton-text h4'
+                      style={{ width: "200px" }}></div>
+                  ) : (
+                    `₹ ${ad?.price}`
+                  )}
+                </div>
 
                 <div className='row'>
                   <div className='col-lg-8 mb-2'>
-                    <div className='py-1'>{ad?.ad_description}</div>
+                    <div className='py-1'>
+                      {isLoading ? (
+                        <>
+                          <div className='skeleton skeleton-text h4'></div>
+                          <div className='skeleton skeleton-text h4'></div>
+                          <div className='skeleton skeleton-text h4'></div>
+                          <div className='skeleton skeleton-text h4'></div>
+                        </>
+                      ) : (
+                        ad?.ad_description
+                      )}
+                    </div>
                     {ad?.dynamic_field
                       ?.filter((df) => df?.field_type === "Text")
                       ?.map((df, i) => (

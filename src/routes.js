@@ -20,7 +20,7 @@ export default function Router() {
   const { auth } = useAuth();
 
   const PrivateRoute = ({ ...rest }) =>
-    auth?.email ? (
+    auth?.accessToken ? (
       <Outlet />
     ) : (
       <Navigate to='/login' state={{ from: rest.location }} replace />

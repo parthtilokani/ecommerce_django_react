@@ -45,7 +45,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
     axiosOpen
       .get("/user/otp", { params: { phone: data.phone_no } })
       .then((res) => {
-        setOtpMessage("OTP sent successfully!");
+        setOtpMessage("OTP sent. You will receive SMS or Call.");
         setOtpSent(true);
         setClock(10 * 60);
         const newInterval = setInterval(() => {
@@ -194,12 +194,12 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
             </div>
           </div>
 
-          <img
+          {/* <img
             src='./assets/svgs/close.svg'
             className='close-btn'
             alt=''
             onClick={() => setOTPView(false)}
-          />
+          /> */}
         </div>
       </div>
 

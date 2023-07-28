@@ -9,7 +9,12 @@ const Layout = () => {
     <>
       <Navbar />
       <main>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className='full-body-spinner'>
+              <div className='spinner'></div>
+            </div>
+          }>
           <Outlet />
         </Suspense>
       </main>

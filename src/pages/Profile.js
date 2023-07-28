@@ -7,29 +7,24 @@ import "../styles/css/profile.css";
 import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
 import { Link, useNavigate } from "react-router-dom";
 import { URI } from "../utils/API.js";
-
-const DeleteAdPostToast = ({ closeToast, deleteAd }) => (
-  <div>
-    <p>Delete Ad?</p>
-    <button className='btn btn-danger btn-sm mx-1' onClick={deleteAd}>
-      Sure
-    </button>
-    <button onClick={closeToast} className='btn btn-info btn-sm'>
-      Close
-    </button>
-  </div>
-);
+import AdCardSkeleton from "../components/skeletons/AdCardSkeleton.js";
 
 const Profile = () => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
+
+  const [deleteModel, setDeleteModel] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(8);
   const [totalData, setTotalData] = useState(0);
 
   const [fetchedQueries, setFetchedQueries] = useState([false, false]);
-  const { data: myAds, refetch } = useQuery({
+  const {
+    data: myAds,
+    refetch,
+    isLoading: isLoadingAds,
+  } = useQuery({
     queryKey: ["my_ads"],
     queryFn: async () => {
       const { data } = await axiosPrivate.get("/ads/ads/get_current_user_ads", {
@@ -48,9 +43,10 @@ const Profile = () => {
     enabled: !fetchedQueries[0],
   });
 
-  const { mutate: deleteAd } = useMutation({
+  const { mutate: deleteAd, isLoading: isDeleting } = useMutation({
     mutationFn: (id) => axiosPrivate.delete(`/ads/ads/${id}`),
     onSuccess: () => {
+      setDeleteModel(0);
       toast.success("Ad post deleted!");
       refetch();
     },
@@ -61,8 +57,8 @@ const Profile = () => {
     refetch();
   }, [itemPerPage, currentPage, refetch]);
 
-  const handleDelete = (idx) => {
-    toast(<DeleteAdPostToast deleteAd={() => deleteAd(idx)} />);
+  const handleDelete = () => {
+    deleteAd(deleteModel);
   };
 
   return (
@@ -80,6 +76,12 @@ const Profile = () => {
       <div id='my-ads'>
         <div className='h3 fw-bold m-3 mb-0'>My Ads :</div>
         <div className='featured-ads-main row mx-auto'>
+          {isLoadingAds &&
+            new Array(4).fill(null).map((_, i) => (
+              <div key={i} className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3'>
+                <AdCardSkeleton />
+              </div>
+            ))}
           {myAds?.results?.map((ad, i) => (
             <div className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3' key={i}>
               <div className='fa-card'>
@@ -115,10 +117,6 @@ const Profile = () => {
                           })}
                       </span>
                     </div>
-                    {/* <div className='d-flex align-items-center'>
-                    <img src='/assets/svgs/profile.svg' alt='' />
-                    <span>Yakuza</span>
-                  </div> */}
                     <div className='d-flex align-items-center'>
                       <img src='/assets/svgs/location.svg' alt='' />
                       <span>Denmark</span>
@@ -132,7 +130,7 @@ const Profile = () => {
                     </Link>
                     <button
                       className='btn btn-danger'
-                      onClick={() => handleDelete(ad.id)}>
+                      onClick={() => setDeleteModel(ad.id)}>
                       Delete
                     </button>
                   </div>
@@ -230,26 +228,24 @@ const Profile = () => {
       </div>
 
       <div id='price-and-packages'>
-        <div className='h3 fw-bold m-3 mb-1'>Price and Packages :</div>
-        <div className='row mx-auto our-pricing-main'>
-          {new Array(4).fill(null).map((_, i) => (
-            <div className='col-xl-3 col-lg-4 col-md-6' key={i}>
-              <div className='our-pricing-card mx-auto'>
-                <div className='h4'>Free</div>
-                <div className='h1 pricing'>
-                  ₹ 0<span>/Per month</span>
-                </div>
-                <div className='op-features'>3 Regular Ads</div>
-                <div className='op-features'>No Featured Ads</div>
-                <div className='op-features'>No Top Ads</div>
-                <div className='op-features'>No Ads will be bumped up</div>
-                <div className='op-features'>Limited Support</div>
-                <div>
-                  <button>Register</button>
-                </div>
+        <div className='h3 fw-bold m-3 mb-1'>Price and Package :</div>
+        <div className='row mx-auto our-pricing-main justify-content-center'>
+          <div className='col-xl-3 col-lg-4 col-md-6'>
+            <div className='our-pricing-card mx-auto'>
+              <div className='h4'>Free</div>
+              <div className='h1 pricing'>
+                ₹ 0<span>/Per month</span>
+              </div>
+              <div className='op-features'>3 Regular Ads</div>
+              <div className='op-features'>No Featured Ads</div>
+              <div className='op-features'>No Top Ads</div>
+              <div className='op-features'>No Ads will be bumped up</div>
+              <div className='op-features'>Limited Support</div>
+              <div>
+                <button>Register</button>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -264,6 +260,39 @@ const Profile = () => {
           <p className='fw-bold p-2'>Logout from all devices</p>
         </div>
       </div>
+
+      {/*Delete Model*/}
+      {deleteModel !== 0 && (
+        <div className='signup-otp-model'>
+          <div className='card'>
+            <div className='text-center h4 fw-bold'>Delete your ad post ?</div>
+            <div className='mt-1 text-center d-flex justify-content-center'>
+              <div>
+                <button
+                  className='btn btn-danger fw-bold me-2'
+                  onClick={handleDelete}
+                  disabled={isDeleting}>
+                  {isDeleting ? "Deleting" : "Delete"}
+                </button>
+              </div>
+              <div>
+                <button
+                  className='btn fw-bold text-white signup-btn'
+                  disabled={isDeleting}
+                  onClick={() => setDeleteModel(0)}>
+                  Close
+                </button>
+              </div>
+            </div>
+            <img
+              src='./assets/svgs/close.svg'
+              className='close-btn'
+              alt=''
+              onClick={() => setDeleteModel(0)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

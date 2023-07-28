@@ -91,7 +91,7 @@ export const LogIn = ({ setSignUpMethod, message }) => {
         <input
           type='text'
           id='email'
-          placeholder='Email address / Username'
+          placeholder='Email address'
           className={`form-control ${errors?.email ? " is-invalid" : ""}`}
           style={{ padding: "14px 16px", fontSize: "17px" }}
           value={data.email}

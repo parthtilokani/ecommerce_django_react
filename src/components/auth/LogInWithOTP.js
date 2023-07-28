@@ -35,7 +35,7 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
     axiosOpen
       .get("/user/otp", { params: { phone: data.phonenumber } })
       .then((res) => {
-        setOtpMessage("OTP sent successfully!");
+        setOtpMessage("OTP sent. You will receive SMS or Call.");
         setOtpSent(true);
         setOtpCount(1);
         setClock(10 * 60);
@@ -56,9 +56,9 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
         console.log(err.response);
-        if (typeof err.response?.data === "string")
+        if (typeof err.response?.data?.error === "string")
           setErrors({
-            phonenumber: err?.response?.data,
+            phonenumber: err?.response?.data?.error,
           });
         else
           setErrors({

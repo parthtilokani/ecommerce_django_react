@@ -9,10 +9,9 @@
 }
 
 .carousel-container {
-  display: flex;
   overflow: hidden;
   width: 100%;
-  max-width: 600px; /* Adjust the width as needed */
+  min-height: 250px;
   margin: 0 auto;
   position: relative;
 }
@@ -26,20 +25,15 @@
 }
 .carousel-image {
   width: 100%;
+  height: auto;
   max-height: 350px;
   object-fit: cover;
 }
-/* Hide the prev/next buttons if only one image */
-.carousel-container .prev,
-.carousel-container .next {
-  display: none;
-}
-/* Show the prev/next buttons when there are multiple images */
 .carousel-wrapper img:not(:first-child) {
   margin-left: 10px; /* Adjust the margin as needed between images */
 }
-.carousel-container:hover .prev,
-.carousel-container:hover .next {
+.carousel-container .prev,
+.carousel-container .next {
   display: block;
   position: absolute;
   top: 50%;

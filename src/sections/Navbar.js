@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // css
 import "../styles/css/navbar.css";
@@ -8,6 +8,7 @@ import "../styles/css/navbar.css";
 import useAuth from "../hooks/useAuth.js";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { auth, setAuth } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -84,6 +85,7 @@ const Navbar = () => {
                   setAuth({});
                   localStorage.removeItem("auth");
                   setIsOpen(false);
+                  navigate("/", { replace: true });
                 }}>
                 Log out
               </Link>

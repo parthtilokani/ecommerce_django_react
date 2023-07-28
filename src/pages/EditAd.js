@@ -28,6 +28,7 @@ const EditAd = () => {
   const [errors, setErrors] = useState({});
   const [dynamicFields, setDynamicFields] = useState([]);
   const [images, setImages] = useState([]);
+  const [imagesToDelete, setImagesToDelete] = useState([]);
   const imageRef = useRef();
 
   const [fetchedQueries, setFetchedQueries] = useState([false, false]);
@@ -94,13 +95,15 @@ const EditAd = () => {
       console.log(err);
     },
   });
-  const { mutate: uploadImage, isLoading: isUploadingImage } = useMutation({
-    mutationFn: async (formData) => {
-      return await axiosPrivate.post(`/ads/ads_image`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    },
-  });
+  const { mutateAsync: uploadImage, isLoading: isUploadingImage } = useMutation(
+    {
+      mutationFn: async (formData) => {
+        return await axiosPrivate.post(`/ads/ads_image`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      },
+    }
+  );
   const { mutateAsync: deleteImage } = useMutation({
     mutationFn: async (imgId) => {
       return await axiosPrivate.delete(`/ads/ads_image/${imgId}`);
@@ -134,13 +137,9 @@ const EditAd = () => {
   const handleDeleteImage = (idx) => {
     const imageToDelete = images.find((e, i) => i === idx);
     if (imageToDelete?.id) {
-      deleteImage(imageToDelete.id)
-        .then((_) => {
-          setImages((prev) => [...prev.filter((_, i) => i !== idx)]);
-          toast.success("Image deleted!");
-        })
-        .catch((err) => toast.error("Something went wrong! Retry"));
-    } else setImages((prev) => [...prev.filter((_, i) => i !== idx)]);
+      setImagesToDelete((prev) => [...prev, imageToDelete]);
+    }
+    setImages((prev) => [...prev.filter((_, i) => i !== idx)]);
   };
 
   const handleFileChange = (e) => {
@@ -192,7 +191,7 @@ const EditAd = () => {
       return navigate(`/ads/view/${ads_id}`);
     }
     Promise.all([
-      images
+      ...images
         .filter((e) => !e?.id)
         .map((img) => {
           const formData = new FormData();
@@ -200,6 +199,7 @@ const EditAd = () => {
           formData.append("ads", ads_id);
           return uploadImage(formData);
         }),
+      ...imagesToDelete.map((img) => deleteImage(img?.id)),
     ]).finally(() => {
       toast.success("Ad Post updated!");
       navigate(`/ads/view/${ads_id}`);

@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { axiosOpen } from "../utils/axios.js";
+import useOurLocation from "../hooks/useOurLocation.js";
 
 // css
 import "../styles/css/home.css";
 import { URI } from "../utils/API.js";
 
 const Home = () => {
+  const { location: ourLocation, setLocation } = useOurLocation();
   const navigate = useNavigate();
 
   const [locationView, setLocationView] = useState(false);
@@ -20,7 +22,6 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedSubCategory, setSelectedSubCategory] = useState();
 
@@ -54,9 +55,7 @@ const Home = () => {
 
   useEffect(() => {
     (() => {
-      const loc = localStorage.getItem("location");
-      if (loc) setSelectedLocation(loc);
-      else handleGetLocation();
+      if (!ourLocation) handleGetLocation();
     })();
   }, []);
 
@@ -83,7 +82,7 @@ const Home = () => {
 
           const data = await res.json();
           if (data.status === "OK") {
-            setSelectedLocation(data.results[0].formatted_address);
+            setLocation(data.results[0].formatted_address);
             setAddressList(data.results);
           } else {
             setError("Unable to fetch location data");
@@ -149,7 +148,7 @@ const Home = () => {
                   <div
                     className='p-hldr'
                     style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
-                    {selectedLocation ? selectedLocation : "Location"}
+                    {ourLocation ? ourLocation : "Location"}
                   </div>
                 </div>
               </div>
@@ -213,9 +212,9 @@ const Home = () => {
         <div className='card'>
           <div className='h5 p-1 text-center mt-3'>Select Location</div>
           {error && <div className='text-center text-danger'>{error}</div>}
-          {selectedLocation && (
+          {ourLocation && (
             <div className='fw-bold px-4'>
-              Selected Location : <span>{selectedLocation}</span>
+              Selected Location : <span>{ourLocation}</span>
             </div>
           )}
           {loading && <div className='text-center fw-bold'>Loading...</div>}
@@ -265,12 +264,8 @@ const Home = () => {
                     key={index}
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      setSelectedLocation(address.formatted_address);
+                      setLocation(address.formatted_address);
                       setLocationView(false);
-                      localStorage.setItem(
-                        "location",
-                        address.formatted_address
-                      );
                       locationQuery.current.value = "";
                     }}>
                     <p
