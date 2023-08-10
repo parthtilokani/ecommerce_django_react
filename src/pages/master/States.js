@@ -11,7 +11,6 @@ import {
   Table,
   Modal,
   Stack,
-  Avatar,
   Button,
   TableRow,
   TableBody,
@@ -29,12 +28,12 @@ import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
 import { axiosPrivate } from '../../utils/axios';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
+import CustomSelect from '../../components/form/CustomSelect';
 import Iconify from '../../components/iconify';
-import { URI } from '../../utils/API';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'icon', label: 'Icon' },
+  { id: 'country', label: 'Country' },
   { id: 'action', label: 'Actions' },
 ];
 
@@ -52,7 +51,7 @@ const style = {
 
 const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   <div>
-    <p>Delete Category?</p>
+    <p>Delete State?</p>
     <button className="btn btn-danger btn-sm mx-1" onClick={deleteCategory}>
       Sure
     </button>
@@ -62,60 +61,63 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   </div>
 );
 
-export default function Categories() {
-  const Folder = '/ads_category_icon';
+export default function States() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
-  const [fetchedQueries, setFetchedQueries] = useState(false);
+  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
 
-  const initialCategory = {
+  const initialState = {
     id: '',
     name: '',
-    imgUrl: '',
-    imgFile: '',
-    icon: '/assets/images/avatars/avatar_1.jpg',
+    country: '',
   };
-  const [category, setCategory] = useState(initialCategory);
+  const [state, setState] = useState(initialState);
 
+  const { data: countries } = useQuery({
+    queryKey: ['country'],
+    queryFn: async () => {
+      const { data } = await axiosPrivate.get('/ads/country');
+      setFetchedQueries((prev) => [true, prev[1]]);
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[0],
+  });
   const {
-    data: categories,
+    data: states,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['category'],
+    queryKey: ['state'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/category');
-      setFetchedQueries(true);
-      return data || [];
+      const { data } = await axiosPrivate.get('/ads/state');
+      setFetchedQueries((prev) => [prev[0], true]);
+      return data?.results || [];
     },
-    enabled: !fetchedQueries,
+    enabled: !fetchedQueries[1],
   });
-  const { mutate: postCategory, isLoading: isSaving } = useMutation({
-    mutationFn: (formData) =>
-      axiosPrivate.post('/ads/category', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  const { mutate: postState, isLoading: isSaving } = useMutation({
+    mutationFn: (formData) => axiosPrivate.post('/ads/state', formData),
     onSuccess: () => {
-      toast.success('Category saved!');
+      toast.success('State saved!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: patchCategory, isLoading: isUpdating } = useMutation({
+  const { mutate: patchState, isLoading: isUpdating } = useMutation({
     mutationFn: ({ formData, id }) => {
-      axiosPrivate.patch(`/ads/category/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      axiosPrivate.patch(`/ads/state/${id}`, formData);
     },
     onSuccess: () => {
-      toast.success('Category updated!');
+      toast.success('State updated!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: deleteCategory, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => axiosPrivate.delete(`/ads/category/${id}`),
+  const { mutate: deleteState, isLoading: isDeleting } = useMutation({
+    mutationFn: (id) => axiosPrivate.delete(`/ads/state/${id}`),
     onSuccess: () => {
-      toast.success('Category deleted!');
+      toast.success('State deleted!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
@@ -131,49 +133,23 @@ export default function Categories() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setCategory(initialCategory);
+    setState(initialState);
   };
 
-  const handleChangeForm = (e) => {
-    if (e.target.id !== 'image') return setCategory((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-    if (
-      e.target.files[0]?.type === 'image/jpeg' ||
-      e.target.files[0]?.type === 'image/png' ||
-      e.target.files[0]?.type === 'image/jpg'
-    ) {
-      setCategory((prev) => ({
-        ...prev,
-        imgUrl: URL.createObjectURL(e.target.files[0]),
-        imgFile: e.target.files[0],
-      }));
-    } else {
-      toast.error('Upload jpg, jpeg, png only.');
-      setCategory((prev) => ({
-        ...prev,
-        imgUrl: '',
-        imgFile: '',
-      }));
-      e.target.value = null;
-    }
-  };
+  const handleChangeForm = (e) => setState((prev) => ({ ...prev, [e.target.id]: e.target.value }));
 
   const handleDelete = (idx) => {
-    toast(<DeleteCategoryToast deleteCategory={() => deleteCategory(idx)} />);
+    toast(<DeleteCategoryToast deleteCategory={() => deleteState(idx)} />);
   };
 
   const handleSubmit = () => {
-    if (!category.name.trim()) return toast.error('Name is required!');
-    const formData = new FormData();
-    formData.append('name', category.name);
-    // update category
-    if (category?.id) {
-      if (category.imgFile) formData.append('icon', category.imgFile);
-      patchCategory({ formData, id: category.id });
+    if (!state.name.trim()) return toast.error('Name is required!');
+    if (!state.country) return toast.error('Country is required!');
+    const formData = { name: state.name, country: state.country };
+    if (state?.id) {
+      patchState({ formData, id: state.id });
     } else {
-      // add category
-      if (!category?.imgFile) return toast.error('Icon is required!');
-      formData.append('icon', category.imgFile);
-      postCategory(formData);
+      postState(formData);
     }
     handleClose();
   };
@@ -181,16 +157,16 @@ export default function Categories() {
   return (
     <>
       <Helmet>
-        <title>Categories | Classified Ads</title>
+        <title>States | Classified Ads</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Categories
+            States
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
-            New Category
+            New State
           </Button>
         </Stack>
 
@@ -216,7 +192,7 @@ export default function Categories() {
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  ) : !categories || categories?.length <= 0 ? (
+                  ) : !states || states?.length <= 0 ? (
                     <TableRow>
                       <TableCell align="center" colSpan={3}>
                         <Typography variant="subtitle2" noWrap>
@@ -225,8 +201,8 @@ export default function Categories() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    categories?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { id, name, icon } = row;
+                    states?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((row) => {
+                      const { id, name, country } = row;
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
                           <TableCell align="center">
@@ -235,11 +211,9 @@ export default function Categories() {
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
-                            <Avatar
-                              alt={name}
-                              src={URI + Folder + icon.split('ads_category_icon')[1]}
-                              style={{ margin: 'auto' }}
-                            />
+                            <Typography variant="subtitle2" noWrap>
+                              {country}
+                            </Typography>
                           </TableCell>
                           <TableCell align="center">
                             <Button
@@ -247,7 +221,7 @@ export default function Categories() {
                               className="me-2"
                               onClick={() => {
                                 handleOpen();
-                                setCategory(row);
+                                setState(row);
                               }}
                             >
                               Edit
@@ -268,7 +242,7 @@ export default function Categories() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={categories?.length || 0}
+            count={states?.length || 0}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -284,41 +258,28 @@ export default function Categories() {
         >
           <Box sx={style}>
             <div>
-              <h5>{category.id ? 'Edit' : 'Add'} Category</h5>
+              <h5>{state.id ? 'Edit' : 'Add'} State</h5>
               <hr />
             </div>
             <div className="w-100">
               <TextField
                 id="name"
-                label="Category Name*"
+                label="State Name*"
                 variant="outlined"
                 className="w-100"
-                value={category.name}
+                value={state.name}
                 onChange={handleChangeForm}
                 autoComplete="off"
               />
             </div>
-            <div className="d-flex mt-2 align-items-center">
-              <div>
-                <img
-                  alt={'placeholder'}
-                  src={category.imgUrl ? category.imgUrl : '/assets/placeholder.svg'}
-                  style={{ margin: 'auto', height: '70px', width: '70px', borderRadius: '5px' }}
-                />
-              </div>
-              <div className="flex-fill d-flex justify-content-center">
-                <div className="position-relative">
-                  <Button variant="contained">Choose Icon*</Button>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="image"
-                    style={{ opacity: 0, width: '112px', height: '36px', cursor: 'pointer' }}
-                    className="position-absolute top-0 start-0"
-                    onChange={handleChangeForm}
-                  />
-                </div>
-              </div>
+            <div className="w-100 mt-1">
+              <CustomSelect
+                id="country"
+                label="Country*"
+                data={countries?.map((e) => ({ value: e.id, label: e.name })) || []}
+                value={state.country}
+                handleChange={handleChangeForm}
+              />
             </div>
             <hr />
             <div className="mt-2 text-end">

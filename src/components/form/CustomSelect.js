@@ -32,7 +32,7 @@ export default function CustomSelect({ id, label, data, value, handleChange, cla
           MenuProps={MenuProps}
           className={className}
         >
-          {data.map((d, i) => (
+          {data?.map((d, i) => (
             <MenuItem key={i} value={d.value}>
               {d.label}
             </MenuItem>

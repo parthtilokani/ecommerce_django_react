@@ -11,7 +11,6 @@ import {
   Table,
   Modal,
   Stack,
-  Avatar,
   Button,
   TableRow,
   TableBody,
@@ -29,12 +28,13 @@ import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
 import { axiosPrivate } from '../../utils/axios';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
+import CustomSelect from '../../components/form/CustomSelect';
 import Iconify from '../../components/iconify';
-import { URI } from '../../utils/API';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'icon', label: 'Icon' },
+  { id: 'state', label: 'State' },
+  { id: 'country', label: 'Country' },
   { id: 'action', label: 'Actions' },
 ];
 
@@ -52,7 +52,7 @@ const style = {
 
 const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   <div>
-    <p>Delete Category?</p>
+    <p>Delete City?</p>
     <button className="btn btn-danger btn-sm mx-1" onClick={deleteCategory}>
       Sure
     </button>
@@ -62,60 +62,73 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   </div>
 );
 
-export default function Categories() {
-  const Folder = '/ads_category_icon';
+export default function Cities() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
-  const [fetchedQueries, setFetchedQueries] = useState(false);
+  const [fetchedQueries, setFetchedQueries] = useState([false, false, false]);
 
-  const initialCategory = {
+  const initialCity = {
     id: '',
     name: '',
-    imgUrl: '',
-    imgFile: '',
-    icon: '/assets/images/avatars/avatar_1.jpg',
+    state: '',
+    country: '',
   };
-  const [category, setCategory] = useState(initialCategory);
+  const [city, setCity] = useState(initialCity);
 
+  const { data: countries } = useQuery({
+    queryKey: ['country'],
+    queryFn: async () => {
+      const { data } = await axiosPrivate.get('/ads/country');
+      setFetchedQueries((prev) => [true, prev[1], prev[2]]);
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[0],
+  });
+  const { data: states } = useQuery({
+    queryKey: ['state'],
+    queryFn: async () => {
+      const { data } = await axiosPrivate.get('/ads/state');
+      setFetchedQueries((prev) => [prev[0], true, prev[2]]);
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[1],
+  });
   const {
-    data: categories,
+    data: cities,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['category'],
+    queryKey: ['city'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/category');
-      setFetchedQueries(true);
-      return data || [];
+      const { data } = await axiosPrivate.get('/ads/city');
+      setFetchedQueries((prev) => [prev[0], prev[1], true]);
+      return data?.results || [];
     },
-    enabled: !fetchedQueries,
+    enabled: !fetchedQueries[2],
   });
-  const { mutate: postCategory, isLoading: isSaving } = useMutation({
-    mutationFn: (formData) =>
-      axiosPrivate.post('/ads/category', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  const { mutate: postCity, isLoading: isSaving } = useMutation({
+    mutationFn: (formData) => axiosPrivate.post('/ads/city', formData),
     onSuccess: () => {
-      toast.success('Category saved!');
+      toast.success('City saved!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: patchCategory, isLoading: isUpdating } = useMutation({
+  const { mutate: patchCity, isLoading: isUpdating } = useMutation({
     mutationFn: ({ formData, id }) => {
-      axiosPrivate.patch(`/ads/category/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      axiosPrivate.patch(`/ads/city/${id}`, formData);
     },
     onSuccess: () => {
-      toast.success('Category updated!');
+      toast.success('City updated!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: deleteCategory, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => axiosPrivate.delete(`/ads/category/${id}`),
+  const { mutate: deleteCity, isLoading: isDeleting } = useMutation({
+    mutationFn: (id) => axiosPrivate.delete(`/ads/city/${id}`),
     onSuccess: () => {
-      toast.success('Category deleted!');
+      toast.success('City deleted!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
@@ -131,49 +144,24 @@ export default function Categories() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setCategory(initialCategory);
+    setCity(initialCity);
   };
 
-  const handleChangeForm = (e) => {
-    if (e.target.id !== 'image') return setCategory((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-    if (
-      e.target.files[0]?.type === 'image/jpeg' ||
-      e.target.files[0]?.type === 'image/png' ||
-      e.target.files[0]?.type === 'image/jpg'
-    ) {
-      setCategory((prev) => ({
-        ...prev,
-        imgUrl: URL.createObjectURL(e.target.files[0]),
-        imgFile: e.target.files[0],
-      }));
-    } else {
-      toast.error('Upload jpg, jpeg, png only.');
-      setCategory((prev) => ({
-        ...prev,
-        imgUrl: '',
-        imgFile: '',
-      }));
-      e.target.value = null;
-    }
-  };
+  const handleChangeForm = (e) => setCity((prev) => ({ ...prev, [e.target.id]: e.target.value }));
 
   const handleDelete = (idx) => {
-    toast(<DeleteCategoryToast deleteCategory={() => deleteCategory(idx)} />);
+    toast(<DeleteCategoryToast deleteCategory={() => deleteCity(idx)} />);
   };
 
   const handleSubmit = () => {
-    if (!category.name.trim()) return toast.error('Name is required!');
-    const formData = new FormData();
-    formData.append('name', category.name);
-    // update category
-    if (category?.id) {
-      if (category.imgFile) formData.append('icon', category.imgFile);
-      patchCategory({ formData, id: category.id });
+    if (!city.name.trim()) return toast.error('Name is required!');
+    if (!city.state) return toast.error('State is required!');
+    if (!city.country) return toast.error('Country is required!');
+    const formData = { name: city.name, state: city.state, country: city.country };
+    if (city?.id) {
+      patchCity({ formData, id: city.id });
     } else {
-      // add category
-      if (!category?.imgFile) return toast.error('Icon is required!');
-      formData.append('icon', category.imgFile);
-      postCategory(formData);
+      postCity(formData);
     }
     handleClose();
   };
@@ -181,16 +169,16 @@ export default function Categories() {
   return (
     <>
       <Helmet>
-        <title>Categories | Classified Ads</title>
+        <title>Cities | Classified Ads</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Categories
+            Cities
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
-            New Category
+            New City
           </Button>
         </Stack>
 
@@ -210,23 +198,23 @@ export default function Categories() {
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
-                      <TableCell align="center" colSpan={3}>
+                      <TableCell align="center" colSpan={4}>
                         <Typography variant="subtitle2" noWrap>
                           Loading...
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  ) : !categories || categories?.length <= 0 ? (
+                  ) : !cities || cities?.length <= 0 ? (
                     <TableRow>
-                      <TableCell align="center" colSpan={3}>
+                      <TableCell align="center" colSpan={4}>
                         <Typography variant="subtitle2" noWrap>
                           No Data Available
                         </Typography>
                       </TableCell>
                     </TableRow>
                   ) : (
-                    categories?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { id, name, icon } = row;
+                    cities?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((row) => {
+                      const { id, name, state, country } = row;
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
                           <TableCell align="center">
@@ -235,11 +223,14 @@ export default function Categories() {
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
-                            <Avatar
-                              alt={name}
-                              src={URI + Folder + icon.split('ads_category_icon')[1]}
-                              style={{ margin: 'auto' }}
-                            />
+                            <Typography variant="subtitle2" noWrap>
+                              {state}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="subtitle2" noWrap>
+                              {country}
+                            </Typography>
                           </TableCell>
                           <TableCell align="center">
                             <Button
@@ -247,7 +238,7 @@ export default function Categories() {
                               className="me-2"
                               onClick={() => {
                                 handleOpen();
-                                setCategory(row);
+                                setCity(row);
                               }}
                             >
                               Edit
@@ -268,7 +259,7 @@ export default function Categories() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={categories?.length || 0}
+            count={cities?.length || 0}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -284,41 +275,41 @@ export default function Categories() {
         >
           <Box sx={style}>
             <div>
-              <h5>{category.id ? 'Edit' : 'Add'} Category</h5>
+              <h5>{city.id ? 'Edit' : 'Add'} City</h5>
               <hr />
             </div>
             <div className="w-100">
               <TextField
                 id="name"
-                label="Category Name*"
+                label="City Name*"
                 variant="outlined"
                 className="w-100"
-                value={category.name}
+                value={city.name}
                 onChange={handleChangeForm}
                 autoComplete="off"
               />
             </div>
-            <div className="d-flex mt-2 align-items-center">
-              <div>
-                <img
-                  alt={'placeholder'}
-                  src={category.imgUrl ? category.imgUrl : '/assets/placeholder.svg'}
-                  style={{ margin: 'auto', height: '70px', width: '70px', borderRadius: '5px' }}
-                />
-              </div>
-              <div className="flex-fill d-flex justify-content-center">
-                <div className="position-relative">
-                  <Button variant="contained">Choose Icon*</Button>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="image"
-                    style={{ opacity: 0, width: '112px', height: '36px', cursor: 'pointer' }}
-                    className="position-absolute top-0 start-0"
-                    onChange={handleChangeForm}
-                  />
-                </div>
-              </div>
+            <div className="w-100 mt-2">
+              <CustomSelect
+                id="country"
+                label="Country*"
+                data={countries?.map((e) => ({ value: e.id, label: e.name })) || []}
+                value={city.country}
+                handleChange={handleChangeForm}
+              />
+            </div>
+            <div className="w-100 mt-2">
+              <CustomSelect
+                id="state"
+                label="State*"
+                data={
+                  states?.filter((e) => e?.country === city?.country)?.length > 0
+                    ? states?.filter((e) => e?.country === city?.country)?.map((e) => ({ value: e.id, label: e.name }))
+                    : [{ value: '', label: 'Select Country' }]
+                }
+                value={city.state}
+                handleChange={handleChangeForm}
+              />
             </div>
             <hr />
             <div className="mt-2 text-end">

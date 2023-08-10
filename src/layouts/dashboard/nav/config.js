@@ -30,6 +30,26 @@ const navConfig = [
         path: '/master/sub-categories',
         icon: icon('ic_user'),
       },
+      {
+        title: 'countries',
+        path: '/master/countries',
+        icon: icon('ic_user'),
+      },
+      {
+        title: 'states',
+        path: '/master/states',
+        icon: icon('ic_user'),
+      },
+      {
+        title: 'cities',
+        path: '/master/cities',
+        icon: icon('ic_user'),
+      },
+      {
+        title: 'ads-plans',
+        path: '/master/ads-plans',
+        icon: icon('ic_user'),
+      },
     ],
   },
   // {

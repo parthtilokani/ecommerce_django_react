@@ -11,7 +11,6 @@ import {
   Table,
   Modal,
   Stack,
-  Avatar,
   Button,
   TableRow,
   TableBody,
@@ -30,11 +29,9 @@ import { toast } from 'react-toastify';
 import { axiosPrivate } from '../../utils/axios';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 import Iconify from '../../components/iconify';
-import { URI } from '../../utils/API';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'icon', label: 'Icon' },
   { id: 'action', label: 'Actions' },
 ];
 
@@ -52,7 +49,7 @@ const style = {
 
 const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   <div>
-    <p>Delete Category?</p>
+    <p>Delete Country?</p>
     <button className="btn btn-danger btn-sm mx-1" onClick={deleteCategory}>
       Sure
     </button>
@@ -62,60 +59,54 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   </div>
 );
 
-export default function Categories() {
-  const Folder = '/ads_category_icon';
+export default function Countries() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
   const [fetchedQueries, setFetchedQueries] = useState(false);
 
-  const initialCategory = {
+  const initialCountry = {
     id: '',
     name: '',
-    imgUrl: '',
-    imgFile: '',
-    icon: '/assets/images/avatars/avatar_1.jpg',
   };
-  const [category, setCategory] = useState(initialCategory);
+  const [country, setCountry] = useState(initialCountry);
 
   const {
-    data: categories,
+    data: countries,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['category'],
+    queryKey: ['country'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/category');
+      const { data } = await axiosPrivate.get('/ads/country');
       setFetchedQueries(true);
-      return data || [];
+      console.log(data);
+      return data?.results || [];
     },
     enabled: !fetchedQueries,
   });
-  const { mutate: postCategory, isLoading: isSaving } = useMutation({
-    mutationFn: (formData) =>
-      axiosPrivate.post('/ads/category', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  const { mutate: postCountry, isLoading: isSaving } = useMutation({
+    mutationFn: (formData) => axiosPrivate.post('/ads/country', formData),
     onSuccess: () => {
-      toast.success('Category saved!');
+      toast.success('Country saved!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: patchCategory, isLoading: isUpdating } = useMutation({
+  const { mutate: patchCountry, isLoading: isUpdating } = useMutation({
     mutationFn: ({ formData, id }) => {
-      axiosPrivate.patch(`/ads/category/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      axiosPrivate.patch(`/ads/country/${id}`, formData);
     },
     onSuccess: () => {
-      toast.success('Category updated!');
+      toast.success('Country updated!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: deleteCategory, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => axiosPrivate.delete(`/ads/category/${id}`),
+  const { mutate: deleteCountry, isLoading: isDeleting } = useMutation({
+    mutationFn: (id) => axiosPrivate.delete(`/ads/country/${id}`),
     onSuccess: () => {
-      toast.success('Category deleted!');
+      toast.success('Country deleted!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
@@ -131,49 +122,22 @@ export default function Categories() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setCategory(initialCategory);
+    setCountry(initialCountry);
   };
 
-  const handleChangeForm = (e) => {
-    if (e.target.id !== 'image') return setCategory((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-    if (
-      e.target.files[0]?.type === 'image/jpeg' ||
-      e.target.files[0]?.type === 'image/png' ||
-      e.target.files[0]?.type === 'image/jpg'
-    ) {
-      setCategory((prev) => ({
-        ...prev,
-        imgUrl: URL.createObjectURL(e.target.files[0]),
-        imgFile: e.target.files[0],
-      }));
-    } else {
-      toast.error('Upload jpg, jpeg, png only.');
-      setCategory((prev) => ({
-        ...prev,
-        imgUrl: '',
-        imgFile: '',
-      }));
-      e.target.value = null;
-    }
-  };
+  const handleChangeForm = (e) => setCountry((prev) => ({ ...prev, [e.target.id]: e.target.value }));
 
   const handleDelete = (idx) => {
-    toast(<DeleteCategoryToast deleteCategory={() => deleteCategory(idx)} />);
+    toast(<DeleteCategoryToast deleteCategory={() => deleteCountry(idx)} />);
   };
 
   const handleSubmit = () => {
-    if (!category.name.trim()) return toast.error('Name is required!');
-    const formData = new FormData();
-    formData.append('name', category.name);
-    // update category
-    if (category?.id) {
-      if (category.imgFile) formData.append('icon', category.imgFile);
-      patchCategory({ formData, id: category.id });
+    if (!country.name.trim()) return toast.error('Name is required!');
+    const formData = { name: country.name };
+    if (country?.id) {
+      patchCountry({ formData, id: country.id });
     } else {
-      // add category
-      if (!category?.imgFile) return toast.error('Icon is required!');
-      formData.append('icon', category.imgFile);
-      postCategory(formData);
+      postCountry(formData);
     }
     handleClose();
   };
@@ -181,16 +145,16 @@ export default function Categories() {
   return (
     <>
       <Helmet>
-        <title>Categories | Classified Ads</title>
+        <title>Countries | Classified Ads</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Categories
+            Countries
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
-            New Category
+            New Country
           </Button>
         </Stack>
 
@@ -216,7 +180,7 @@ export default function Categories() {
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  ) : !categories || categories?.length <= 0 ? (
+                  ) : !countries || countries?.length <= 0 ? (
                     <TableRow>
                       <TableCell align="center" colSpan={3}>
                         <Typography variant="subtitle2" noWrap>
@@ -225,8 +189,8 @@ export default function Categories() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    categories?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { id, name, icon } = row;
+                    countries?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((row) => {
+                      const { id, name } = row;
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
                           <TableCell align="center">
@@ -235,19 +199,12 @@ export default function Categories() {
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
-                            <Avatar
-                              alt={name}
-                              src={URI + Folder + icon.split('ads_category_icon')[1]}
-                              style={{ margin: 'auto' }}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
                             <Button
                               variant="contained"
                               className="me-2"
                               onClick={() => {
                                 handleOpen();
-                                setCategory(row);
+                                setCountry(row);
                               }}
                             >
                               Edit
@@ -268,7 +225,7 @@ export default function Categories() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={categories?.length || 0}
+            count={countries?.length || 0}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -284,41 +241,19 @@ export default function Categories() {
         >
           <Box sx={style}>
             <div>
-              <h5>{category.id ? 'Edit' : 'Add'} Category</h5>
+              <h5>{country.id ? 'Edit' : 'Add'} Country</h5>
               <hr />
             </div>
             <div className="w-100">
               <TextField
                 id="name"
-                label="Category Name*"
+                label="Country Name*"
                 variant="outlined"
                 className="w-100"
-                value={category.name}
+                value={country.name}
                 onChange={handleChangeForm}
                 autoComplete="off"
               />
-            </div>
-            <div className="d-flex mt-2 align-items-center">
-              <div>
-                <img
-                  alt={'placeholder'}
-                  src={category.imgUrl ? category.imgUrl : '/assets/placeholder.svg'}
-                  style={{ margin: 'auto', height: '70px', width: '70px', borderRadius: '5px' }}
-                />
-              </div>
-              <div className="flex-fill d-flex justify-content-center">
-                <div className="position-relative">
-                  <Button variant="contained">Choose Icon*</Button>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="image"
-                    style={{ opacity: 0, width: '112px', height: '36px', cursor: 'pointer' }}
-                    className="position-absolute top-0 start-0"
-                    onChange={handleChangeForm}
-                  />
-                </div>
-              </div>
             </div>
             <hr />
             <div className="mt-2 text-end">
