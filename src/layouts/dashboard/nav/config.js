@@ -53,10 +53,15 @@ const navConfig = [
     ],
   },
   // {
-  //   title: 'user',
-  //   path: '/dashboard/user',
+  //   title: 'users',
+  //   path: '/users',
   //   icon: icon('ic_user'),
   // },
+  {
+    title: 'plan orders',
+    path: '/plan_orders',
+    icon: icon('ic_user'),
+  },
   // {
   //   title: 'product',
   //   path: '/dashboard/products',

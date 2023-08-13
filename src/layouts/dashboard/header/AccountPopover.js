@@ -100,7 +100,13 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={() => setAuth()} sx={{ m: 1 }}>
+        <MenuItem
+          onClick={() => {
+            setAuth();
+            localStorage.removeItem('auth');
+          }}
+          sx={{ m: 1 }}
+        >
           Logout
         </MenuItem>
       </Popover>

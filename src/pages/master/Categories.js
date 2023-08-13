@@ -27,7 +27,7 @@ import {
 
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import { axiosPrivate } from '../../utils/axios';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 import Iconify from '../../components/iconify';
 import { URI } from '../../utils/API';
@@ -63,6 +63,7 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
 );
 
 export default function Categories() {
+  const axiosPrivate = useAxiosPrivate();
   const Folder = '/ads_category_icon';
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);

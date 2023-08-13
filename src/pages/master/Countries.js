@@ -26,7 +26,7 @@ import {
 
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import { axiosPrivate } from '../../utils/axios';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 import Iconify from '../../components/iconify';
 
@@ -60,6 +60,7 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
 );
 
 export default function Countries() {
+  const axiosPrivate = useAxiosPrivate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
@@ -78,9 +79,8 @@ export default function Countries() {
   } = useQuery({
     queryKey: ['country'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/country');
+      const { data } = await axiosPrivate.get('/ads/country', { params: { page: 1, page_size: 10000 } });
       setFetchedQueries(true);
-      console.log(data);
       return data?.results || [];
     },
     enabled: !fetchedQueries,

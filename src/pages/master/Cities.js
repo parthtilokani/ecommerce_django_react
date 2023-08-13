@@ -26,7 +26,7 @@ import {
 
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import { axiosPrivate } from '../../utils/axios';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 import CustomSelect from '../../components/form/CustomSelect';
 import Iconify from '../../components/iconify';
@@ -63,6 +63,7 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
 );
 
 export default function Cities() {
+  const axiosPrivate = useAxiosPrivate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
@@ -79,7 +80,7 @@ export default function Cities() {
   const { data: countries } = useQuery({
     queryKey: ['country'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/country');
+      const { data } = await axiosPrivate.get('/ads/country', { params: { page: 1, page_size: 10000 } });
       setFetchedQueries((prev) => [true, prev[1], prev[2]]);
       return data?.results || [];
     },
@@ -88,7 +89,7 @@ export default function Cities() {
   const { data: states } = useQuery({
     queryKey: ['state'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/state');
+      const { data } = await axiosPrivate.get('/ads/state', { params: { page: 1, page_size: 10000 } });
       setFetchedQueries((prev) => [prev[0], true, prev[2]]);
       return data?.results || [];
     },
@@ -101,7 +102,7 @@ export default function Cities() {
   } = useQuery({
     queryKey: ['city'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/city');
+      const { data } = await axiosPrivate.get('/ads/city', { params: { page: 1, page_size: 10000 } });
       setFetchedQueries((prev) => [prev[0], prev[1], true]);
       return data?.results || [];
     },
@@ -214,7 +215,7 @@ export default function Cities() {
                     </TableRow>
                   ) : (
                     cities?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((row) => {
-                      const { id, name, state, country } = row;
+                      const { id, name, state_name: stateName, country_name: countryName } = row;
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
                           <TableCell align="center">
@@ -224,12 +225,12 @@ export default function Cities() {
                           </TableCell>
                           <TableCell align="center">
                             <Typography variant="subtitle2" noWrap>
-                              {state}
+                              {stateName}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
                             <Typography variant="subtitle2" noWrap>
-                              {country}
+                              {countryName}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">

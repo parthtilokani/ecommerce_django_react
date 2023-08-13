@@ -26,14 +26,14 @@ import {
 
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import Scrollbar from '../../components/scrollbar/Scrollbar';
-import Iconify from '../../components/iconify';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import Scrollbar from '../components/scrollbar/Scrollbar';
+import CustomSelect from '../components/form/CustomSelect';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'ads', label: 'Number od Ads' },
-  { id: 'price', label: 'Price' },
+  { id: 'country', label: 'Email' },
+  { id: 'username', label: 'Username' },
   { id: 'action', label: 'Actions' },
 ];
 
@@ -49,10 +49,10 @@ const style = {
   p: 4,
 };
 
-const DeleteAdPostToast = ({ closeToast, deleteAdPlan }) => (
+const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   <div>
-    <p>Delete Ads Plan?</p>
-    <button className="btn btn-danger btn-sm mx-1" onClick={deleteAdPlan}>
+    <p>Delete User?</p>
+    <button className="btn btn-danger btn-sm mx-1" onClick={deleteCategory}>
       Sure
     </button>
     <button onClick={closeToast} className="btn btn-info btn-sm">
@@ -61,57 +61,67 @@ const DeleteAdPostToast = ({ closeToast, deleteAdPlan }) => (
   </div>
 );
 
-export default function Categories() {
+export default function Users() {
   const axiosPrivate = useAxiosPrivate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
-  const [fetchedQueries, setFetchedQueries] = useState(false);
+  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
 
-  const initialAdPlan = {
+  const initialUser = {
     id: '',
     name: '',
-    description: '',
-    ads_number_restriction: '',
-    price: '',
+    username: '',
+    email: '',
+    phone_no: '',
+    plan_id: '',
   };
-  const [adPlan, setAdPlan] = useState(initialAdPlan);
+  const [user, setUser] = useState(initialUser);
 
+  const { data: adsPlans } = useQuery({
+    queryKey: ['ads_plan'],
+    queryFn: async () => {
+      const { data } = await axiosPrivate.get('/ads_plan/ads_plan/');
+      setFetchedQueries((prev) => [true, prev[1]]);
+      return data || [];
+    },
+    enabled: !fetchedQueries[0],
+  });
   const {
-    data: adPlans,
+    data: users,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['ad_plans'],
+    queryKey: ['users'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads_plan/ads_plan/');
-      setFetchedQueries(true);
+      const { data } = await axiosPrivate.get('/user/user');
+      setFetchedQueries((prev) => [prev[0], true]);
       return data || [];
     },
-    enabled: !fetchedQueries,
+    enabled: !fetchedQueries[1],
   });
-  const { mutate: postAdPlan, isLoading: isSaving } = useMutation({
-    mutationFn: (body) => axiosPrivate.post('/ads_plan/ads_plan/', body),
+  const { mutate: postUser, isLoading: isSaving } = useMutation({
+    mutationFn: (formData) => axiosPrivate.post('/user/user', formData),
     onSuccess: () => {
-      toast.success('Ads Plan saved!');
+      toast.success('User saved!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: patchAdPlan, isLoading: isUpdating } = useMutation({
-    mutationFn: ({ body, id }) => {
-      axiosPrivate.patch(`/ads_plan/ads_plan/${id}/`, body);
+  const { mutate: patchUser, isLoading: isUpdating } = useMutation({
+    mutationFn: ({ formData, id }) => {
+      axiosPrivate.patch(`/user/user/${id}`, formData);
     },
     onSuccess: () => {
-      toast.success('Ads Plan updated!');
+      toast.success('User updated!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
   });
-  const { mutate: deleteAdPlan, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => axiosPrivate.delete(`/ads_plan/ads_plan/${id}/`),
+  const { mutate: deleteUser, isLoading: isDeleting } = useMutation({
+    mutationFn: (id) => axiosPrivate.delete(`/user/user/${id}`),
     onSuccess: () => {
-      toast.success('Ads Plan deleted!');
+      toast.success('User deleted!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
@@ -127,24 +137,32 @@ export default function Categories() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setAdPlan(initialAdPlan);
+    setUser(initialUser);
   };
 
-  const handleChangeForm = (e) => setAdPlan((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  const handleChangeForm = (e) => setUser((prev) => ({ ...prev, [e.target.id]: e.target.value }));
 
   const handleDelete = (idx) => {
-    toast(<DeleteAdPostToast deleteAdPlan={() => deleteAdPlan(idx)} />);
+    toast(<DeleteCategoryToast deleteCategory={() => deleteUser(idx)} />);
   };
 
   const handleSubmit = () => {
-    const { id, name, description, ads_number_restriction: adsRestriction, price } = adPlan;
-    if (!name?.trim()) return toast.error('Name is required!');
-    // update ads plan
-    if (id) {
-      patchAdPlan({ body: { name, description, ads_number_restriction: adsRestriction, price }, id });
+    if (!user.name.trim()) return toast.error('Name is required!');
+    if (!user.email.trim()) return toast.error('Email is required!');
+    if (!user.username.trim()) return toast.error('Username is required!');
+    if (!user.phone_no.trim()) return toast.error('Phone no is required!');
+    if (!user.plan_id) return toast.error('Ad Plan is required!');
+    const formData = {
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      phone_no: user.phone_no,
+      plan_id: user.plan_id,
+    };
+    if (user?.id) {
+      patchUser({ formData, id: user.id });
     } else {
-      // add ads plan
-      postAdPlan({ name, description, ads_number_restriction: adsRestriction, price });
+      postUser(formData);
     }
     handleClose();
   };
@@ -152,17 +170,17 @@ export default function Categories() {
   return (
     <>
       <Helmet>
-        <title>Ads Plans | Classified Ads</title>
+        <title>Users | Classified Ads</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Ads Plans
+            Users
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
-            New Ads Plan
-          </Button>
+          {/* <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
+            New User
+          </Button> */}
         </Stack>
 
         <Card>
@@ -187,7 +205,7 @@ export default function Categories() {
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  ) : !adPlans || adPlans?.length <= 0 ? (
+                  ) : !users || users?.length <= 0 ? (
                     <TableRow>
                       <TableCell align="center" colSpan={3}>
                         <Typography variant="subtitle2" noWrap>
@@ -196,8 +214,8 @@ export default function Categories() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    adPlans?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { id, name, ads_number_restriction: adRestriction, price } = row;
+                    users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((row) => {
+                      const { id, name, email, username } = row;
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
                           <TableCell align="center">
@@ -207,12 +225,12 @@ export default function Categories() {
                           </TableCell>
                           <TableCell align="center">
                             <Typography variant="subtitle2" noWrap>
-                              {adRestriction}
+                              {email}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
                             <Typography variant="subtitle2" noWrap>
-                              {price}
+                              {username}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
@@ -221,7 +239,7 @@ export default function Categories() {
                               className="me-2"
                               onClick={() => {
                                 handleOpen();
-                                setAdPlan(row);
+                                setUser({ ...row, plan_id: row.plan_id.id });
                               }}
                             >
                               Edit
@@ -242,7 +260,7 @@ export default function Categories() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={adPlans?.length || 0}
+            count={users?.length || 0}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -258,58 +276,64 @@ export default function Categories() {
         >
           <Box sx={style}>
             <div>
-              <h5>{adPlan.id ? 'Edit' : 'Add'} Ads Plan</h5>
+              <h5>{user.id ? 'Edit' : 'Add'} User</h5>
               <hr />
             </div>
             <div className="w-100">
               <TextField
                 id="name"
-                label="Plan Name*"
+                label="Name*"
                 variant="outlined"
                 className="w-100"
-                value={adPlan.name}
+                value={user.name}
                 onChange={handleChangeForm}
                 autoComplete="off"
               />
             </div>
             <div className="w-100 mt-3">
               <TextField
-                id="description"
-                label="Description*"
+                id="email"
+                label="Email*"
                 variant="outlined"
                 className="w-100"
-                value={adPlan.description}
-                onChange={handleChangeForm}
-                autoComplete="off"
-                multiline
-              />
-            </div>
-            <div className="w-100 mt-3">
-              <TextField
-                type="number"
-                id="ads_number_restriction"
-                label="Ads Number Restriction*"
-                variant="outlined"
-                className="w-100"
-                value={adPlan.ads_number_restriction}
+                value={user.email}
                 onChange={handleChangeForm}
                 autoComplete="off"
               />
             </div>
             <div className="w-100 mt-3">
               <TextField
-                type="number"
-                id="price"
-                label="Price*"
+                id="username"
+                label="Username*"
                 variant="outlined"
                 className="w-100"
-                value={adPlan.price}
+                value={user.username}
                 onChange={handleChangeForm}
                 autoComplete="off"
+              />
+            </div>
+            <div className="w-100 mt-3">
+              <TextField
+                id="phone_no"
+                label="Phone Number*"
+                variant="outlined"
+                className="w-100"
+                value={user.phone_no}
+                onChange={handleChangeForm}
+                autoComplete="off"
+              />
+            </div>
+            <div className="w-100 mt-3">
+              <CustomSelect
+                id="plan_id"
+                label="Ad Plan*"
+                data={adsPlans?.map((e) => ({ value: e.id, label: e.name })) || []}
+                value={user.plan_id}
+                handleChange={handleChangeForm}
               />
             </div>
             <hr />
-            <div className="mt-2 text-end">
+            <div className="mt-3 text-end">
               <Button variant="contained" className="me-2" onClick={handleSubmit} disabled={isSaving || isUpdating}>
                 Save
               </Button>

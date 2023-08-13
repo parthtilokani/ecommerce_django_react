@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import { axiosPrivate } from '../../utils/axios';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 import Iconify from '../../components/iconify';
 import CustomSelect from '../../components/form/CustomSelect';
@@ -62,6 +62,7 @@ const DeleteSubCategoryToast = ({ closeToast, deleteSubCategory }) => (
 );
 
 export default function SubCategories() {
+  const axiosPrivate = useAxiosPrivate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);

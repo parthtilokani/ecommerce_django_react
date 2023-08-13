@@ -26,7 +26,7 @@ import {
 
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import { axiosPrivate } from '../../utils/axios';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 import CustomSelect from '../../components/form/CustomSelect';
 import Iconify from '../../components/iconify';
@@ -62,6 +62,7 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
 );
 
 export default function States() {
+  const axiosPrivate = useAxiosPrivate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
@@ -77,7 +78,7 @@ export default function States() {
   const { data: countries } = useQuery({
     queryKey: ['country'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/country');
+      const { data } = await axiosPrivate.get('/ads/country', { params: { page: 1, page_size: 10000 } });
       setFetchedQueries((prev) => [true, prev[1]]);
       return data?.results || [];
     },
@@ -90,7 +91,7 @@ export default function States() {
   } = useQuery({
     queryKey: ['state'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/state');
+      const { data } = await axiosPrivate.get('/ads/state', { params: { page: 1, page_size: 10000 } });
       setFetchedQueries((prev) => [prev[0], true]);
       return data?.results || [];
     },
@@ -202,7 +203,7 @@ export default function States() {
                     </TableRow>
                   ) : (
                     states?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((row) => {
-                      const { id, name, country } = row;
+                      const { id, name, country_name: countryName } = row;
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
                           <TableCell align="center">
@@ -212,7 +213,7 @@ export default function States() {
                           </TableCell>
                           <TableCell align="center">
                             <Typography variant="subtitle2" noWrap>
-                              {country}
+                              {countryName}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">

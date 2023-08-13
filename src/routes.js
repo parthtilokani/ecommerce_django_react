@@ -23,6 +23,9 @@ const Cities = lazy(() => import('./pages/master/Cities'));
 
 const AdsPlans = lazy(() => import('./pages/master/AdPlans'));
 
+const Users = lazy(() => import('./pages/Users'));
+const PlanOrders = lazy(() => import('./pages/PlanOrders'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -35,7 +38,7 @@ export default function Router() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to="/master" />} />
       <Route path="/login" element={<LoginPage />} />
       <Route element={<PrivateRoute />}>
         <Route element={<DashboardLayout />}>
@@ -49,6 +52,9 @@ export default function Router() {
           <Route path="/master/cities" element={<Cities />} />
 
           <Route path="/master/ads-plans" element={<AdsPlans />} />
+
+          <Route path="/users" element={<Users />} />
+          <Route path="/plan_orders" element={<PlanOrders />} />
         </Route>
       </Route>
       <Route element={<SimpleLayout />}>
