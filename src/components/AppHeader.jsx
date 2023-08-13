@@ -17,7 +17,14 @@ const AppHeader = ({title, leftIcon, logo}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.innerView}>
         <Pressable
-          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          style={{
+            left: 10,
+            top: 10,
+            padding: 10,
+            position: 'absolute',
+            alignSelf: 'flex-start',
+          }}>
           <Image source={icons.menu} style={styles.icon} />
         </Pressable>
         {/* <Image source={logo} style={styles.logoImage} /> */}
@@ -43,14 +50,12 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   icon: {
-    left: 10,
-    top: -7,
     width: width * 0.05,
     height: height * 0.03,
     tintColor: COLORS.white,
     resizeMode: 'contain',
-    position: 'absolute',
-    alignSelf: 'flex-start',
+
+    // backgroundColor: 'red',
   },
   logoImage: {
     width: width * 0.45,
@@ -61,8 +66,8 @@ const styles = StyleSheet.create({
 
   // this style for Text Title
   title: {
-    marginLeft: width * 0.2,
-    fontSize: normalize(FONTSIZE.xxLarge),
+    marginLeft: width * 0.27,
+    fontSize: normalize(FONTSIZE.xLarge),
     color: COLORS.white,
     fontWeight: '700',
     textAlign: 'center',

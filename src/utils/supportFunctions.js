@@ -40,13 +40,42 @@ export const isValid = (label, value, type) => {
 };
 
 import NetInfo from '@react-native-community/netinfo';
-import {Alert} from 'react-native';
+import ToastManager, {Toast} from 'toastify-react-native';
+import {width} from '../constant/index.js';
+
 export const isConnectedToInternet = async () => {
   return NetInfo.fetch().then(state => {
     if (!state.isConnected) {
-      Alert.alert('ALERT!', 'Please check your internet connection!');
+      Toast.info('No internet connection!');
     }
+    <ToastManager style={{width: width * 0.9}} />;
 
     return state.isConnected;
   });
 };
+
+export function getPostAge(postDate) {
+  const postTime = new Date(postDate).getTime();
+  const currentTime = Date.now();
+  const ageInSeconds = Math.floor((currentTime - postTime) / 1000);
+
+  const timeUnits = [
+    {unit: 'year', seconds: 31536000},
+    {unit: 'month', seconds: 2592000},
+    {unit: 'day', seconds: 86400},
+    {unit: 'hour', seconds: 3600},
+    {unit: 'minute', seconds: 60},
+    {unit: 'second', seconds: 1},
+  ];
+
+  for (const {unit, seconds} of timeUnits) {
+    if (ageInSeconds >= seconds) {
+      const age = Math.floor(ageInSeconds / seconds);
+      return `${age} ${unit}${age !== 1 ? 's' : ''} ago`;
+    }
+  }
+}
+
+// const postDate = '2023-07-24T12:35:25.029684Z';
+// const postAge = getPostAge(postDate);
+// console.log(postAge);

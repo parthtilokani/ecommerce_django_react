@@ -9,31 +9,113 @@ import {
   normalize,
   width,
 } from '../../constant/index.js';
+import Icons from 'react-native-vector-icons/dist/MaterialIcons.js';
+import {useNavigation} from '@react-navigation/native';
+import {baseURL} from '../../utils/Api.js';
 
-const ListFlatAds = () => {
+const ListFlatAds = ({data, editDelete, deleteAds}) => {
+  const navigation = useNavigation();
+  const imageUri = `${baseURL.replace('/api', data?.images[0]?.image)}`;
   return (
-    <TouchableOpacity style={[styles.container, SHADOWS.medium]}>
+    <TouchableOpacity
+      style={[styles.container, SHADOWS.medium]}
+      onPress={() => navigation.navigate('ShowAdsDetails')}>
       <View style={styles.image_soldOutView}>
-        <View style={[styles.sold_outView, SHADOWS.medium]}>
-          <Text style={styles.sold_outText}>SOLD OUT</Text>
-        </View>
+        {data?.is_sold && (
+          <View style={[styles.sold_outView, SHADOWS.medium]}>
+            <Text style={styles.sold_outText}>SOLD OUT</Text>
+          </View>
+        )}
 
-        <Image source={icons.account} style={styles.image} />
+        <Image
+          source={imageUri ? {uri: imageUri} : icons.account}
+          style={styles.image}
+        />
       </View>
       <View style={styles.rightSideView}>
-        <Text style={styles.titleText}>Properties for Rent</Text>
+        <Text style={styles.titleText}>{data?.ad_title}</Text>
         <View style={styles.category_locationContainer}>
           {/* icon */}
           <Image source={icons.tag} style={styles.miniIcon} />
-          <Text style={styles.text}>Category</Text>
+          <Text style={styles.text}>Sub-Category</Text>
         </View>
         <View style={styles.category_locationContainer}>
           {/* icon */}
           <Image source={icons.location} style={styles.miniIcon} />
           <Text style={styles.text}>Location</Text>
         </View>
-        <Text style={styles.priceText}>$1,240</Text>
+        <View style={styles.category_locationContainer}>
+          <Image source={icons.time} style={styles.miniIcon} />
+          <Text style={styles.text}>
+            {data?.posted_on &&
+              new Date(data?.posted_on).toLocaleString('en-IN', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                // hour: '2-digit',
+                // minute: 'numeric',
+                // hour12: true,
+              })}
+          </Text>
+        </View>
+        <View style={styles.category_locationContainer}>
+          <Image source={icons.rupee} style={styles.miniIcon} />
+          <Text style={styles.priceText} numberOfLines={1}>
+            ₹ {data?.price}
+          </Text>
+        </View>
       </View>
+      {/* {editDelete && (
+        <View
+          style={{
+            justifyContent: 'space-between',
+            marginVertical: 20,
+            marginHorizontal: 10,
+          }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('EditAdDetails', {data: data})}>
+            <Icons name="edit" size={width * 0.07} color={COLORS.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => deleteAds(data?.id)}>
+            <Icons name="delete" size={width * 0.07} color={COLORS.primary} />
+          </TouchableOpacity>
+        </View>
+      )} */}
+      {editDelete && (
+        <View
+          style={[
+            {
+              justifyContent: 'center',
+            },
+            SHADOWS.medium,
+          ]}>
+          <TouchableOpacity
+            style={{
+              // backgroundColor: '#0870E8',
+              backgroundColor: COLORS.secondary,
+              borderRadius: 30,
+              padding: 8,
+              marginVertical: 20,
+            }}
+            onPress={() => navigation.navigate('EditAdDetails', {data: data})}>
+            <Icons name="edit" size={width * 0.07} color={COLORS.black} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: COLORS.secondary,
+              borderRadius: 30,
+              padding: 8,
+              marginVertical: 20,
+            }}
+            onPress={() => deleteAds(data?.id)}>
+            <Icons
+              name="delete-forever"
+              size={width * 0.07}
+              color={COLORS.black}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -45,7 +127,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightWhite,
     borderRadius: 5,
     width: width * 0.95,
-    height: height * 0.17,
+    height: height * 0.2,
     alignSelf: 'center',
     flexDirection: 'row',
     marginVertical: 7,
@@ -58,9 +140,11 @@ const styles = StyleSheet.create({
   },
   image: {
     // overflow: 'hidden',
-    resizeMode: 'contain',
-    width: width * 0.35,
-    height: height * 0.15,
+    // resizeMode: 'cover',
+    backgroundColor: COLORS.gray2,
+    borderRadius: 10,
+    width: width * 0.45,
+    height: height * 0.2,
     // width: 100,
     // height: 100,
   },
@@ -110,7 +194,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: 'bold',
     fontSize: normalize(FONTSIZE.xxSmall),
-    position: 'absolute',
-    bottom: 10,
+    // position: 'absolute',
+    // bottom: 10,
   },
 });

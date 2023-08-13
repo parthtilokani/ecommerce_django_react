@@ -6,9 +6,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Modal,
-  Alert,
-  TouchableOpacity,
 } from 'react-native';
 import {RadioButton} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -34,6 +31,7 @@ import {
 } from '../../utils/customHook/backEndCalls.js';
 import Loader from '../../components/Loader/Loader.jsx';
 import PhoneOtpModal from '../../components/PhoneOtpModal/PhoneOtpModal.jsx';
+import ToastManager, {Toast} from 'toastify-react-native';
 
 const SignUp = ({navigation}) => {
   const [formDetails, setFormDetails] = useState({
@@ -103,9 +101,12 @@ const SignUp = ({navigation}) => {
       };
       if (await isConnectedToInternet()) {
         setLoading(true);
-        const res = await signUP(data);
-        if (res) {
+        const response = await signUP(data);
+        if (response?.success) {
           otpRequest();
+        } else {
+          if (!response?.res) return Toast.info('No internet connection!');
+          return Toast.error(response?.res || 'Something went wrong');
         }
         setLoading(false);
       }
@@ -113,45 +114,36 @@ const SignUp = ({navigation}) => {
       console.log('error in SignUp.JSX', err);
     }
   };
+  useEffect(() => {}, []);
 
   // OTP Request
   const otpRequest = async () => {
     const data = {phone: formDetails.phoneNumber};
-    const res = await requestOtp(data);
-    if (res) {
-      Alert.alert(
-        'ALERT!',
-        'Sign Up sucessful! \nOPT has been sent to your phone number.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setOtpModalVisible(true);
-            },
-          },
-        ],
-      );
+    const response = await requestOtp(data);
+    if (response?.success) {
+      Toast.success('Sign Up sucessful!\nYou will receive OTP on phone call');
+      setTimeout(() => {
+        setOtpModalVisible(true);
+      }, 3000);
+    } else {
+      Toast.error(response?.res);
     }
   };
 
   const verifyOTP = async () => {
     if (optValue.length < 6) {
-      return Alert.alert('ALERT!', 'Please enter OPT');
+      return Toast.error('Please enter OPT');
     }
     const data = {phone: formDetails.phoneNumber, otp: optValue};
     setLoading(true);
-    const res = await verifyOtp(data, 'otp');
+    const response = await verifyOtp(data, 'otp');
     setLoading(false);
-    if (res) {
-      Alert.alert('ALERT!', 'OTP verify sucessful! \nSignIn to continue.', [
-        {
-          text: 'OK',
-          onPress: () => {
-            setOtpModalVisible(false);
-            navigation.navigate('SignIn');
-          },
-        },
-      ]);
+    if (response?.success) {
+      Toast.success('OTP verify sucessful! \nSignIn to continue.');
+      setTimeout(() => {
+        setOtpModalVisible(false);
+        navigation.navigate('SignIn');
+      }, 3000);
     }
   };
 
@@ -174,6 +166,7 @@ const SignUp = ({navigation}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ToastManager style={{width: width * 0.92, height: height * 0.1}} />
       <Loader visible={loading} />
       <GobackHeader navigation={navigation} />
       <ScrollView

@@ -8,40 +8,56 @@ import Chats from './BottomTabScreens/Chats.jsx';
 import Account from './BottomTabScreens/Account.jsx';
 import {appName} from '../../constant/index.js';
 import {useIsFocused} from '@react-navigation/native';
+import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
 
-const Main = ({navigation}) => {
+const Main = () => {
   const [tab, setTab] = useState(0);
   const isFocused = useIsFocused();
+  const [customAlert, setCustomAert] = useState(false);
 
   useEffect(() => {
     const backAction = () => {
-      Alert.alert('ALERT!', 'Are you sure you want to exit app?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {text: 'YES', onPress: () => BackHandler.exitApp()},
-      ]);
-      return true;
+      if (isFocused) {
+        setCustomAert(true);
+        // Alert.alert('ALERT!', 'Are you sure you want to exit app?', [
+        //   {
+        //     text: 'Cancel',
+        //     onPress: () => null,
+        //     style: 'cancel',
+        //   },
+        //   {text: 'YES', onPress: () => BackHandler.exitApp()},
+        // ]);
+        return true;
+      } else {
+        backHandler.remove();
+      }
     };
-
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       backAction,
     );
 
     return () => {
-      console.log('sdasdad');
       backHandler.remove();
     };
-  }, []);
+  }, [isFocused]);
+
   const getSelectedTab = tabNumber => {
     setTab(tabNumber);
   };
 
   return (
     <View style={{flex: 1}}>
+      <CustomAlert
+        visible={customAlert}
+        title={'Alert!'}
+        message={'Are you sure you want to exit app?'}
+        onOkPress={() => {
+          setCustomAert(false);
+          BackHandler.exitApp();
+        }}
+        onCancel={() => setCustomAert(false)}
+      />
       <AppHeader
         title={appName}
         logo={require('../../assets/logo-ecommerce.png')}

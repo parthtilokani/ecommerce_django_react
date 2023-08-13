@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Keyboard,
   Platform,
@@ -7,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {PERMISSIONS} from 'react-native-permissions';
 import {launchImageLibrary} from 'react-native-image-picker';
 import GobackHeader from '../../../../components/GobackHeader.jsx';
@@ -17,6 +18,7 @@ import {
   COLORS,
   FONTSIZE,
   height,
+  icons,
   normalize,
   width,
 } from '../../../../constant/index.js';
@@ -27,41 +29,43 @@ import {CheckPermission} from '../../../../utils/Permission.js';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {PostAdDynamicFields} from './PostAdDynamicFields.js';
 import {isValid} from '../../../../utils/supportFunctions.js';
-import Loader from '../../../../components/Loader/Loader.jsx';
-import {useMutation} from '@tanstack/react-query';
-import {HelperText} from 'react-native-paper';
-import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
 import ToastManager, {Toast} from 'toastify-react-native';
 
-const PostAdDetails = () => {
+import Loader from '../../../../components/Loader/Loader.jsx';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {HelperText} from 'react-native-paper';
+import {baseURL} from '../../../../utils/Api.js';
+import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
+
+const EditAdDetails = () => {
+  const axiosPrivate = useAxiosPrivate();
   const {
-    params: {dynamic_field, category_id, subcategory_id},
+    params: {data},
   } = useRoute();
   const navigation = useNavigation();
-  const axiosPrivate = useAxiosPrivate();
 
   const [imageUri, setImageUri] = useState(new Array(12).fill(null));
+  const [imagesToDelete, setImagesToDelete] = useState([]);
   const [viewHeight, setViewHeight] = useState();
-  const [loading, setLoading] = useState(false);
   const [showDateTimeModal, setShowDateTimeModal] = useState({
     date: false,
     time: false,
   });
   const [selectedItems, setSelectedItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formDetails, setFormDetails] = useState({
-    ad_title: '',
-    price: '',
-    description: '',
+    ad_title: data?.ad_title || '',
+    price: data?.price || '',
+    description: data?.ad_description || '',
   });
   const [errors, setErrors] = useState({});
   const [dynamicFields, setDynamicFields] = useState([
-    ...(dynamic_field || []),
+    ...(data?.dynamic_field || []),
   ]);
 
   const handleInputChange = (field, value) => {
     setFormDetails(prevState => ({...prevState, [field]: value}));
   };
-
   const handlePostDFChange = (e, idx) => {
     let dynamicFieldsClone = dynamicFields;
     dynamicFieldsClone[idx] = {
@@ -70,6 +74,18 @@ const PostAdDetails = () => {
     };
     setDynamicFields([...dynamicFieldsClone]);
   };
+
+  useEffect(() => {
+    const image = data?.images;
+    const newImages = [
+      ...image.map(e => {
+        e['uri'] = baseURL.replace('/api', e?.image);
+        return e;
+      }),
+    ];
+    console.log(newImages);
+    setImageUri([...newImages, ...new Array(12 - newImages.length).fill(null)]);
+  }, []);
 
   const onChangeCountry = country => {
     setFormDetails(prevState => ({
@@ -148,7 +164,20 @@ const PostAdDetails = () => {
       .catch(err => console.log('adsdasd', err));
   };
 
+  // const handleDelete = idx => {
+  //   const imageToDelete = imageUri.find((e, i) => i === idx);
+  //   if (imageToDelete?.id) {
+  //     deleteImage(imageToDelete.id).then(_ => {
+  //       setImageUri(prev => [...prev.filter((_, i) => i !== idx), null]);
+  //     });
+  //   } else setImageUri(prev => [...prev.filter((_, i) => i !== idx), null]);
+  // };
+
   const handleDelete = idx => {
+    const imageToDelete = imageUri.find((e, i) => i === idx);
+    if (imageToDelete?.id) {
+      setImagesToDelete(prev => [...prev, imageToDelete]);
+    }
     setImageUri(prev => [...prev.filter((_, i) => i !== idx), null]);
   };
 
@@ -158,7 +187,7 @@ const PostAdDetails = () => {
         handleDelete={() => handleDelete(index)}
         key={index}
         imageURL={item?.uri}
-        handleImage={() => checkLibraryPermission()}
+        handleImage={checkLibraryPermission}
       />
     );
   };
@@ -173,36 +202,33 @@ const PostAdDetails = () => {
     setDynamicFields([...dynamicFieldsClone]);
   };
 
-  const {mutate: uploadAd, error} = useMutation({
+  const {mutate: uploadAd} = useMutation({
     mutationFn: async formData => {
       console.log('function call postAd');
       setLoading(true);
-      return await axiosPrivate.post(`/ads/ads`, formData);
+      return await axiosPrivate.patch(`/ads/ads/${data?.id}`, formData);
     },
     onSuccess: res => {
+      console.log('sada');
       if (res?.data?.id) handleSubmitImages(res?.data?.id);
     },
     onError: err => {
       console.log('PostAds error', err);
       setLoading(false);
-      Toast.error('Token expired! Login Again');
-      setTimeout(() => {
-        navigation.replace('SignIn');
-      }, 2000);
+      Toast.error('Error while uploading Ad');
     },
   });
 
   const {mutate: uploadImage} = useMutation({
     mutationFn: async formData => {
-      return await axiosPrivate.post('/ads/ads_image', formData, {
+      return await axiosPrivate.post(`/ads/ads_image`, formData, {
         headers: {'Content-Type': 'multipart/form-data'},
       });
     },
-
     onSuccess: res => {
       console.log('PostAds Images Response', res);
       setLoading(false);
-      Toast.success('Ad Posted Successfully!');
+      Toast.success('Ad updated Successfully!');
       setTimeout(() => {
         navigation.replace('MyListing');
       }, 2000);
@@ -214,43 +240,66 @@ const PostAdDetails = () => {
     },
   });
 
+  const {mutateAsync: deleteImage} = useMutation({
+    mutationFn: async imgId => {
+      return await axiosPrivate.delete(`/ads/ads_image/${imgId}`);
+    },
+  });
+
   const handleSubmitImages = ads_id => {
-    imageUri
-      .filter(e => e)
-      .forEach(img => {
-        const formData = new FormData();
-        formData.append('image', {
-          name: img?.fileName,
-          type: img?.type,
-          uri:
-            Platform.OS === 'ios' ? img?.uri?.replace('file://', '') : img.uri,
-        });
-        formData.append('ads', ads_id);
-        uploadImage(formData);
-      });
+    if (imageUri.filter(e => e).filter(e => !e?.id).length === 0) {
+      Toast.success('Ad Post updated!');
+      setTimeout(() => {
+        navigation.replace('MyListing');
+      }, 2000);
+    }
+    Promise.all([
+      imageUri
+        .filter(e => e)
+        .filter(e => !e?.id)
+        .forEach(img => {
+          const formData = new FormData();
+          formData.append('image', {
+            name: img?.fileName || '',
+            type: img?.type || 'image/jpg',
+            uri:
+              Platform.OS === 'ios'
+                ? img?.uri?.replace('file://', '')
+                : img.uri,
+          });
+          formData.append('ads', ads_id);
+          return uploadImage(formData);
+        }),
+      ...imagesToDelete.map(img => deleteImage(img?.id)),
+    ]);
   };
 
-  const handlePostAd = async () => {
+  const handleUpdateAd = async () => {
     try {
       let obj = {
         ad_title: isValid('Ad title', formDetails?.ad_title),
         ad_description: isValid('Description', formDetails?.description),
         price: isValid('Price', formDetails?.price),
       };
-      dynamicFields.forEach(
-        e => (obj[e.field_name] = isValid(e.field_name, e.value)),
+      console.log('post', dynamicFields);
+
+      dynamicFields?.forEach(
+        e => (obj[e?.field_name] = isValid(e?.field_name, e?.value)),
       );
+
       const len = imageUri.filter(e => e);
       if (len == 0) {
         obj.image = 'Please select atleast one image';
       }
-      if (Object.values(obj).filter(e => e !== '').length > 0)
+      if (Object.values(obj).filter(e => e !== '').length > 0) {
+        console.log(obj);
         return setErrors(obj);
+      }
 
       setErrors({});
       const data = {
-        category: category_id,
-        sub_category: subcategory_id,
+        category: data?.category_id,
+        sub_category: data?.subcategory_id,
         ad_title: formDetails?.ad_title,
         ad_description: formDetails?.description,
         price: formDetails?.price,
@@ -265,7 +314,7 @@ const PostAdDetails = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ToastManager duration={2000} style={{width: width * 0.8}} />
+      <ToastManager duration={2000} style={{width: width * 0.9}} />
       <GobackHeader bg title={'Post Your Ads'} />
       <Loader visible={loading} />
       <KeyboardAvoidingWrapper>
@@ -286,7 +335,7 @@ const PostAdDetails = () => {
             errors={errors}
             value={formDetails?.price}
             onChangeText={text =>
-              handleInputChange('price', text?.replace(/[^0-9]/, ''))
+              handleInputChange('price', text.replace(/[^0-9]/, ''))
             }
             style={styles.input}
           />
@@ -337,8 +386,8 @@ const PostAdDetails = () => {
             scrollEnabled={false}
           />
           <Button
-            text={'Post Ad'}
-            onPress={handlePostAd}
+            text={'Update Ad'}
+            onPress={handleUpdateAd}
             style={{width: width * 0.9, marginVertical: 15}}
           />
         </View>
@@ -347,7 +396,7 @@ const PostAdDetails = () => {
   );
 };
 
-export default PostAdDetails;
+export default EditAdDetails;
 
 const styles = StyleSheet.create({
   inputFieldView: {flex: 1, alignItems: 'center'},

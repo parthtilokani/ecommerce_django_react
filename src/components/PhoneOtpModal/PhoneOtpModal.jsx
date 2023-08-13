@@ -3,7 +3,6 @@ import {
   Text,
   View,
   Modal,
-  Alert,
   TouchableOpacity,
   Image,
 } from 'react-native';
@@ -16,7 +15,7 @@ import Input from '../Inputs/Input.jsx';
 import {isConnectedToInternet, isValid} from '../../utils/supportFunctions.js';
 import {requestOtp, verifyOtp} from '../../utils/customHook/backEndCalls.js';
 import Loader from '../Loader/Loader.jsx';
-import {useNavigation} from '@react-navigation/native';
+import ToastManager, {Toast} from 'toastify-react-native';
 
 const PhoneOtpModal = ({
   visible,
@@ -26,7 +25,7 @@ const PhoneOtpModal = ({
   handleOTPvalueChange,
 }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [optView, setOtpView] = useState(isVisibleOTPView);
+  const [optView, setOtpView] = useState(isVisibleOTPView || false);
   const [loading, setLoading] = useState(false);
   const [optValue, setOtpValue] = useState('');
   const [errors, setErrors] = useState({});
@@ -63,43 +62,49 @@ const PhoneOtpModal = ({
 
       if (await isConnectedToInternet()) {
         setLoading(true);
-        const res = await requestOtp({phone_no: phoneNumber});
-        if (res) {
+        const response = await requestOtp({phone: phoneNumber});
+        if (response) {
+          Toast.success('You will receive OTP on phone call');
           setOtpView(true);
           startTimer();
+        } else {
+          Toast.error(response?.res);
         }
         setLoading(false);
       }
     } catch (err) {
-      Alert.alert('ALERT!', 'Failed to send OTP!');
+      Toast.error('Failed to send OTP!');
     }
   };
 
   return (
     <Modal visible={visible} transparent>
+      <ToastManager />
       <Loader visible={loading} />
       <View style={styles.container}>
         <View style={styles.alert}>
-          <TouchableOpacity
-            style={{
-              marginBottom: 15,
-              alignSelf: 'flex-end',
-              padding: 5,
-            }}
-            onPress={() => {
-              setOtpView(false);
-              onModalClose();
-            }}>
-            <Image
-              source={icons.close}
+          {!optView && (
+            <TouchableOpacity
               style={{
-                width: width * 0.04,
-                height: height * 0.02,
-                resizeMode: 'contain',
-                tintColor: 'red',
+                marginBottom: 15,
+                alignSelf: 'flex-end',
+                padding: 5,
               }}
-            />
-          </TouchableOpacity>
+              onPress={() => {
+                setOtpView(false);
+                onModalClose();
+              }}>
+              <Image
+                source={icons.close}
+                style={{
+                  width: width * 0.04,
+                  height: height * 0.02,
+                  resizeMode: 'contain',
+                  tintColor: 'red',
+                }}
+              />
+            </TouchableOpacity>
+          )}
           {!optView ? (
             <View>
               <Input

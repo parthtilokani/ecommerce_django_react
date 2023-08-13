@@ -21,6 +21,9 @@ import tag from '../assets/tag.png';
 import list_view from '../assets/list-view.png';
 import grid_view from '../assets/grid-view.png';
 import calendar from '../assets/calendar.png';
+import time from '../assets/time.png';
+import rupee from '../assets/rupee.png';
+import otp from '../assets/otp.png';
 
 export default {
   menu,
@@ -46,4 +49,7 @@ export default {
   list_view,
   grid_view,
   calendar,
+  time,
+  rupee,
+  otp,
 };

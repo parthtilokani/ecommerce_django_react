@@ -15,9 +15,9 @@ import {
   height,
   normalize,
   width,
-} from '../../../constant/index.js';
-import GobackHeader from '../../../components/GobackHeader.jsx';
-import ListGridAds from '../../../components/Ads/ListGridAds.jsx';
+} from '../../../../constant/index.js';
+import GobackHeader from '../../../../components/GobackHeader.jsx';
+import ListGridAds from '../../../../components/Ads/ListGridAds.jsx';
 
 const StoreDetails = () => {
   const [showAll, setShowAll] = useState(false);
@@ -58,12 +58,12 @@ const StoreDetails = () => {
         <View style={[styles.detailHeaderView, SHADOWS.medium]}>
           <View style={{alignItems: 'center', height: height * 0.26}}>
             <Image
-              source={require('../../../assets/background.png')}
+              source={require('../../../../assets/background.png')}
               style={styles.bgImage}
             />
             <View style={styles.logoImageView}>
               <Image
-                source={require('../../../assets/background.png')}
+                source={require('../../../../assets/background.png')}
                 style={styles.logoImage}
               />
             </View>
@@ -109,7 +109,7 @@ const StoreDetails = () => {
             <TouchableOpacity
               onPress={toggleShowAll}
               style={{alignSelf: 'center'}}>
-              <Text style={{color: 'black'}}>
+              <Text style={{color: 'red'}}>
                 {text.length > maxLength && !showAll
                   ? 'Show More'
                   : 'Show Less'}

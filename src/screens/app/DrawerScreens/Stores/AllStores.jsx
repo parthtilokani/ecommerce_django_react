@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import GobackHeader from '../../../components/GobackHeader.jsx';
+import GobackHeader from '../../../../components/GobackHeader.jsx';
 import {Searchbar} from 'react-native-paper';
 import {
   COLORS,
@@ -18,7 +18,7 @@ import {
   normalize,
   width,
   icons,
-} from '../../../constant/index.js';
+} from '../../../../constant/index.js';
 
 const AllStores = ({navigation}) => {
   const [searchValue, setSearchValue] = useState('');
@@ -29,11 +29,17 @@ const AllStores = ({navigation}) => {
         style={[styles.flatItemsMainContainer, SHADOWS.small]}
         onPress={() => navigation.navigate('StoreDetails')}>
         <Image
-          source={require('../../../assets/bg-image.jpg')}
-          style={{width: 90, height: 100, resizeMode: 'contain'}}
+          source={require('../../../../assets/bg-image.jpg')}
+          style={{width: 85, height: 90, resizeMode: 'contain'}}
         />
-        <Text>TITLE</Text>
-        <Text>ADs</Text>
+        <Text
+          style={{color: COLORS.black, fontSize: normalize(FONTSIZE.small)}}>
+          TITLE
+        </Text>
+        <Text
+          style={{color: COLORS.black, fontSize: normalize(FONTSIZE.small)}}>
+          ADs
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -64,10 +70,10 @@ const AllStores = ({navigation}) => {
       </View>
       <View style={{alignSelf: 'center'}}>
         <FlatList
-          data={new Array(12).fill(null)}
+          data={new Array(13).fill(null)}
           renderItem={renderFlatItems}
           numColumns={3}
-          ListFooterComponent={() => <View style={{height: 100}} />}
+          ListFooterComponent={() => <View style={{height: 120}} />}
         />
       </View>
     </SafeAreaView>

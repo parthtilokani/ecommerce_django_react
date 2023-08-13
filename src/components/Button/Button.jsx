@@ -20,7 +20,7 @@ const Button = ({
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.container, style]}
+      style={[styles.container, style, disable && {backgroundColor: 'gray'}]}
       onPress={onPress}
       disabled={disable}>
       {icon && (

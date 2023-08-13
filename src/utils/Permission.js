@@ -1,27 +1,5 @@
-import {
-  check,
-  request,
-  RESULTS,
-  openSettings,
-  requestMultiple,
-} from 'react-native-permissions';
-import CustomAlert from '../components/CustomAlert/CustomAlert.jsx';
+import {check, request, RESULTS, openSettings} from 'react-native-permissions';
 import {Alert} from 'react-native';
-// This function can be used anywhere as it supports multiple permissions.
-// It checks for permissions and then requests for it.
-// export async function checkMultiplePermissions(permissions) {
-//   let isPermissionGranted = false;
-//   const statuses = await requestMultiple(permissions);
-//   for (let index in permissions) {
-//     if (statuses[permissions[index]] === RESULTS.GRANTED) {
-//       isPermissionGranted = true;
-//     } else {
-//       isPermissionGranted = false;
-//       break;
-//     }
-//   }
-//   return isPermissionGranted;
-// }
 
 // In case you want to check a single permission
 export async function CheckPermission(permission) {
@@ -43,6 +21,7 @@ export async function CheckPermission(permission) {
       isPermissionGranted = false;
       break;
   }
+  isPermissionGranted;
   return isPermissionGranted;
 }
 

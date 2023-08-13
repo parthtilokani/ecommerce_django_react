@@ -51,12 +51,12 @@ const LocationScreen = ({navigation}) => {
         : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
 
     const isPermissionGranted = await CheckPermission(permission);
-    if (isPermissionGranted) {
-      setLoading(true);
-      const position = await Getlocation();
-      setAddressList(position);
-      setLoading(false);
-    }
+    if (!isPermissionGranted) return false;
+    setLoading(true);
+    Getlocation()
+      .then(e => setAddressList(e))
+      .catch(err => console.log(err));
+    setLoading(false);
   };
 
   const onSearchLocation = async text => {

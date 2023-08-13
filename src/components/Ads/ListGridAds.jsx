@@ -1,10 +1,21 @@
-import {FlatList, Pressable, StyleSheet, Text, View, Image} from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  SafeAreaView,
+  Platform,
+} from 'react-native';
 import React, {useState} from 'react';
 import GridFlatAds from './GridFlatAds.jsx';
 import ListFlatAds from './ListFlatAds.jsx';
 import {COLORS, FONTSIZE, SHADOWS} from '../../constant/theme.js';
 import icons from '../../constant/icons.js';
 import {height, normalize, width} from '../../constant/index.js';
+import GobackHeader from '../GobackHeader.jsx';
+import Button from '../Button/Button.jsx';
 
 const ListGridAds = ({
   data,
@@ -12,80 +23,141 @@ const ListGridAds = ({
   isChange,
   onChnagePress,
   changeLayoutStyle,
+  scrollEnabled,
+  pagination,
+  nextPage,
+  prevPage,
+  onNextPress,
+  onPrevPress,
+  editDelete,
+  deleteAds,
 }) => {
   const [isGrid, setIsGrid] = useState(false);
-
+  const renderFooter = () => {
+    if (data && pagination) {
+      return (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginHorizontal: 15,
+            marginVertical: 10,
+            marginBottom: height * 0.05,
+          }}>
+          <Button
+            text={'Prev'}
+            style={{width: width * 0.3}}
+            onPress={onPrevPress}
+            disable={nextPage}
+          />
+          <Button
+            text={'Next'}
+            style={{width: width * 0.3}}
+            onPress={onNextPress}
+            disable={prevPage}
+          />
+        </View>
+      );
+    } else {
+      return (
+        <View
+          style={{
+            height: Platform.OS == 'android' ? height * 0.1 : 0,
+          }}
+        />
+      );
+    }
+  };
   return (
-    <View style={styles.container}>
-      <View style={styles.secondContainer}>
-        <View style={styles.titleView}>
-          <Text style={styles.titleText} numberOfLines={1}>
-            {title}
-          </Text>
-          {isChange && (
+    <SafeAreaView>
+      {/* <GobackHeader bg title={'Ads'} /> */}
+      <View style={styles.container}>
+        <View style={styles.secondContainer}>
+          <View style={styles.titleView}>
+            <Text style={styles.titleText} numberOfLines={1}>
+              {title}
+            </Text>
+            {/* {isChange && (
             <Text style={styles.changeText} onPress={onChnagePress}>
               Change
             </Text>
+          )} */}
+          </View>
+
+          {changeLayoutStyle && data?.length >= 1 && (
+            <View style={{flexDirection: 'row'}}>
+              <Pressable
+                onPress={() => setIsGrid(true)}
+                style={[
+                  styles.iconView,
+                  SHADOWS.small,
+                  {
+                    backgroundColor: isGrid
+                      ? COLORS.secondary
+                      : COLORS.lightWhite,
+                  },
+                ]}>
+                <Image
+                  source={icons.grid_view}
+                  style={[
+                    styles.icon,
+                    {tintColor: isGrid ? COLORS.white : COLORS.gray},
+                  ]}
+                />
+              </Pressable>
+              <Pressable
+                onPress={() => setIsGrid(false)}
+                style={[
+                  styles.iconView,
+                  SHADOWS.small,
+                  {
+                    backgroundColor: !isGrid
+                      ? COLORS.secondary
+                      : COLORS.lightWhite,
+                  },
+                ]}>
+                <Image
+                  source={icons.list_view}
+                  style={[
+                    styles.icon,
+                    {tintColor: !isGrid ? COLORS.white : COLORS.gray},
+                  ]}
+                />
+              </Pressable>
+            </View>
           )}
         </View>
-
-        {changeLayoutStyle && (
-          <View style={{flexDirection: 'row'}}>
-            <Pressable
-              onPress={() => setIsGrid(true)}
-              style={[
-                styles.iconView,
-                SHADOWS.small,
-                {
-                  backgroundColor: isGrid
-                    ? COLORS.secondary
-                    : COLORS.lightWhite,
-                },
-              ]}>
-              <Image
-                source={icons.grid_view}
-                style={[
-                  styles.icon,
-                  {tintColor: isGrid ? COLORS.white : COLORS.gray},
-                ]}
+        <FlatList
+          key={isGrid ? 1 : 2}
+          scrollEnabled={scrollEnabled}
+          data={data}
+          numColumns={isGrid ? 2 : 1}
+          renderItem={({item, index}) =>
+            isGrid ? (
+              <GridFlatAds
+                data={item}
+                index={index}
+                deleteAds={deleteAds}
+                editDelete={editDelete}
               />
-            </Pressable>
-            <Pressable
-              onPress={() => setIsGrid(false)}
-              style={[
-                styles.iconView,
-                SHADOWS.small,
-                {
-                  backgroundColor: !isGrid
-                    ? COLORS.secondary
-                    : COLORS.lightWhite,
-                },
-              ]}>
-              <Image
-                source={icons.list_view}
-                style={[
-                  styles.icon,
-                  {tintColor: !isGrid ? COLORS.white : COLORS.gray},
-                ]}
+            ) : (
+              <ListFlatAds
+                data={item}
+                index={index}
+                deleteAds={deleteAds}
+                editDelete={editDelete}
               />
-            </Pressable>
-          </View>
-        )}
+            )
+          }
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={() => (
+            <Text style={styles.flatListEmptyComponent}>
+              Sorry, there has no listing yet!
+            </Text>
+          )}
+        />
       </View>
-      <FlatList
-        key={isGrid ? 1 : 2}
-        scrollEnabled={false}
-        data={data}
-        style={{alignSelf: 'center'}}
-        numColumns={isGrid ? 2 : 1}
-        renderItem={() => (isGrid ? <GridFlatAds /> : <ListFlatAds />)}
-        ListEmptyComponent={() => (
-          <Text style={styles.flatListEmptyComponent}>
-            Sorry, this store has no listing yet!
-          </Text>
-        )}
-      />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -128,6 +200,7 @@ const styles = StyleSheet.create({
   },
   flatListEmptyComponent: {
     alignSelf: 'center',
+    marginVertical: 10,
     fontSize: normalize(FONTSIZE.small),
     color: COLORS.black,
   },

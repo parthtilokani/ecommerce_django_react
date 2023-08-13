@@ -24,20 +24,19 @@ import {retrieveUserSession} from '../../utils/AsyncStorage/userSession.js';
 const Bottomtab = ({callBack, tabValue}) => {
   const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState(tabValue);
-
   const setTab = async tab => {
     const userToken = await retrieveUserSession('userToken');
     if (tab == 2) {
       setSelectedTab(0);
-      if (userToken?.access) {
+      if (userToken) {
         return navigation.navigate('Postad');
       } else {
         return navigation.navigate('SignIn');
       }
     }
-    if (tab == 4) {
-      if (!userToken?.access) return navigation.navigate('SignIn');
-    }
+    // if (tab == 4) {
+    //   if (!userToken?.access) return navigation.navigate('SignIn');
+    // }
 
     setSelectedTab(tab);
     callBack(tab);

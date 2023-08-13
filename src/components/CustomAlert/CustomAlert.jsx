@@ -14,10 +14,12 @@ const CustomAlert = ({visible, title, message, onCancel, onOkPress}) => {
           <Text style={styles.message}>{message}</Text>
           <View style={styles.buttonView}>
             <TouchableOpacity style={styles.button} onPress={onCancel}>
-              <Text style={styles.buttonText}>CANCEL</Text>
+              <Text style={styles.buttonText}>NO</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={onOkPress}>
-              <Text style={styles.buttonText}>OK</Text>
+            <TouchableOpacity
+              style={[styles.button, {backgroundColor: 'red'}]}
+              onPress={onOkPress}>
+              <Text style={styles.buttonText}>YES</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -38,9 +40,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 5,
     width: '80%',
+    alignItems: 'center',
   },
   title: {
-    fontSize: normalize(FONTSIZE.medium),
+    fontSize: normalize(FONTSIZE.large),
     fontWeight: 'bold',
     marginBottom: 10,
     color: COLORS.black,
@@ -52,20 +55,23 @@ const styles = StyleSheet.create({
   },
   buttonView: {
     flexDirection: 'row',
-    alignSelf: 'flex-end',
+    // justifyContent: 'space-between',
+    // alignSelf: 'flex-end',
   },
   button: {
-    // backgroundColor: ,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    width: width * 0.3,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
     borderRadius: 5,
-    alignSelf: 'flex-end',
+    borderRadius: 10,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: normalize(FONTSIZE.xxSmall),
     fontWeight: 'bold',
-    color: COLORS.black,
+    color: COLORS.white,
   },
 });
 

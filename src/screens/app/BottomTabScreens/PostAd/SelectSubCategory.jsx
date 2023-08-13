@@ -1,57 +1,36 @@
 import {
-  FlatList,
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  FlatList,
   View,
-  Image,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import GobackHeader from '../../../components/GobackHeader.jsx';
-import {
-  COLORS,
-  FONTSIZE,
-  SHADOWS,
-  height,
-  icons,
-  normalize,
-  width,
-} from '../../../constant/index.js';
+import React, {useState} from 'react';
+import GobackHeader from '../../../../components/GobackHeader.jsx';
 import {useQuery} from '@tanstack/react-query';
-import Loader from '../../../components/Loader/Loader.jsx';
-import {axiosOpen} from '../../../utils/axios.js';
+import {useRoute} from '@react-navigation/native';
+import icons from '../../../../constant/icons.js';
+import Loader from '../../../../components/Loader/Loader.jsx';
+import {COLORS, FONTSIZE, SHADOWS} from '../../../../constant/theme.js';
+import {height, width, normalize} from '../../../../constant/index.js';
+import {axiosOpen} from '../../../../utils/axios.js';
 
-const Postad = ({navigation}) => {
+const SelectSubCategory = ({navigation}) => {
   const [loading, setLoading] = useState(false);
-  const {data: categories, error: error} = useQuery({
-    queryKey: ['categories'],
+  const {
+    params: {category_id},
+  } = useRoute();
+  const {data: subCategories} = useQuery({
+    queryKey: ['subCategories'],
     queryFn: async () => {
       setLoading(true);
-      const data = await axiosOpen('/ads/category');
+      const data = await axiosOpen('/ads/subcategory');
       setLoading(false);
-      return data;
+      return data?.data?.filter(e => e?.category === category_id);
     },
   });
-
-  // const handlePress = idx => {
-  //   setState(prevState => ({
-  //     isVisible: !prevState.isVisible,
-  //     visibleId: idx,
-  //   }));
-
-  //   dropdownHeight.value = withTiming(state.isVisible ? 0 : height * 0.03, {
-  //     duration: 200,
-  //     easing: Easing.inOut(Easing.ease),
-  //   });
-  // };
-
-  // const dropdownStyle = useAnimatedStyle(() => {
-  //   return {
-  //     height: dropdownHeight.value,
-  //   };
-  // });
-
   const renderFlatItems = ({item, index}) => {
     return (
       <View style={[styles.categoryMainContainer, SHADOWS.small]}>
@@ -59,10 +38,16 @@ const Postad = ({navigation}) => {
           key={index}
           style={styles.categoryView}
           onPress={() =>
-            navigation.navigate('SelectSubCategory', {category_id: item?.id})
+            navigation.navigate('PostAdDetails', {
+              category_id,
+              subcategory_id: item?.id,
+              dynamic_field: item?.dynamic_field?.map(df => ({
+                ...df,
+                value: '',
+              })),
+            })
           }>
           <View style={styles.categoryInnerView}>
-            <Image source={{uri: item?.icon}} style={styles.icon} />
             <Text numberOfLines={1} style={styles.categoryText}>
               {item?.name}
             </Text>
@@ -83,19 +68,20 @@ const Postad = ({navigation}) => {
             fontWeight: 'bold',
             alignSelf: 'center',
           }}>
-          {categories?.data?.length >= 1 ? 'Select Category' : 'Data not found'}
+          {subCategories?.length >= 1
+            ? 'Select sub-category'
+            : 'Data not found'}
         </Text>
       </View>
     );
   };
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
       <Loader visible={loading} />
-      <GobackHeader bg resetBack title={'Post Your Ads'} />
+      <GobackHeader bg title="Post Your Ads" />
       <View style={styles.flatListMainView}>
         <FlatList
-          data={categories?.data}
+          data={subCategories}
           keyExtractor={(item, index) => index}
           showsVerticalScrollIndicator={false}
           renderItem={renderFlatItems}
@@ -104,16 +90,6 @@ const Postad = ({navigation}) => {
             backgroundColor: COLORS.lightWhite,
             padding: 10,
           }}
-          // ListEmptyComponent={() => (
-          //   <Text
-          //     style={{
-          //       alignSelf: 'center',
-          //       fontSize: normalize(FONTSIZE.medium),
-          //       color: COLORS.black,
-          //     }}>
-          //     Data not found
-          //   </Text>
-          // )}
           stickyHeaderIndices={[0]}
           ListFooterComponent={() => <View style={{height: height * 0.1}} />}
         />
@@ -122,7 +98,7 @@ const Postad = ({navigation}) => {
   );
 };
 
-export default Postad;
+export default SelectSubCategory;
 
 const styles = StyleSheet.create({
   flatListMainView: {
@@ -144,13 +120,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  categoryInnerView: {flexDirection: 'row', alignItems: 'center', padding: 5},
+  categoryInnerView: {flexDirection: 'row', alignItems: 'center', padding: 10},
   icon: {
     marginHorizontal: 5,
-    width: width * 0.1,
-    height: height * 0.04,
+    width: width * 0.06,
+    height: height * 0.03,
     resizeMode: 'contain',
-    // tintColor: COLORS.black,
+    tintColor: COLORS.black,
   },
   rightIcon: {
     marginRight: 20,

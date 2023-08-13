@@ -1,4 +1,4 @@
-import {Alert, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import GobackHeader from '../../components/GobackHeader';
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
@@ -19,18 +19,16 @@ import Loader from '../../components/Loader/Loader.jsx';
 import useAuth from '../../hooks/useAuth.js';
 import {retrieveUserSession} from '../../utils/AsyncStorage/userSession.js';
 import PhoneOtpModal from '../../components/PhoneOtpModal/PhoneOtpModal.jsx';
+import ToastManager, {Toast} from 'toastify-react-native';
 
 const SignIn = ({navigation}) => {
   const [formDetails, setFormDetails] = useState({
     email: '',
     password: '',
-    phoneNumber: '',
   });
-  const [optValue, setOtpValue] = useState('');
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [phoneOtpModal, setPhoneOtpModal] = useState(false);
-  // const {setAuth} = useAuth();
+  const {setAuth} = useAuth();
 
   const handleInputChange = (field, value) => {
     setFormDetails(prevState => ({...prevState, [field]: value}));
@@ -38,49 +36,43 @@ const SignIn = ({navigation}) => {
 
   const onSignin = async () => {
     let obj = {
-      email: isValid('Email', formDetails.email, 'email'),
+      email: isValid('Email', formDetails.email),
       password: isValid('Password', formDetails.password),
     };
     if (Object.values(obj).filter(e => e !== '').length > 0)
       return setErrors(obj);
     setErrors({});
 
-    const data = {email: formDetails.email, password: formDetails.password};
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // const istu = emailRegex.test(formDetails.email);
+    // if (istu) data.email = formDetails.email;
+    // data.username = formDetails.email;
+
+    const data = {email: formDetails.email, password: formDetails?.password};
     if (await isConnectedToInternet()) {
       setLoading(true);
-      const res = await signIN(data);
+      const response = await signIN(data);
+
       setLoading(false);
-      if (res) {
-        return navigation.replace('Drawer');
+      if (response.success) {
+        setAuth(response?.res);
+        Toast.success('Login successful');
+        setTimeout(() => {
+          return navigation.replace('Drawer');
+        }, 3000);
+      } else {
+        if (!response?.res)
+          return Toast.error(response?.res || 'OTP not verified');
+        return Toast.error(response?.res || 'Invalid Credentials');
       }
     }
   };
 
-  const verifyOTP = async () => {
-    console.log(formDetails.phoneNumber);
-    if (optValue.length < 6) {
-      return Alert.alert('ALERT!', 'Please enter OPT');
-    }
-    const data = {phone: formDetails.phoneNumber, otp: optValue};
-    setLoading(true);
-    const res = await verifyOtp(data, 'token/withotp');
-    setLoading(false);
-    if (res) {
-      Alert.alert('ALERT!', 'OTP verify sucessful!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            setPhoneOtpModal(false);
-            navigation.replace('Drawer');
-          },
-        },
-      ]);
-    }
-  };
   return (
     <KeyboardAvoidingWrapper>
       <SafeAreaView style={{flex: 1}}>
         <Loader visible={loading} />
+        <ToastManager style={{width: width * 0.9}} />
         <GobackHeader resetBack navigation={navigation} />
         <View
           style={{
@@ -95,7 +87,6 @@ const SignIn = ({navigation}) => {
               <Text style={styles.pageName}>Sign In</Text>
             </View>
 
-            {/* TextInput View */}
             <View
               style={{
                 alignItems: 'center',
@@ -147,35 +138,8 @@ const SignIn = ({navigation}) => {
             <Button
               text={'Phone Number'}
               style={[styles.phoneBtn]}
-              onPress={() => setPhoneOtpModal(true)}
+              onPress={() => navigation.navigate('LoginWithPhone')}
             />
-            <PhoneOtpModal
-              visible={phoneOtpModal}
-              onModalClose={() => setPhoneOtpModal(false)}
-              verifyOTP={verifyOTP}
-              handleOTPvalueChange={(text, phoneNumber) => {
-                setFormDetails(prevState => ({
-                  ...prevState,
-                  phoneNumber: phoneNumber,
-                }));
-                setOtpValue(text);
-              }}
-            />
-
-            {/* Login Optional Button View */}
-            {/* <View style={styles.optionalLoginBtnView}>
-          <Button
-            text={'Facebook'}
-            icon={icons.facebook}
-            style={[styles.optionalLoginBtn, {backgroundColor: '#1976D2'}]}
-          />
-          <Button
-            text={'Google'}
-            icon={icons.google}
-            textStyle={styles.optionalLoginBtnText}
-            style={[styles.optionalLoginBtn, {backgroundColor: 'white'}]}
-          />
-        </View> */}
             {/* Create account view */}
             <View style={styles.createAccountView}>
               <Text
@@ -193,9 +157,6 @@ const SignIn = ({navigation}) => {
             </View>
           </View>
         </View>
-        {/* Phone Number Modal */}
-
-        {/* Phone Number Modal */}
       </SafeAreaView>
     </KeyboardAvoidingWrapper>
   );

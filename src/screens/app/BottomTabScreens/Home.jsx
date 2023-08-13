@@ -1,11 +1,7 @@
 import {
-  FlatList,
   ScrollView,
   StyleSheet,
-  Text,
   View,
-  Image,
-  Pressable,
   RefreshControl,
   Platform,
 } from 'react-native';
@@ -25,13 +21,15 @@ import useLocation from '../../../hooks/useLocation.js';
 import Loader from '../../../components/Loader/Loader.jsx';
 import {height, width} from '../../../constant/index.js';
 import {isConnectedToInternet} from '../../../utils/supportFunctions.js';
+import Tostify from '../../../components/Tostify/Tostify.jsx';
+import ToastManager, {Toast} from 'toastify-react-native';
 
 const Home = () => {
   const navigation = useNavigation();
   const {location, setLocation} = useLocation();
   const scrollViewRef = useRef();
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [fetchQueries, setFetchedQueries] = useState([false]);
 
   useEffect(() => {
     (async () => {
@@ -47,7 +45,7 @@ const Home = () => {
 
     const isPermissionGranted = await CheckPermission(permission);
     if (isPermissionGranted) {
-      setLoading(true);
+      // setLoading(true);
       const position = await Getlocation();
       setLocation(position[0].formatted_address);
     } else {
@@ -55,12 +53,15 @@ const Home = () => {
       const position = await Getlocation();
       setLocation(position[0].formatted_address);
     }
-    setLoading(false);
+    // setLoading(false);
   };
-  const data = ['1', '2', '3', '4', '5'];
 
   const handleRefresh = () => {
     setRefreshing(true);
+    // ads = fetchAds();
+    // console.log('refresh', fetchAds());
+    // setRefreshing(false);
+
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
@@ -72,7 +73,7 @@ const Home = () => {
 
   return (
     <View style={{flex: 1}}>
-      <Loader visible={loading} />
+      {/* <Loader visible={loading} /> */}
       <Header isSearchInput btnText={location} />
       <ScrollView
         ref={scrollViewRef}
@@ -84,17 +85,23 @@ const Home = () => {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }>
         <Categories scrollEnabled={false} />
+
         <Button
           style={styles.viewAllCategoriesBtn}
           text={'View All Categories'}
           onPress={() => navigation.navigate('AllCategories')}
         />
-        <ListGridAds data={data} title={'Latest Ads'} changeLayoutStyle />
-        <Pressable
+        {/* <ListGridAds
+          data={ads}
+          title={'Latest Ads'}
+          changeLayoutStyle
+          scrollEnabled={false}
+        /> */}
+        {/* <Pressable
           style={[styles.scrollUpButton, SHADOWS.medium]}
           onPress={handleScrollToTop}>
           <Image source={icons.back} style={styles.scrollUpIcon} />
-        </Pressable>
+        </Pressable> */}
       </ScrollView>
     </View>
   );
@@ -115,7 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     backgroundColor: COLORS.secondary,
-    bottom: 120,
+    bottom: 100,
     borderRadius: 40,
     right: 20,
     zIndex: 1,

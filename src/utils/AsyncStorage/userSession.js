@@ -46,12 +46,10 @@ export async function storeUserSession(key, data) {
 export async function retrieveUserSession(key) {
   try {
     const session = await EncryptedStorage.getItem(key);
-
     if (session !== undefined) {
-      return JSON.parse(session);
-      // Congrats! You've just retrieved your first value!
+      return session;
     } else {
-      return 'Data not found';
+      return undefined;
     }
   } catch (error) {
     return 'Something went wrong';

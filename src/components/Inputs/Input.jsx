@@ -36,6 +36,7 @@ const Input = ({
   onChangeCountry,
   multiline,
   onContentSizeChange,
+  editable = true,
 }) => {
   const [secure, setSecure] = useState(true);
   return (
@@ -79,6 +80,7 @@ const Input = ({
             onFocus={onFocus}
             showSoftInputOnFocus={showSoftInputOnFocus}
             onContentSizeChange={onContentSizeChange}
+            editable={editable}
           />
         )}
         {isPassword && (
@@ -104,7 +106,7 @@ const Input = ({
   );
 };
 
-export default Input;
+export default React.memo(Input);
 
 const styles = StyleSheet.create({
   container: {

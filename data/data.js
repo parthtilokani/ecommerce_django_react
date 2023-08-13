@@ -49,11 +49,11 @@ const itemData = [
 ];
 
 const drawerItemList = [
-  {
-    title: 'All Stores',
-    icon: icons.chat,
-    screen: 'AllStores',
-  },
+  // {
+  //   title: 'All Stores',
+  //   icon: icons.chat,
+  //   screen: 'AllStores',
+  // },
   // {
   //   title: 'FAQ',
   //   icon: icons.chat,
@@ -79,11 +79,11 @@ const drawerItemList = [
   //   icon: icons.chat,
   //   screen: 'Contactus',
   // },
-  {
-    title: 'App Settings',
-    icon: icons.chat,
-    screen: 'AppSetting',
-  },
+  // {
+  //   title: 'App Settings',
+  //   icon: icons.chat,
+  //   screen: 'AppSetting',
+  // },
   {
     title: 'Share with friend',
     icon: icons.chat,
