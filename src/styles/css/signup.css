@@ -9,7 +9,7 @@
   background-color: hsla(0, 0%, 0%, 0.5);
 }
 .signup-main {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 55px);
 }
 .signup-body,
 .signin-body {

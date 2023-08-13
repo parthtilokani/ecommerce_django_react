@@ -10,7 +10,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
   const [otpSent, setOtpSent] = useState(false);
   const [OTPView, setOTPView] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [clock, setClock] = useState(10 * 60);
+  const [clock, setClock] = useState(5 * 60);
   const [data, setData] = useState({
     name: "",
     username: "",
@@ -43,11 +43,11 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
     setErrors({});
     setLoading(true);
     axiosOpen
-      .get("/user/otp", { params: { phone: data.phone_no } })
+      .get("/user/otp", { params: { phone: data.phone_no, register: true } })
       .then((res) => {
         setOtpMessage("OTP sent. You will receive SMS or Call.");
         setOtpSent(true);
-        setClock(10 * 60);
+        setClock(5 * 60);
         const newInterval = setInterval(() => {
           setClock((prev) => {
             if (prev === 0) {
@@ -65,7 +65,12 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
         console.log(err.response);
-        setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
+        if (err?.response?.data?.error)
+          setErrors((prev) => ({
+            ...prev,
+            message: err?.response?.data?.error,
+          }));
+        else setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
       })
       .finally(() => setLoading(false));
   };
@@ -87,7 +92,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
     setErrors({});
     setLoading(true);
     axiosOpen
-      .post("/user/register", { ...data, area_code: data.area_code || "91" })
+      .post("/user/user", { ...data, area_code: data.area_code || "91" })
       .then(() => {
         setOTPView(true);
         handleGetOTP();
@@ -119,7 +124,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
     setErrors({});
     setLoading(true);
     axiosOpen
-      .post("/user/otp", { phone: data.phone_no, otp: data.otp })
+      .post("/user/otp", { phone: data.phone_no, otp: data.otp, login: "" })
       .then((res) => {
         setSignUpMethod(2);
         setMessage("Registration successful. Log in to continue");

@@ -199,6 +199,11 @@
 .featured-ads-main .fa-card-body {
   padding: 1rem;
 }
+.featured-ads-main .fa-card-body .h6 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .featured-ads-main .fa-img-main {
   width: 100%;
   height: 175px;
@@ -358,4 +363,20 @@
 #home-our-pricing .our-pricing-card:hover .pricing,
 #home-our-pricing .our-pricing-card:hover button {
   background-color: var(--btn-color-secondary-hover);
+}
+
+/*No ads card*/
+.no-ads-card {
+}
+.no-ads-card .body {
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  border-radius: 8px;
+  margin: 5px;
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.no-ads-card .h4 {
+  color: rgb(128, 128, 128);
 }

@@ -50,7 +50,8 @@ export const LogIn = ({ setSignUpMethod, message }) => {
       .catch((err) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
-        const { email, password, detail } = err?.response?.data;
+        const { email, password, detail, message } = err?.response?.data;
+        if (message) return setErrors({ message });
         if (!email && !password && !detail)
           return setErrors({ message: "Something went wrong! Retry" });
         setErrors((prev) => ({
@@ -129,7 +130,7 @@ export const LogIn = ({ setSignUpMethod, message }) => {
         </span>
       </div>
       {errors?.message && (
-        <div style={{ fontSize: "10px", color: "red" }}>{errors?.message}</div>
+        <div style={{ fontSize: "12px", color: "red" }}>{errors?.message}</div>
       )}
       <div className='mt-1 text-center'>
         <button

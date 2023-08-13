@@ -35,7 +35,7 @@ const FormInput = ({
         onChange={onChange}
         min={min}
         max={max}
-        maxLength={maxLength}
+        maxLength={maxLength || 30}
         placeholder={placeholder}
       />
       <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>

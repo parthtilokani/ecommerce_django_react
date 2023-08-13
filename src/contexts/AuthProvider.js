@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const twoMinutes = 1000 * 60 * 2;
+    const twoMinutes = 1000 * 60 * 29;
     let tokenRefreshTimeout;
 
     const refreshToken = async () => {

@@ -20,6 +20,9 @@ const PostNewAdd = () => {
     ad_title: "",
     ad_description: "",
     price: "",
+    city: "",
+    state: "",
+    country: "",
   });
   const [errors, setErrors] = useState({});
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -28,7 +31,13 @@ const PostNewAdd = () => {
   const [images, setImages] = useState([]);
   const imageRef = useRef();
 
-  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
+  const [fetchedQueries, setFetchedQueries] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
   const { data: categories, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -53,6 +62,52 @@ const PostNewAdd = () => {
     },
     enabled: !fetchedQueries[1],
   });
+  const { data: countries } = useQuery({
+    queryKey: ["countries"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/country", {
+        page: 1,
+        page_size: 1000,
+      });
+      setFetchedQueries((prev) => {
+        prev[2] = true;
+        return [...prev];
+      });
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[2],
+  });
+  const { data: states } = useQuery({
+    queryKey: ["states"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/state", {
+        page: 1,
+        page_size: 1000,
+      });
+      setFetchedQueries((prev) => {
+        prev[3] = true;
+        return [...prev];
+      });
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[3],
+  });
+  const { data: cities } = useQuery({
+    queryKey: ["cities"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/city", {
+        page: 1,
+        page_size: 1000,
+      });
+      setFetchedQueries((prev) => {
+        prev[4] = true;
+        return [...prev];
+      });
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[4],
+  });
+
   const { mutate, isLoading } = useMutation({
     mutationFn: async (formData) => {
       return await axiosPrivate.post(`/ads/ads`, formData);
@@ -62,7 +117,7 @@ const PostNewAdd = () => {
     },
     onError: (err) => {
       console.log(err);
-      toast.error("Something went wrong! Retry");
+      toast.error(err?.response?.data?.detail || "Something went wrong! Retry");
     },
   });
   const { mutateAsync: uploadImage, isLoading: isUploadingImage } = useMutation(
@@ -91,8 +146,22 @@ const PostNewAdd = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
+    if (e.target.id === "country")
+      return setData((prev) => ({
+        ...prev,
+        state: "",
+        city: "",
+        country: e.target.value,
+      }));
+    if (e.target.id === "state")
+      return setData((prev) => ({
+        ...prev,
+        city: "",
+        state: e.target.value,
+      }));
     setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  };
 
   const handlePostDFChange = (e, idx) => {
     let dynamicFieldsClone = dynamicFields;
@@ -127,6 +196,9 @@ const PostNewAdd = () => {
       ad_title: isValid("Ad title", data.ad_title),
       ad_description: isValid("Ad description", data.ad_description),
       price: isValid("Price", data.price),
+      city: isValid("City", data.city),
+      state: isValid("State", data.state),
+      country: isValid("Country", data.country),
     };
     dynamicFields.forEach(
       (df) => (obj[df?.field_name] = isValid(df?.field_name, df?.value))
@@ -147,18 +219,19 @@ const PostNewAdd = () => {
       })),
       is_sold: false,
     };
+
     mutate(formData);
   };
 
   const handleSubmitImages = (ads_id) => {
-    Promise.all([
+    Promise.all(
       images.map((img) => {
         const formData = new FormData();
         formData.append("image", img?.image);
         formData.append("ads", ads_id);
         return uploadImage(formData);
-      }),
-    ]).finally(() => {
+      })
+    ).finally(() => {
       toast.success("Your Ad was posted!");
       navigate(`/ads/view/${ads_id}`);
     });
@@ -282,6 +355,81 @@ const PostNewAdd = () => {
                   <div
                     style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
                     {errors?.price && errors?.price}
+                  </div>
+                </div>
+                <div>
+                  <label className='form-label m-0' htmlFor='country'>
+                    Country :
+                  </label>
+                  <select
+                    className={`form-control form-control-sm${
+                      errors?.price ? " is-invalid" : ""
+                    }`}
+                    id='country'
+                    value={data.country}
+                    onChange={handleChange}>
+                    <option value=''>Select Country</option>
+                    {countries?.map((e) => (
+                      <option key={e.id} value={e.id}>
+                        {e.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div
+                    style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                    {errors?.country && errors?.country}
+                  </div>
+                </div>
+                <div>
+                  <label className='form-label m-0' htmlFor='state'>
+                    State :
+                  </label>
+                  <select
+                    className={`form-control form-control-sm${
+                      errors?.state ? " is-invalid" : ""
+                    }`}
+                    id='state'
+                    value={data.state}
+                    onChange={handleChange}>
+                    <option value=''>Select State</option>
+                    {states
+                      ?.filter(
+                        (e) => Number(e.country) === Number(data.country)
+                      )
+                      ?.map((e) => (
+                        <option key={e.id} value={e.id}>
+                          {e.name}
+                        </option>
+                      ))}
+                  </select>
+                  <div
+                    style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                    {errors?.state && errors?.state}
+                  </div>
+                </div>
+                <div>
+                  <label className='form-label m-0' htmlFor='city'>
+                    City :
+                  </label>
+                  <select
+                    className={`form-control form-control-sm${
+                      errors?.city ? " is-invalid" : ""
+                    }`}
+                    id='city'
+                    value={data.city}
+                    onChange={handleChange}>
+                    <option value=''>Select City</option>
+                    {cities
+                      ?.filter((e) => Number(e.state) === Number(data.state))
+                      ?.map((e) => (
+                        <option key={e.id} value={e.id}>
+                          {e.name}
+                        </option>
+                      ))}
+                  </select>
+                  <div
+                    style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                    {errors?.city && errors?.city}
                   </div>
                 </div>
                 {dynamicFields?.map((df, i) => (

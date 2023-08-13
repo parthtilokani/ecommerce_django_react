@@ -47,6 +47,15 @@ code {
     monospace;
 }
 
+a {
+  text-decoration: none;
+  color: black;
+}
+
 main {
   min-height: calc(100vh - 55px);
+}
+
+.pointer {
+  cursor: pointer !important;
 }

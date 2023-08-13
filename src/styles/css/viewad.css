@@ -11,26 +11,23 @@
 .carousel-container {
   overflow: hidden;
   width: 100%;
-  min-height: 250px;
+  min-height: 150px;
   margin: 0 auto;
   position: relative;
 }
 .carousel-wrapper {
   display: flex;
+  align-items: stretch;
   transition: transform 0.3s ease;
 }
 .image-wrapper {
   flex: 0 0 100%;
-  margin-right: 10px; /* Adjust the margin as needed between images */
 }
 .carousel-image {
   width: 100%;
-  height: auto;
+  aspect-ratio: 1.5;
   max-height: 350px;
-  object-fit: cover;
-}
-.carousel-wrapper img:not(:first-child) {
-  margin-left: 10px; /* Adjust the margin as needed between images */
+  object-fit: contain;
 }
 .carousel-container .prev,
 .carousel-container .next {

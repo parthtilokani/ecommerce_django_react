@@ -43,9 +43,9 @@ const Navbar = () => {
               Home
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link>All Categories</Link>
-          </li>
+          </li> */}
           <li>
             <Link
               to='/contact'

@@ -9,7 +9,7 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
   const [otpCount, setOtpCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [clock, setClock] = useState(10 * 60);
+  const [clock, setClock] = useState(5 * 60);
   const { setAuth } = useAuth();
   const [data, setData] = useState({
     phonenumber: "",
@@ -38,7 +38,7 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
         setOtpMessage("OTP sent. You will receive SMS or Call.");
         setOtpSent(true);
         setOtpCount(1);
-        setClock(10 * 60);
+        setClock(5 * 60);
         const newInterval = setInterval(() => {
           setClock((prev) => {
             if (prev === 0) {

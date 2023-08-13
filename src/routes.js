@@ -9,6 +9,7 @@ import Layout from "./components/Layout.js";
 import Authentication from "./pages/Authentication.js";
 import Home from "./pages/Home.js";
 // pages - lazyloaded
+const PasswordReset = lazy(() => import("./pages/PasswordReset.js"));
 const Search = lazy(() => import("./pages/Search.js"));
 const ViewAd = lazy(() => import("./pages/ViewAd.js"));
 const PostNewAd = lazy(() => import("./pages/PostNewAdd.js"));
@@ -30,12 +31,13 @@ export default function Router() {
     <Routes>
       <Route path='/' element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path='password_reset/:token' element={<PasswordReset />} />
         <Route path='home' element={<Home />} />
         <Route path='login' element={<Authentication />} />
         <Route path='search' element={<Search />} />
         <Route path='contact' element={<Contact />} />
-        <Route path='ads/view/:id' element={<ViewAd />} />
         <Route element={<PrivateRoute />}>
+          <Route path='ads/view/:id' element={<ViewAd />} />
           <Route path='post-new-ad' element={<PostNewAd />} />
           <Route path='profile' element={<Profile />} />
           <Route path='ads/edit/:id' element={<EditAd />} />

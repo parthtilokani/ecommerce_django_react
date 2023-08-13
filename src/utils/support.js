@@ -6,7 +6,7 @@ const phoneNumberRegex = /^\d{10}$/;
 const otpRegex = /^\d{6}$/;
 
 export const isValid = (label, value, type) => {
-  if (!value?.trim()) return `${label} is required`;
+  if (!value?.toString()?.trim()) return `${label} is required`;
   if (!type) return "";
   if (type === "email" && !emailRegex.test(value)) return "Invalid email";
   if (type === "password" && !passwordRegex.test(value))

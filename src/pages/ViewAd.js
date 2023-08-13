@@ -10,12 +10,15 @@ const ViewAd = () => {
   const axiosPrivate = useAxiosPrivate();
   const { id: adId } = useParams();
   const [currentImage, setCurrentImage] = useState(0);
+  const [fetchedQueries, setFetchedQueries] = useState([false]);
   const { data: ad, isLoading } = useQuery({
     queryKey: ["single_ad", adId],
     queryFn: async () => {
       const { data } = await axiosPrivate.get(`/ads/ads/${adId}`);
+      setFetchedQueries((prev) => [true]);
       return data || [];
     },
+    enabled: !fetchedQueries[0],
   });
 
   const nextSlide = () =>
@@ -38,7 +41,7 @@ const ViewAd = () => {
     <div id='view_ad'>
       <div className='va-body'>
         <div className='row m-1'>
-          <div className='col-md-9 mb-2'>
+          <div className='col-lg-8 mb-2'>
             <div className='card'>
               <div className='card-body'>
                 {isLoading ? (
@@ -49,7 +52,7 @@ const ViewAd = () => {
                 ) : (
                   <div className='h4 fw-bold my-2'>{ad?.ad_title}</div>
                 )}
-                <div className='carousel-container skeleton'>
+                <div className='carousel-container'>
                   <div
                     className='carousel-wrapper'
                     style={{
@@ -80,8 +83,8 @@ const ViewAd = () => {
                     &gt;
                   </button>
                 </div>
-                <div className='d-flex my-2'>
-                  <div className='d-flex align-items-center me-3'>
+                <div className='d-sm-flex my-2'>
+                  <div className='d-flex align-items-center me-3 mb-1'>
                     <img src='/assets/svgs/time.svg' className='icon' alt='' />
                     {isLoading ? (
                       <div
@@ -112,7 +115,7 @@ const ViewAd = () => {
                         className='skeleton skeleton-text h4'
                         style={{ width: "200px" }}></div>
                     ) : (
-                      <span>Denmark</span>
+                      <span>{ad?.city_name || "No Location"}</span>
                     )}
                   </div>
                 </div>
@@ -183,14 +186,16 @@ const ViewAd = () => {
               </div>
             </div>
           </div>
-          <div className='col-md-3 mb-2'>
+          <div className='col-lg-4 mb-2'>
             <div className='card'>
               <div className='card-body'>
                 <div className='h5 fw-bold'>Seller Information</div>
                 <hr />
-                <div className='h6 fw-bold'>User Name</div>
-                <div className='h6 fw-bold'>User Location</div>
-                <div className='h6 fw-bold'>User Contact Info</div>
+                <div className='h6 fw-bold'>Name : {ad?.create_user?.name}</div>
+                <div className='h6 fw-bold'>
+                  Contact Info : +{ad?.create_user?.area_code}-
+                  {ad?.create_user?.phone_no}
+                </div>
               </div>
             </div>
           </div>

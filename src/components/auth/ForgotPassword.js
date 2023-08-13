@@ -3,8 +3,11 @@ import { useMutation } from "@tanstack/react-query";
 
 import { isValid } from "../../utils/support.js";
 import { axiosOpen } from "../../utils/axios.js";
+import { useState } from "react";
 
 const ForgotPassword = ({ setForgotPasswordView }) => {
+  const [message, setMessage] = useState("");
+
   const emailRef = useRef();
 
   const { mutate, isLoading, error } = useMutation({
@@ -17,6 +20,39 @@ const ForgotPassword = ({ setForgotPasswordView }) => {
         }
         await axiosOpen.post("/user/password_reset/", { email });
       } catch (err) {
+        setMessage("");
+        let obj = {};
+        if (err?.email) obj = { email: err.email };
+        else if (err?.response?.data?.email?.length > 0)
+          obj = { email: err?.response?.data?.email[0] };
+        else obj = { message: "Something went wrong! Retry" };
+        throw obj;
+      }
+    },
+    onSuccess: () => {
+      setMessage("Email sent successfully!");
+    },
+  });
+
+  const {
+    mutate: verifyToken,
+    isLoading: isVerifing,
+    error2,
+  } = useMutation({
+    mutationFn: async ({ token, password }) => {
+      try {
+        const tokenInValid = isValid("Token", token);
+        const passwordInValid = isValid("Password", password, "password");
+        if (tokenInValid || passwordInValid) {
+          const obj = { token: tokenInValid, password: passwordInValid };
+          throw obj;
+        }
+        await axiosOpen.post("/user/password_reset/confirm/", {
+          token,
+          password,
+        });
+      } catch (err) {
+        setMessage("");
         console.log(err);
         let obj = { message: "Something went wrong! Retry" };
         if (err?.response?.data?.email?.length > 0)
@@ -24,13 +60,18 @@ const ForgotPassword = ({ setForgotPasswordView }) => {
         throw obj;
       }
     },
-    onSuccess: () => {},
+    onSuccess: () => {
+      setMessage("Password reset successfully! Try Logging in");
+    },
   });
 
   return (
     <div className='signup-otp-model'>
       <div className='card'>
         <div className='text-center h4 fw-bold'>Forgot Password</div>
+        <div style={{ height: "15px" }} className='text-success'>
+          {message}
+        </div>
         <div className='mt-3'>
           <input
             type='text'

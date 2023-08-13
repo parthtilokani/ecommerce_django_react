@@ -24,6 +24,9 @@ const EditAd = () => {
     category: "",
     sub_category: "",
     enabled: true,
+    city: "",
+    state: "",
+    country: "",
   });
   const [errors, setErrors] = useState({});
   const [dynamicFields, setDynamicFields] = useState([]);
@@ -31,7 +34,13 @@ const EditAd = () => {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const imageRef = useRef();
 
-  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
+  const [fetchedQueries, setFetchedQueries] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -56,11 +65,67 @@ const EditAd = () => {
     },
     enabled: !fetchedQueries[1],
   });
+  const { data: countries } = useQuery({
+    queryKey: ["countries"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/country", {
+        page: 1,
+        page_size: 1000,
+      });
+      setFetchedQueries((prev) => {
+        prev[2] = true;
+        return [...prev];
+      });
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[2],
+  });
+  const { data: states } = useQuery({
+    queryKey: ["states"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/state", {
+        page: 1,
+        page_size: 1000,
+      });
+      setFetchedQueries((prev) => {
+        prev[3] = true;
+        return [...prev];
+      });
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[3],
+  });
+  const { data: cities } = useQuery({
+    queryKey: ["cities"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/city", {
+        page: 1,
+        page_size: 1000,
+      });
+      setFetchedQueries((prev) => {
+        prev[4] = true;
+        return [...prev];
+      });
+      return data?.results || [];
+    },
+    enabled: !fetchedQueries[4],
+  });
+
   const { data: ad, isLoading: isLoadingAd } = useQuery({
     queryKey: ["single_ad"],
     queryFn: async () => {
       const { data } = await axiosPrivate.get(`/ads/ads/${adId}`);
-      setData({ ...data, enabled: false });
+      setData({
+        ad_title: data?.ad_title || "",
+        ad_description: data?.ad_description || "",
+        price: data?.price || "",
+        category: data?.category || "",
+        sub_category: data?.sub_category || "",
+        city: data?.city || "",
+        state: data?.state || "",
+        country: data?.country || "",
+        enabled: false,
+      });
 
       //if sub category and dynamic_fields are present
       if (subcategories?.length > 0 && data?.dynamic_field?.length > 0) {
@@ -117,6 +182,19 @@ const EditAd = () => {
   };
 
   const handleChange = (e) => {
+    if (e.target.id === "country")
+      return setData((prev) => ({
+        ...prev,
+        state: "",
+        city: "",
+        country: e.target.value,
+      }));
+    if (e.target.id === "state")
+      return setData((prev) => ({
+        ...prev,
+        city: "",
+        state: e.target.value,
+      }));
     if (e.target.id === "sub_category") handleSubCategoryClick(e.target.value);
     setData((prev) => ({
       ...prev,
@@ -165,6 +243,9 @@ const EditAd = () => {
       price: isValid("Price", data.price),
       category: isValid("Category", data.category?.toString()),
       sub_category: isValid("Sub Category", data.sub_category?.toString()),
+      city: isValid("City", data.city),
+      state: isValid("State", data.state),
+      country: isValid("Country", data.country),
     };
     dynamicFields.forEach(
       (df) => (obj[df?.field_name] = isValid(df?.field_name, df?.value))
@@ -310,6 +391,76 @@ const EditAd = () => {
               />
               <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
                 {errors?.price && errors?.price}
+              </div>
+            </div>
+            <div>
+              <label className='form-label m-0' htmlFor='country'>
+                Country :
+              </label>
+              <select
+                className={`form-control form-control-sm${
+                  errors?.price ? " is-invalid" : ""
+                }`}
+                id='country'
+                value={data.country}
+                onChange={handleChange}>
+                <option value=''>Select Country</option>
+                {countries?.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.name}
+                  </option>
+                ))}
+              </select>
+              <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                {errors?.country && errors?.country}
+              </div>
+            </div>
+            <div>
+              <label className='form-label m-0' htmlFor='state'>
+                State :
+              </label>
+              <select
+                className={`form-control form-control-sm${
+                  errors?.state ? " is-invalid" : ""
+                }`}
+                id='state'
+                value={data.state}
+                onChange={handleChange}>
+                <option value=''>Select State</option>
+                {states
+                  ?.filter((e) => Number(e.country) === Number(data.country))
+                  ?.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.name}
+                    </option>
+                  ))}
+              </select>
+              <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                {errors?.state && errors?.state}
+              </div>
+            </div>
+            <div>
+              <label className='form-label m-0' htmlFor='city'>
+                City :
+              </label>
+              <select
+                className={`form-control form-control-sm${
+                  errors?.city ? " is-invalid" : ""
+                }`}
+                id='city'
+                value={data.city}
+                onChange={handleChange}>
+                <option value=''>Select City</option>
+                {cities
+                  ?.filter((e) => Number(e.state) === Number(data.state))
+                  ?.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.name}
+                    </option>
+                  ))}
+              </select>
+              <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                {errors?.city && errors?.city}
               </div>
             </div>
             {dynamicFields?.map((df, i) => (
