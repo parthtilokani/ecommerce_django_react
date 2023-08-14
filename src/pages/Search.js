@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 // css
 import "../styles/css/search.css";
 
-import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
 import { Link, useLocation } from "react-router-dom";
 import AdCardSkeleton from "../components/skeletons/AdCardSkeleton.js";
 import useOurLocation from "../hooks/useOurLocation.js";
@@ -33,7 +32,6 @@ const Search = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState(subcategory);
 
   const { location: ourLocation, setLocation } = useOurLocation();
-  const axiosPrivate = useAxiosPrivate();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(8);
@@ -278,7 +276,7 @@ const Search = () => {
                         </div>
                         <div className='d-flex align-items-center'>
                           <img src='/assets/svgs/location.svg' alt='' />
-                          <span>{ad?.city_name || "No Location"}</span>
+                          <span>{ad?.district_name || "No Location"}</span>
                         </div>
                         <div className='h4 fw-bold'>₹ {ad?.price}</div>
                       </div>

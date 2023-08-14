@@ -4,20 +4,27 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosOpen } from "../../utils/axios.js";
 
 const InfoPanel = () => {
-  const [fetchedQueries, setFetchedQueries] = useState(false);
-  const { data: total } = useQuery({
+  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
+  const { data: total_ads } = useQuery({
     queryKey: ["total_ads"],
     queryFn: async () => {
-      const { data } = await axiosOpen.get("/ads/ads/total_count", {
-        params: {
-          page: 1,
-          limit: 8,
-        },
-      });
-      setFetchedQueries((prev) => true);
-      return data;
+      const { data } = await axiosOpen.get("/ads/ads/total_count");
+      setFetchedQueries((prev) => [true, prev[1]]);
+      return data?.total_count;
     },
-    enabled: !fetchedQueries,
+    enabled: !fetchedQueries[0],
+  });
+  const { data: total_locations } = useQuery({
+    queryKey: ["total_locations"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/ads/district", {
+        page: 1,
+        page_size: 1000,
+      });
+      setFetchedQueries((prev) => [prev[0], true]);
+      return data?.count || 100;
+    },
+    enabled: !fetchedQueries[1],
   });
 
   return (
@@ -32,7 +39,9 @@ const InfoPanel = () => {
                     <img src='/assets/svgs/ads.svg' alt='' />
                   </div>
                   <div className='mt-4'>
-                    <div className='h2 fw-bold text-white'>5000+</div>
+                    <div className='h2 fw-bold text-white'>
+                      {total_ads || 100}+
+                    </div>
                     <p className='h5 text-white'>Published Ads</p>
                   </div>
                 </div>
@@ -58,8 +67,10 @@ const InfoPanel = () => {
                     <img src='/assets/svgs/verified.svg' alt='' />
                   </div>
                   <div className='mt-4'>
-                    <div className='h2 fw-bold text-white'>2000+</div>
-                    <p className='h5 text-white'>Verified Users</p>
+                    <div className='h2 fw-bold text-white'>
+                      {total_locations || 100}+
+                    </div>
+                    <p className='h5 text-white'>Locations</p>
                   </div>
                 </div>
               </div>

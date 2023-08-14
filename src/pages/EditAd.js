@@ -24,7 +24,7 @@ const EditAd = () => {
     category: "",
     sub_category: "",
     enabled: true,
-    city: "",
+    district: "",
     state: "",
     country: "",
   });
@@ -98,7 +98,7 @@ const EditAd = () => {
   const { data: cities } = useQuery({
     queryKey: ["cities"],
     queryFn: async () => {
-      const { data } = await axiosOpen.get("/ads/city", {
+      const { data } = await axiosOpen.get("/ads/district", {
         page: 1,
         page_size: 1000,
       });
@@ -121,7 +121,7 @@ const EditAd = () => {
         price: data?.price || "",
         category: data?.category || "",
         sub_category: data?.sub_category || "",
-        city: data?.city || "",
+        district: data?.district || "",
         state: data?.state || "",
         country: data?.country || "",
         enabled: false,
@@ -186,13 +186,13 @@ const EditAd = () => {
       return setData((prev) => ({
         ...prev,
         state: "",
-        city: "",
+        district: "",
         country: e.target.value,
       }));
     if (e.target.id === "state")
       return setData((prev) => ({
         ...prev,
-        city: "",
+        district: "",
         state: e.target.value,
       }));
     if (e.target.id === "sub_category") handleSubCategoryClick(e.target.value);
@@ -243,7 +243,7 @@ const EditAd = () => {
       price: isValid("Price", data.price),
       category: isValid("Category", data.category?.toString()),
       sub_category: isValid("Sub Category", data.sub_category?.toString()),
-      city: isValid("City", data.city),
+      district: isValid("City", data.district),
       state: isValid("State", data.state),
       country: isValid("Country", data.country),
     };
@@ -440,15 +440,15 @@ const EditAd = () => {
               </div>
             </div>
             <div>
-              <label className='form-label m-0' htmlFor='city'>
+              <label className='form-label m-0' htmlFor='district'>
                 City :
               </label>
               <select
                 className={`form-control form-control-sm${
-                  errors?.city ? " is-invalid" : ""
+                  errors?.district ? " is-invalid" : ""
                 }`}
-                id='city'
-                value={data.city}
+                id='district'
+                value={data.district}
                 onChange={handleChange}>
                 <option value=''>Select City</option>
                 {cities
@@ -460,7 +460,7 @@ const EditAd = () => {
                   ))}
               </select>
               <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
-                {errors?.city && errors?.city}
+                {errors?.district && errors?.district}
               </div>
             </div>
             {dynamicFields?.map((df, i) => (

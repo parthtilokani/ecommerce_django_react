@@ -10,15 +10,16 @@ export const handleLocationSearch = async ({
     if (searchLocation.trim() === "") return;
     setLoading(true);
 
-    const apiKey = "AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70";
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${apiKey}`;
+    // const apiKey = "";
+    // const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${apiKey}`;
 
-    const res = await fetch(url, { method: "GET" });
-    // const res = await axiosOpen.get("/ads/ads/get_lat_lng_from_address", {
-    //   params: { address: searchLocation },
-    // });
+    // const res = await fetch(url, { method: "GET" });
+    const res = await axiosOpen.get("/ads/ads/get_lat_lng_from_address", {
+      params: { address: searchLocation },
+    });
 
-    const data = await res.json();
+    const data = await res.data;
+    console.log(data);
     if (data.status === "OK") {
       setError("");
       setAddressList([...data.results]);

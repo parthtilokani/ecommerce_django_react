@@ -83,12 +83,14 @@ const Home = () => {
         try {
           setLoading(true);
 
-          const apiKey = "AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70";
-          const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&location_type=APPROXIMATE&key=${apiKey}`;
+          // const apiKey = "";
+          // const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&location_type=APPROXIMATE&key=${apiKey}`;
+          // const res = await fetch(url, { method: "GET" });
 
-          const res = await fetch(url, { method: "GET" });
-
-          const data = await res.json();
+          const res = await axiosOpen.get("/ads/ads/get_current_address", {
+            params: { lat: latitude, lng: longitude },
+          });
+          const data = await res.data;
           if (data.status === "OK") {
             setLocation((prev) => ({
               ...prev,
@@ -127,6 +129,15 @@ const Home = () => {
       clearTimeout(timer);
     };
   }, [searchLocation]);
+
+  const handleLocationSearchByClick = () => {
+    handleLocationSearch({
+      searchLocation,
+      setAddressList,
+      setLoading,
+      setError,
+    });
+  };
 
   return (
     <div className='position-relative'>
@@ -230,6 +241,7 @@ const Home = () => {
           setLocationView,
           addressList,
           setError,
+          handleLocationSearchByClick,
         }}
       />
       <CategoryModel

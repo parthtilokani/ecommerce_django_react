@@ -12,6 +12,7 @@ const LocationModel = ({
   setLocationView,
   addressList,
   setError,
+  handleLocationSearchByClick,
 }) => {
   return (
     <div
@@ -48,7 +49,7 @@ const LocationModel = ({
               }}
               onClick={() => {
                 if (loading) return;
-                handleLocationSearch();
+                handleLocationSearchByClick();
               }}>
               <img
                 src='/assets/svgs/search.svg'

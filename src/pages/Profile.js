@@ -75,7 +75,8 @@ const Profile = () => {
   });
 
   const { mutate: deleteUser, isLoading: isDeletingUser } = useMutation({
-    mutationFn: () => axiosPrivate.delete(`/user/user/x/delete_user_account`),
+    mutationFn: () =>
+      axiosPrivate.post(`/user/user/x/delete_user_account`, { password }),
     onSuccess: () => {
       setAuth({});
       setDeleteUserModel(false);
@@ -193,7 +194,7 @@ const Profile = () => {
                       </div>
                       <div className='d-flex align-items-center'>
                         <img src='/assets/svgs/location.svg' alt='' />
-                        <span>{ad?.city_name || "No Location"}</span>
+                        <span>{ad?.district_name || "No Location"}</span>
                       </div>
                       <div className='h4 fw-bold'>₹ {ad?.price}</div>
                     </div>

@@ -32,8 +32,6 @@ const PackageAndPricing = () => {
     axiosPrivate
       .post("/ads_plan/pay", { ads_plan_id: plan_id })
       .then((res) => {
-        console.log(res?.data);
-
         const options = {
           key: res.data?.api_id,
           amount: res.data?.payment?.amount,
@@ -98,7 +96,9 @@ const PackageAndPricing = () => {
               </div>
               <div className='op-features'>{plan?.description || "-"}</div>
               <div>
-                <button onClick={() => buyPackage(plan?.id)}>Register</button>
+                <button onClick={() => buyPackage(plan?.id)}>
+                  {auth?.accessToken ? "Purchase" : "Register"}
+                </button>
               </div>
             </div>
           </div>

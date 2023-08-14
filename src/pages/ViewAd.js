@@ -115,7 +115,7 @@ const ViewAd = () => {
                         className='skeleton skeleton-text h4'
                         style={{ width: "200px" }}></div>
                     ) : (
-                      <span>{ad?.city_name || "No Location"}</span>
+                      <span>{ad?.district_name || "No Location"}</span>
                     )}
                   </div>
                 </div>
