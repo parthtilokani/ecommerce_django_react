@@ -26,6 +26,7 @@ import Scrollbar from '../components/scrollbar/Scrollbar';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Plan Name' },
+  { id: 'email', label: 'Email' },
   { id: 'order_id', label: 'Order ID' },
   { id: 'amount', label: 'Amount' },
   { id: 'date', label: 'Created On' },
@@ -35,7 +36,7 @@ const TABLE_HEAD = [
 export default function Users() {
   const axiosPrivate = useAxiosPrivate();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [pagesCount, setPagesCount] = useState(0);
   const [fetchedQueries, setFetchedQueries] = useState([false]);
 
@@ -120,6 +121,11 @@ export default function Users() {
                         </TableCell>
                         <TableCell align="center">
                           <Typography variant="subtitle2" noWrap>
+                            {row.user_id?.email}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Typography variant="subtitle2" noWrap>
                             {row.order_payment_id}
                           </Typography>
                         </TableCell>
@@ -147,7 +153,7 @@ export default function Users() {
           </Scrollbar>
 
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[10, 25, 50]}
             component="div"
             count={pagesCount}
             rowsPerPage={rowsPerPage}
