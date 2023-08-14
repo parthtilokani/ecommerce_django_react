@@ -75,7 +75,7 @@ export default function Cities() {
     state: '',
     country: '',
   };
-  const [city, setCity] = useState(initialCity);
+  const [district, setCity] = useState(initialCity);
 
   const { data: countries } = useQuery({
     queryKey: ['country'],
@@ -100,16 +100,16 @@ export default function Cities() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['city'],
+    queryKey: ['district'],
     queryFn: async () => {
-      const { data } = await axiosPrivate.get('/ads/city', { params: { page: 1, page_size: 10000 } });
+      const { data } = await axiosPrivate.get('/ads/district', { params: { page: 1, page_size: 10000 } });
       setFetchedQueries((prev) => [prev[0], prev[1], true]);
       return data?.results || [];
     },
     enabled: !fetchedQueries[2],
   });
   const { mutate: postCity, isLoading: isSaving } = useMutation({
-    mutationFn: (formData) => axiosPrivate.post('/ads/city', formData),
+    mutationFn: (formData) => axiosPrivate.post('/ads/district', formData),
     onSuccess: () => {
       toast.success('City saved!');
       refetch();
@@ -118,7 +118,7 @@ export default function Cities() {
   });
   const { mutate: patchCity, isLoading: isUpdating } = useMutation({
     mutationFn: ({ formData, id }) => {
-      axiosPrivate.patch(`/ads/city/${id}`, formData);
+      axiosPrivate.patch(`/ads/district/${id}`, formData);
     },
     onSuccess: () => {
       toast.success('City updated!');
@@ -127,7 +127,7 @@ export default function Cities() {
     onError: () => toast.error('Something went wrong! Retry'),
   });
   const { mutate: deleteCity, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => axiosPrivate.delete(`/ads/city/${id}`),
+    mutationFn: (id) => axiosPrivate.delete(`/ads/district/${id}`),
     onSuccess: () => {
       toast.success('City deleted!');
       refetch();
@@ -155,12 +155,12 @@ export default function Cities() {
   };
 
   const handleSubmit = () => {
-    if (!city.name.trim()) return toast.error('Name is required!');
-    if (!city.state) return toast.error('State is required!');
-    if (!city.country) return toast.error('Country is required!');
-    const formData = { name: city.name, state: city.state, country: city.country };
-    if (city?.id) {
-      patchCity({ formData, id: city.id });
+    if (!district.name.trim()) return toast.error('Name is required!');
+    if (!district.state) return toast.error('State is required!');
+    if (!district.country) return toast.error('Country is required!');
+    const formData = { name: district.name, state: district.state, country: district.country };
+    if (district?.id) {
+      patchCity({ formData, id: district.id });
     } else {
       postCity(formData);
     }
@@ -276,7 +276,7 @@ export default function Cities() {
         >
           <Box sx={style}>
             <div>
-              <h5>{city.id ? 'Edit' : 'Add'} City</h5>
+              <h5>{district.id ? 'Edit' : 'Add'} City</h5>
               <hr />
             </div>
             <div className="w-100">
@@ -285,7 +285,7 @@ export default function Cities() {
                 label="City Name*"
                 variant="outlined"
                 className="w-100"
-                value={city.name}
+                value={district.name}
                 onChange={handleChangeForm}
                 autoComplete="off"
               />
@@ -295,7 +295,7 @@ export default function Cities() {
                 id="country"
                 label="Country*"
                 data={countries?.map((e) => ({ value: e.id, label: e.name })) || []}
-                value={city.country}
+                value={district.country}
                 handleChange={handleChangeForm}
               />
             </div>
@@ -304,11 +304,13 @@ export default function Cities() {
                 id="state"
                 label="State*"
                 data={
-                  states?.filter((e) => e?.country === city?.country)?.length > 0
-                    ? states?.filter((e) => e?.country === city?.country)?.map((e) => ({ value: e.id, label: e.name }))
+                  states?.filter((e) => e?.country === district?.country)?.length > 0
+                    ? states
+                        ?.filter((e) => e?.country === district?.country)
+                        ?.map((e) => ({ value: e.id, label: e.name }))
                     : [{ value: '', label: 'Select Country' }]
                 }
-                value={city.state}
+                value={district.state}
                 handleChange={handleChangeForm}
               />
             </div>
