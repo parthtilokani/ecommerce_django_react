@@ -53,6 +53,9 @@ const Search = () => {
       };
 
       if (search) paramsObj.search = search;
+      if (selectedCategory?.id) paramsObj.category = selectedCategory?.id;
+      if (selectedSubCategory?.id)
+        paramsObj.subcategory = selectedSubCategory?.id;
 
       const { data } = await axiosOpen.get("/ads/ads", {
         params: paramsObj,
