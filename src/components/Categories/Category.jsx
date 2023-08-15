@@ -30,8 +30,9 @@ const Category = ({navigation}) => {
     queryKey: ['ads'],
     queryFn: async () => {
       const data = await axiosOpen('ads/ads');
-      console.log(data);
-      return data?.data?.results?.filter(e => e?.sub_category === item?.id);
+      return data?.data?.results?.filter(
+        e => e?.sub_category === item?.category?.id,
+      );
     },
   });
 
@@ -41,7 +42,7 @@ const Category = ({navigation}) => {
       <View style={styles.listGirdView}>
         <ListGridAds
           isChange
-          title={item?.name}
+          title={'Ads'}
           data={ads}
           onChnagePress={() => navigation.replace('AllCategories')}
           changeLayoutStyle

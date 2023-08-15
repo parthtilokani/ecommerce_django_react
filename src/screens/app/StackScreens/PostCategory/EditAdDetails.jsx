@@ -17,13 +17,14 @@ import Input from '../../../../components/Inputs/Input.jsx';
 import {
   COLORS,
   FONTSIZE,
+  SHADOWS,
   height,
   icons,
   normalize,
   width,
 } from '../../../../constant/index.js';
 import AdImage from '../../../../components/PostAdImage/AdImage.jsx';
-
+import {Dropdown} from 'react-native-element-dropdown';
 import Button from '../../../../components/Button/Button.jsx';
 import {CheckPermission} from '../../../../utils/Permission.js';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -36,6 +37,7 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import {HelperText} from 'react-native-paper';
 import {baseURL} from '../../../../utils/Api.js';
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
+import {axiosOpen} from '../../../../utils/axios.js';
 
 const EditAdDetails = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -62,6 +64,45 @@ const EditAdDetails = () => {
   const [dynamicFields, setDynamicFields] = useState([
     ...(data?.dynamic_field || []),
   ]);
+
+  useEffect(() => {
+    fetchCountry();
+    fetchState();
+    fetchDistrict();
+  }, []);
+
+  const fetchCountry = async () => {
+    const {data} = await axiosOpen.get('/ads/country', {
+      page: 1,
+      page_size: 1000,
+    });
+    setCountryList(data?.results);
+  };
+  const fetchState = async () => {
+    const {data} = await axiosOpen.get('/ads/state', {
+      page: 1,
+      page_size: 1000,
+    });
+    setStateList(data?.results);
+  };
+  const fetchDistrict = async () => {
+    const {data} = await axiosOpen.get('/ads/district', {
+      page: 1,
+      page_size: 1000,
+    });
+    setDistList(data?.results);
+  };
+
+  const [country, setCountry] = useState('');
+  const [countryList, setCountryList] = useState([]);
+
+  const [state, setState] = useState('');
+  const [filteredState, setFilteredState] = useState([]);
+  const [stateList, setStateList] = useState([]);
+
+  const [district, setDistrict] = useState('');
+  const [filteredDist, setFilteredDist] = useState([]);
+  const [distList, setDistList] = useState([]);
 
   const handleInputChange = (field, value) => {
     setFormDetails(prevState => ({...prevState, [field]: value}));
@@ -291,6 +332,15 @@ const EditAdDetails = () => {
       if (len == 0) {
         obj.image = 'Please select atleast one image';
       }
+      if (country == '') {
+        obj.country = 'Please select country';
+      }
+      if (state == '') {
+        obj.state = 'Please select state';
+      }
+      if (district == '') {
+        obj.district = 'Please select district';
+      }
       if (Object.values(obj).filter(e => e !== '').length > 0) {
         console.log(obj);
         return setErrors(obj);
@@ -305,7 +355,11 @@ const EditAdDetails = () => {
         price: formDetails?.price,
         is_sold: false,
         dynamic_field: dynamicFields,
+        city: district,
+        state: state,
+        country: country,
       };
+      console.log(data);
       uploadAd(data);
     } catch (e) {
       console.error('dasdad', e);
@@ -338,6 +392,7 @@ const EditAdDetails = () => {
               handleInputChange('price', text.replace(/[^0-9]/, ''))
             }
             style={styles.input}
+            keyboardType="number-pad"
           />
           <Text style={styles.inputFieldTitleTxt}>Description</Text>
           <Input
@@ -373,6 +428,83 @@ const EditAdDetails = () => {
             );
           })}
 
+          <Text style={styles.inputFieldTitleTxt}>Country</Text>
+          <Dropdown
+            style={[styles.dropdown, SHADOWS.small]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            iconStyle={styles.iconStyle}
+            data={countryList}
+            maxHeight={300}
+            labelField="name"
+            valueField="id"
+            placeholder={'Select Country'}
+            value={country}
+            onChange={item => {
+              setCountry(item.id);
+              const a = stateList.filter(e => e?.country === item?.id);
+              setFilteredState(a);
+            }}
+          />
+          {errors?.country && (
+            <HelperText
+              type="error"
+              style={{fontSize: 14, alignSelf: 'flex-start'}}>
+              {errors?.country}
+            </HelperText>
+          )}
+
+          <Text style={styles.inputFieldTitleTxt}>State</Text>
+          <Dropdown
+            style={[styles.dropdown, SHADOWS.small]}
+            disable={country === ''}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            iconStyle={styles.iconStyle}
+            data={filteredState}
+            maxHeight={300}
+            labelField="name"
+            valueField="id"
+            placeholder={'Select State'}
+            value={state}
+            onChange={item => {
+              setState(item.id);
+              const a = distList.filter(e => e?.state === item?.id);
+              setFilteredDist(a);
+            }}
+          />
+          {errors?.state && (
+            <HelperText
+              type="error"
+              style={{fontSize: 14, alignSelf: 'flex-start'}}>
+              {errors?.state}
+            </HelperText>
+          )}
+          <Text style={styles.inputFieldTitleTxt}>District</Text>
+          <Dropdown
+            style={[styles.dropdown, SHADOWS.small]}
+            disable={state === ''}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            iconStyle={styles.iconStyle}
+            data={filteredDist}
+            maxHeight={300}
+            labelField="name"
+            valueField="id"
+            placeholder={'Select District'}
+            value={district}
+            onChange={item => {
+              setDistrict(item.id);
+            }}
+          />
+          {errors?.city && (
+            <HelperText
+              type="error"
+              style={{fontSize: 14, alignSelf: 'flex-start'}}>
+              {errors?.city}
+            </HelperText>
+          )}
+
           <Text style={styles.inputFieldTitleTxt}>Upload upto 12 Images</Text>
           <HelperText
             type="error"
@@ -399,7 +531,7 @@ const EditAdDetails = () => {
 export default EditAdDetails;
 
 const styles = StyleSheet.create({
-  inputFieldView: {flex: 1, alignItems: 'center'},
+  inputFieldView: {flex: 1, alignItems: 'center', marginTop: 7},
   inputFieldTitleTxt: {
     alignSelf: 'flex-start',
     marginHorizontal: width * 0.05,
@@ -420,5 +552,34 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     margin: 0,
+  },
+
+  dropdown: {
+    height: height * 0.06,
+    width: width * 0.9,
+    backgroundColor: COLORS.white,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginVertical: 5,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: COLORS.black,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: COLORS.black,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    color: COLORS.black,
   },
 });

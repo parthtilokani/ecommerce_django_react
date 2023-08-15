@@ -25,7 +25,7 @@ const PhoneOtpModal = ({
   handleOTPvalueChange,
 }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [optView, setOtpView] = useState(isVisibleOTPView || false);
+  const [optView, setOtpView] = useState(isVisibleOTPView);
   const [loading, setLoading] = useState(false);
   const [optValue, setOtpValue] = useState('');
   const [errors, setErrors] = useState({});
@@ -61,9 +61,9 @@ const PhoneOtpModal = ({
       setErrors({});
 
       if (await isConnectedToInternet()) {
-        setLoading(true);
         const response = await requestOtp({phone: phoneNumber});
-        if (response) {
+        setLoading(true);
+        if (response?.success) {
           Toast.success('You will receive OTP on phone call');
           setOtpView(true);
           startTimer();
@@ -83,100 +83,49 @@ const PhoneOtpModal = ({
       <Loader visible={loading} />
       <View style={styles.container}>
         <View style={styles.alert}>
-          {!optView && (
-            <TouchableOpacity
+          <Text
+            style={{
+              color: COLORS.black,
+              fontWeight: '700',
+              textAlign: 'center',
+              fontSize: normalize(FONTSIZE.medium),
+            }}>
+            Enter OTP
+          </Text>
+          <OTPTextView
+            tintColor={COLORS.primary}
+            offTintColor={COLORS.secondary}
+            containerStyle={styles.textInputContainer}
+            textInputStyle={styles.otpTextInputStyle}
+            handleTextChange={text =>
+              handleOTPvalueChange(text.replace(/[^0-9]/, ''), phoneNumber)
+            }
+            inputCount={6}
+            keyboardType="numeric"
+          />
+          <Button
+            text={'Submit'}
+            style={styles.otpSubmitButton}
+            onPress={verifyOTP}
+          />
+
+          <Text style={{color: 'black', alignSelf: 'center'}}>
+            {clock} second/s
+          </Text>
+
+          <TouchableOpacity
+            onPress={onSendOTP}
+            // disabled={clock === 0 ? false : true}
+          >
+            <Text
               style={{
-                marginBottom: 15,
-                alignSelf: 'flex-end',
-                padding: 5,
-              }}
-              onPress={() => {
-                setOtpView(false);
-                onModalClose();
+                color: clock === 0 ? COLORS.black : COLORS.gray,
+                fontWeight: '700',
+                textAlign: 'center',
               }}>
-              <Image
-                source={icons.close}
-                style={{
-                  width: width * 0.04,
-                  height: height * 0.02,
-                  resizeMode: 'contain',
-                  tintColor: 'red',
-                }}
-              />
-            </TouchableOpacity>
-          )}
-          {!optView ? (
-            <View>
-              <Input
-                id={'phoneNumber'}
-                errors={errors}
-                style={{width: width * 0.81}}
-                placeholder={'Enter Phone Number*'}
-                value={phoneNumber}
-                onChangeText={value =>
-                  setPhoneNumber(value.replace(/[^0-9]/, ''))
-                }
-                maxLength={10}
-                keyboardType={'phone-pad'}
-              />
-
-              <Button
-                text={'Send OTP'}
-                style={{
-                  width: width * 0.5,
-                  alignSelf: 'center',
-                  margin: 10,
-                  marginVertical: 15,
-                }}
-                onPress={onSendOTP}
-              />
-            </View>
-          ) : (
-            <>
-              <Text
-                style={{
-                  color: COLORS.black,
-                  fontWeight: '700',
-                  textAlign: 'center',
-                  fontSize: normalize(FONTSIZE.medium),
-                }}>
-                Enter OTP
-              </Text>
-              <OTPTextView
-                tintColor={COLORS.primary}
-                offTintColor={COLORS.secondary}
-                containerStyle={styles.textInputContainer}
-                textInputStyle={styles.otpTextInputStyle}
-                handleTextChange={text =>
-                  handleOTPvalueChange(text.replace(/[^0-9]/, ''), phoneNumber)
-                }
-                inputCount={6}
-                keyboardType="numeric"
-              />
-              <Button
-                text={'Submit'}
-                style={styles.otpSubmitButton}
-                onPress={verifyOTP}
-              />
-
-              <Text style={{color: 'black', alignSelf: 'center'}}>
-                {clock} second/s
-              </Text>
-
-              <TouchableOpacity
-                onPress={onSendOTP}
-                disabled={clock === 0 ? false : true}>
-                <Text
-                  style={{
-                    color: clock === 0 ? COLORS.black : COLORS.gray,
-                    fontWeight: '700',
-                    textAlign: 'center',
-                  }}>
-                  Resend OTP
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
+              Resend OTP
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>

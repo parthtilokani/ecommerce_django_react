@@ -48,7 +48,7 @@ const SignIn = ({navigation}) => {
     // if (istu) data.email = formDetails.email;
     // data.username = formDetails.email;
 
-    const data = {email: formDetails.email, password: formDetails?.password};
+    const data = {email: formDetails?.email, password: formDetails?.password};
     if (await isConnectedToInternet()) {
       setLoading(true);
       const response = await signIN(data);
@@ -61,9 +61,9 @@ const SignIn = ({navigation}) => {
           return navigation.replace('Drawer');
         }, 3000);
       } else {
-        if (!response?.res)
-          return Toast.error(response?.res || 'OTP not verified');
-        return Toast.error(response?.res || 'Invalid Credentials');
+        console.log(response);
+        if (!response?.res) return Toast.error('Invalid Credentials');
+        return Toast.error(response?.res);
       }
     }
   };

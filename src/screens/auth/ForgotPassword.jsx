@@ -21,11 +21,14 @@ import {
 import Input from '../../components/Inputs/Input';
 import Button from '../../components/Button/Button';
 import {isEmptyValue} from '../../utils/supportFunctions.js';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate.js';
+import ToastManager, {Toast} from 'toastify-react-native';
 
 const ForgotPassword = ({navigation}) => {
   const [userName, setUserName] = useState('');
   const [continueBtn, setContinueBtn] = useState(false);
   const [errors, setErrors] = useState({});
+  const axiosPrivate = useAxiosPrivate();
 
   const onChangeUsername = v => {
     setUserName(v);
@@ -37,16 +40,27 @@ const ForgotPassword = ({navigation}) => {
     }
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (isEmptyValue(userName, 'Username/Email', setErrors)) return;
 
     setErrors({});
-    navigation.replace('Drawer', {screen: 'Main'});
+    try {
+      const resetPassword = await axiosPrivate.post('/user/password_reset/', {
+        email: userName,
+      });
+      Toast.success('Password reset send to register \nemail address!');
+
+      console.log(resetPassword?.data);
+    } catch (e) {
+      console.log(e?.response?.data?.email[0]);
+      Toast.error("We couldn't find an account associated with that email.");
+    }
   };
 
   return (
     <KeyboardAvoidingWrapper>
       <SafeAreaView style={{flex: 1}}>
+        <ToastManager style={{width: width * 0.9}} />
         <GobackHeader resetBack navigation={navigation} />
         <View
           style={{
@@ -78,9 +92,9 @@ const ForgotPassword = ({navigation}) => {
                 // marginTop: height * 0.05,
               }}>
               <Input
-                id={'Username/Email'}
+                id={'Email'}
                 errors={errors}
-                placeholder={'Username / Email Address'}
+                placeholder={'Email Address'}
                 value={userName}
                 onChangeText={v => onChangeUsername(v)}
                 leftIcon={icons.user}

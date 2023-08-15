@@ -15,11 +15,16 @@ import {baseURL} from '../../utils/Api.js';
 
 const ListFlatAds = ({data, editDelete, deleteAds}) => {
   const navigation = useNavigation();
-  const imageUri = `${baseURL.replace('/api', data?.images[0]?.image)}`;
+  let imageUri;
+  if (data?.ads_image[0]?.image.includes(baseURL?.replace('/api', ''))) {
+    imageUri = data?.ads_image[0]?.image;
+  } else {
+    imageUri = `${baseURL?.replace('/api', data?.ads_image[0]?.image)}`;
+  }
   return (
     <TouchableOpacity
       style={[styles.container, SHADOWS.medium]}
-      onPress={() => navigation.navigate('ShowAdsDetails')}>
+      onPress={() => navigation.navigate('ShowAdsDetails', {data})}>
       <View style={styles.image_soldOutView}>
         {data?.is_sold && (
           <View style={[styles.sold_outView, SHADOWS.medium]}>

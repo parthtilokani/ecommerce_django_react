@@ -15,12 +15,12 @@ import {useQuery} from '@tanstack/react-query';
 import {getCategory} from '../../utils/customHook/backEndCalls.js';
 import {axiosOpen} from '../../utils/axios.js';
 import Loader from '../Loader/Loader.jsx';
+import {baseURL} from '../../utils/Api.js';
 
-const Categories = ({scrollEnabled}) => {
+const Categories = ({scrollEnabled, categories = [], title, nav}) => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [fetchQueries, setFetchedQueries] = useState([false]);
+  console.log('Cateeeee', categories);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -29,34 +29,23 @@ const Categories = ({scrollEnabled}) => {
     }, 2000);
   };
 
-  const {data: categories, error: error} = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      setLoading(true);
-      const data = await axiosOpen('ads/category');
-      setFetchedQueries(prev => {
-        prev[0] = true;
-        return [...prev];
-      });
-      setLoading(false);
-      return data?.data || [];
-    },
-    enabled: !fetchQueries[0],
-  });
-
   const Item = ({item}) => {
     return (
       <TouchableOpacity
         style={styles.item}
-        // onPress={() => navigation.navigate('Category', {item: item})}
-      >
-        <Image source={{uri: item.icon}} style={styles.imageStyle} />
-        <Text style={styles.titleStyle}>{item.name}</Text>
+        onPress={() => !nav && navigation.navigate('Category', {item: item})}>
+        <Image
+          source={{
+            uri: item.icon || baseURL.replace('/api', item?.category?.icon),
+          }}
+          style={styles.imageStyle}
+        />
+        <Text style={styles.titleStyle}>
+          {item.name || item.category?.name}
+        </Text>
       </TouchableOpacity>
     );
   };
-
-  console.log(categories);
 
   const flatHeader = () => {
     return (
@@ -68,7 +57,7 @@ const Categories = ({scrollEnabled}) => {
             fontWeight: 'bold',
             alignSelf: 'center',
           }}>
-          {categories?.length >= 1 ? 'Category' : 'Category Data not found'}
+          {categories?.length >= 1 ? title : 'Category Data not found'}
         </Text>
       </View>
     );
@@ -76,7 +65,6 @@ const Categories = ({scrollEnabled}) => {
 
   return (
     <View style={styles.container}>
-      <Loader visible={loading} />
       {/* <Text style={styles.titleText}>Categories</Text> */}
       <FlatList
         data={categories}

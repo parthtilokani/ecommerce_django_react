@@ -102,6 +102,7 @@ const SignUp = ({navigation}) => {
       if (await isConnectedToInternet()) {
         setLoading(true);
         const response = await signUP(data);
+        setLoading(true);
         if (response?.success) {
           otpRequest();
         } else {
@@ -111,6 +112,7 @@ const SignUp = ({navigation}) => {
         setLoading(false);
       }
     } catch (err) {
+      setLoading(true);
       console.log('error in SignUp.JSX', err);
     }
   };
@@ -315,8 +317,8 @@ const SignUp = ({navigation}) => {
 
           {/* OTP Modal */}
           <PhoneOtpModal
-            visible={otpModalVisible}
-            isVisibleOTPView
+            visible={true}
+            isVisibleOTPView={true}
             onModalClose={() => setOtpModalVisible(false)}
             verifyOTP={verifyOTP}
             handleOTPvalueChange={text => setOtpValue(text)}

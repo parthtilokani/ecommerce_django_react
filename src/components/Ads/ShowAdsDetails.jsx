@@ -13,64 +13,70 @@ import {
 } from 'react-native';
 import GobackHeader from '../GobackHeader.jsx';
 import {COLORS, width} from '../../constant/index.js';
+import {useRoute} from '@react-navigation/native';
+import {baseURL} from '../../utils/Api.js';
 
 const ShowAdsDetails = () => {
-  const data = [
-    {id: '1', imageUrl: 'https://source.unsplash.com/user/c_v_r/1900x800'},
-    {id: '2', imageUrl: 'https://source.unsplash.com/user/c_v_r/100x100'},
-    {
-      id: '3',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '4',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '5',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '6',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '7',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '8',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '9',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '10',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '11',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    {
-      id: '12',
-      imageUrl:
-        'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
-    },
-    // Add more image objects as needed
-  ];
+  const {
+    params: {data},
+  } = useRoute();
+  // const data = [
+  //   {id: '1', imageUrl: 'https://source.unsplash.com/user/c_v_r/1900x800'},
+  //   {id: '2', imageUrl: 'https://source.unsplash.com/user/c_v_r/100x100'},
+  //   {
+  //     id: '3',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '4',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '5',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '6',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '7',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '8',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '9',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '10',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '11',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   {
+  //     id: '12',
+  //     imageUrl:
+  //       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+  //   },
+  //   // Add more image objects as needed
+  // ];
 
+  console.log('DADAD', data);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -81,22 +87,30 @@ const ShowAdsDetails = () => {
   });
   const viewConfigRef = useRef({viewAreaCoveragePercentThreshold: 50});
 
-  const renderItem = ({item}) => (
-    <View style={styles.imageContainer}>
-      {loading && (
-        <ActivityIndicator style={styles.loadingIndicator} color={'black'} />
-      )}
-      <Image
-        source={{uri: item.imageUrl}}
-        style={styles.image}
-        onLoadStart={() => setLoading(true)}
-        onLoadEnd={() => setLoading(false)}
-      />
-    </View>
-  );
-
+  const renderItem = ({item}) => {
+    let imageUri;
+    if (data?.ads_image[0].image.includes(baseURL.replace('/api', ''))) {
+      imageUri = data?.ads_image[0]?.image;
+    } else {
+      imageUri = `${baseURL.replace('/api', data?.ads_image[0]?.image)}`;
+    }
+    console.log(imageUri);
+    return (
+      <View style={styles.imageContainer}>
+        {loading && (
+          <ActivityIndicator style={styles.loadingIndicator} color={'black'} />
+        )}
+        <Image
+          source={{uri: imageUri}}
+          style={styles.image}
+          onLoadStart={() => setLoading(true)}
+          onLoadEnd={() => setLoading(false)}
+        />
+      </View>
+    );
+  };
   const handleNext = () => {
-    if (currentIndex < data.length - 1) {
+    if (currentIndex < data?.ads_image?.length - 1) {
       setCurrentIndex(currentIndex + 1);
       flatListRef.current.scrollToIndex({index: currentIndex + 1});
     }
@@ -116,7 +130,7 @@ const ShowAdsDetails = () => {
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
-          data={data}
+          data={data?.ads_image}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           horizontal
@@ -133,21 +147,25 @@ const ShowAdsDetails = () => {
             {useNativeDriver: false},
           )}
         />
-        <TouchableOpacity
-          style={styles.buttonPrev}
-          onPress={handlePrev}
-          disabled={currentIndex == 0}>
-          <Text style={styles.buttonText}>Prev</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttonNext}
-          onPress={handleNext}
-          disabled={currentIndex === data.length - 1}>
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
+        {data?.ads_image.length > 1 && (
+          <>
+            <TouchableOpacity
+              style={styles.buttonPrev}
+              onPress={handlePrev}
+              disabled={currentIndex == 0}>
+              <Text style={styles.buttonText}>Prev</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonNext}
+              onPress={handleNext}
+              disabled={currentIndex === data.length - 1}>
+              <Text style={styles.buttonText}>Next</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
       <View style={styles.indicatorContainer}>
-        {data.map((_, index) => {
+        {data?.ads_image.map((_, index) => {
           const indicatorStyle =
             index === currentIndex
               ? styles.activeIndicator
@@ -162,7 +180,7 @@ const ShowAdsDetails = () => {
       </View>
       <View style={{marginHorizontal: 10}}>
         <Text>Title</Text>
-        <Text>Soosad</Text>
+        <Text>{data?.ad_title}</Text>
       </View>
       <View
         style={{
@@ -175,7 +193,7 @@ const ShowAdsDetails = () => {
       />
       <View style={{marginHorizontal: 10}}>
         <Text>Listed By : </Text>
-        <Text>Steve</Text>
+        <Text>{data?.create_user?.name}</Text>
       </View>
       <View
         style={{
@@ -188,7 +206,13 @@ const ShowAdsDetails = () => {
       />
       <View style={{marginHorizontal: 10}}>
         <Text>Location : </Text>
-        <Text>Mumbai</Text>
+        <Text>
+          {data?.city_name +
+            ', ' +
+            data?.state_name +
+            ', ' +
+            data?.country_name}
+        </Text>
       </View>
       <View
         style={{
@@ -201,17 +225,7 @@ const ShowAdsDetails = () => {
       />
       <View style={{marginHorizontal: 10}}>
         <Text>Description : </Text>
-        <Text>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
-          five centuries, but also the leap into electronic typesetting,
-          remaining essentially unchanged. It was popularised in the 1960s with
-          the release of Letraset sheets containing Lorem Ipsum passages, and
-          more recently with desktop publishing software like Aldus PageMaker
-          including versions of Lorem Ipsum.
-        </Text>
+        <Text>{data?.ad_description}</Text>
       </View>
     </SafeAreaView>
   );
@@ -227,11 +241,12 @@ const styles = StyleSheet.create({
     height: 250,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: COLORS.gray2,
   },
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
   indicatorContainer: {
     flexDirection: 'row',

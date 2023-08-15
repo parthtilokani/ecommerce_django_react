@@ -24,31 +24,35 @@ const MyListing = () => {
 
   useEffect(() => {
     (async () => {
-      try {
-        setLoading(true);
-        const {data} = await axiosPrivate.get('/ads/ads/get_current_user_ads', {
-          params: {
-            page: currentPage,
-            page_size: itemPerPage,
-          },
-        });
-
-        setLoading(false);
-        setTotalData(data?.count || 0);
-        setFetchedQueries(prev => {
-          setLoading(false);
-          prev[0] = true;
-          return [...prev];
-        });
-        setLoading(false);
-        setMyAds(data || []);
-      } catch (e) {
-        setLoading(false);
-        Toast.error('Token is invalid or expired!');
-        console.log(e?.response?.data);
-      }
+      fetchAds();
     })();
   }, [itemPerPage, currentPage]);
+
+  const fetchAds = async () => {
+    try {
+      setLoading(true);
+      const {data} = await axiosPrivate.get('/ads/ads/get_current_user_ads', {
+        params: {
+          page: currentPage,
+          page_size: itemPerPage,
+        },
+      });
+
+      setLoading(false);
+      setTotalData(data?.count || 0);
+      setFetchedQueries(prev => {
+        setLoading(false);
+        prev[0] = true;
+        return [...prev];
+      });
+      setLoading(false);
+      setMyAds(data || []);
+    } catch (e) {
+      setLoading(false);
+      Toast.error('Session is invalid or expired!');
+      console.log(e?.response?.data);
+    }
+  };
 
   // const {
   //   data: myAds,
@@ -91,7 +95,7 @@ const MyListing = () => {
     onSuccess: () => {
       setLoading(false);
       Toast.success('Ad post deleted!');
-      refetch();
+      fetchAds();
     },
     onError: () => {
       setLoading(false);

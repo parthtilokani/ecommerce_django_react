@@ -28,7 +28,7 @@ export const signIN = async values => {
         success: false,
         res: e?.response?.data?.message || 'Something went wrong!',
       };
-    return {res: e?.response?.message, success: false};
+    return {res: e?.response?.data?.message, success: false};
     // return {res: e?.response, success: false};
   }
 };
@@ -41,17 +41,34 @@ export const signUP = async values => {
       data: values,
     });
     if (response) {
+      console.log('responsewrq323', response?.data);
       return {res: response?.data, success: true};
     }
     return {res: (response.data = 'Something went wrong'), success: false};
   } catch (e) {
-    console.log('error in login', JSON.stringify(e?.response?.data));
+    console.log('error in signup', JSON.stringify(e?.response?.data));
     if (!e?.response) return {success: false, res: 'Something went wrong!'};
-    return {res: e?.response?.message, success: false};
+    return {success: false, res: 'Something went wrong!'};
+    // if (e?.response?.data?.phone_no[0])
+    //   return {
+    //     res: e?.response?.data?.phone_no[0],
+    //     success: false,
+    //   };
+    // if (e?.response?.data?.email[0])
+    //   return {
+    //     res: e?.response?.data?.email[0],
+    //     success: false,
+    //   };
+    // if (e?.response?.data?.username[0])
+    //   return {
+    //     res: e?.response?.data?.username[0],
+    //     success: false,
+    //   };
   }
 };
 
 export const requestOtp = async values => {
+  console.log('asdasdasd');
   try {
     const response = await axios.get(`${baseURL}/user/otp`, {
       params: {
@@ -59,6 +76,7 @@ export const requestOtp = async values => {
         register: true,
       },
     });
+    console.log(response);
     if (response?.data?.Status === 'Success')
       return {res: 'Success', success: true};
 
@@ -79,6 +97,7 @@ export const verifyOtp = async (values, url) => {
       method: 'POST',
       data: values,
     });
+    console.log('delta', response?.data);
     if (response || url === 'token/withotp') {
       await storeUserSession('userToken', {
         refresh: response?.data?.refresh,

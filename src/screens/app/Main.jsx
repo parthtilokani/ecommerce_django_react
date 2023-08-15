@@ -6,10 +6,10 @@ import Home from './BottomTabScreens/Home.jsx';
 import Search from './BottomTabScreens/Search.jsx';
 import Chats from './BottomTabScreens/Chats.jsx';
 import Account from './BottomTabScreens/Account.jsx';
-import {appName} from '../../constant/index.js';
-import {useIsFocused} from '@react-navigation/native';
+import {appName, width} from '../../constant/index.js';
+import {useIsFocused, useRoute} from '@react-navigation/native';
 import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
-
+import ToastManager, {Toast} from 'toastify-react-native';
 const Main = () => {
   const [tab, setTab] = useState(0);
   const isFocused = useIsFocused();
@@ -45,9 +45,18 @@ const Main = () => {
   const getSelectedTab = tabNumber => {
     setTab(tabNumber);
   };
+  const payment = useRoute()?.params?.payment;
+  useEffect(() => {
+    if (payment) {
+      Toast.success('Plan purches successfully!');
+    } else if (payment === false) {
+      Toast.error('Plan purches failed!');
+    }
+  }, [payment]);
 
   return (
     <View style={{flex: 1}}>
+      <ToastManager style={{width: width * 0.9}} />
       <CustomAlert
         visible={customAlert}
         title={'Alert!'}
@@ -58,6 +67,7 @@ const Main = () => {
         }}
         onCancel={() => setCustomAert(false)}
       />
+
       <AppHeader
         title={appName}
         logo={require('../../assets/logo-ecommerce.png')}

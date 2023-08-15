@@ -24,6 +24,7 @@ import MyListing from '../../screens/app/StackScreens/Account/MyListing/MyListin
 import EditAdDetails from '../../screens/app/StackScreens/PostCategory/EditAdDetails.jsx';
 import LoginWithPhone from '../../screens/auth/LoginWithPhone.jsx';
 import ShowAdsDetails from '../../components/Ads/ShowAdsDetails.jsx';
+import Search from '../../screens/app/Search.jsx';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
@@ -50,6 +51,7 @@ const StackNavigator = () => {
       <Stack.Screen name="AppSetting" component={Appsetting} />
       <Stack.Screen name="StoreDetails" component={StoreDetails} />
       <Stack.Screen name="ListGridAds" component={ListGridAds} />
+      <Stack.Screen name="Search" component={Search} />
 
       {/* <Stack.Screen name="PostSubCategory" component={PostSubCategory} /> */}
       <Stack.Screen name="SelectSubCategory" component={SelectSubCategory} />

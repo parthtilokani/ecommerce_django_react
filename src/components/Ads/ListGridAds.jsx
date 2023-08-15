@@ -16,6 +16,7 @@ import icons from '../../constant/icons.js';
 import {height, normalize, width} from '../../constant/index.js';
 import GobackHeader from '../GobackHeader.jsx';
 import Button from '../Button/Button.jsx';
+import Loader from '../Loader/Loader.jsx';
 
 const ListGridAds = ({
   data,
@@ -68,6 +69,7 @@ const ListGridAds = ({
       );
     }
   };
+
   return (
     <SafeAreaView>
       {/* <GobackHeader bg title={'Ads'} /> */}
@@ -132,8 +134,8 @@ const ListGridAds = ({
           scrollEnabled={scrollEnabled}
           data={data}
           numColumns={isGrid ? 2 : 1}
-          renderItem={({item, index}) =>
-            isGrid ? (
+          renderItem={({item, index}) => {
+            return isGrid ? (
               <GridFlatAds
                 data={item}
                 index={index}
@@ -147,8 +149,8 @@ const ListGridAds = ({
                 deleteAds={deleteAds}
                 editDelete={editDelete}
               />
-            )
-          }
+            );
+          }}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={() => (
             <Text style={styles.flatListEmptyComponent}>

@@ -19,21 +19,31 @@ import KeyboardAvoidingWrapper from '../../../../components/KeyboardAvoidingWrap
 import Button from '../../../../components/Button/Button.jsx';
 import {isValid} from '../../../../utils/supportFunctions.js';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
+import ToastManager, {Toast} from 'toastify-react-native';
+import Loader from '../../../../components/Loader/Loader.jsx';
 
 const Profile = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const navigation = useNavigation();
+  const {
+    params: {userData},
+  } = useRoute();
   const [formDetails, setFormDetails] = useState({
-    name: '',
-    userName: '',
-    email: '',
-    areaCode: '',
-    phoneNumber: '',
+    name: userData.name || '',
+    userName: userData.username || '',
+    email: userData.email || '',
+    areaCode: userData.area_code || '',
+    phoneNumber: userData.phone_no || '',
     date: new Date(),
-    dob: undefined,
+    dob: userData.dob || undefined,
   });
   const [show, setShow] = useState(false);
   const [imageUri, setImageUri] = useState(
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_xdDre4lqxczG2sdZ73IGUPaQlA4B0p9RhQdgkRbnCg&s',
   );
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (field, value) => {
@@ -61,72 +71,65 @@ const Profile = () => {
     try {
       let obj = {
         name: isValid('Name', formDetails.name, 'name'),
-        phoneNumber: isValid(
-          'Phone number',
-          formDetails.phoneNumber,
-          'phonenumber',
-        ),
       };
       if (Object.values(obj).filter(e => e !== '').length > 0)
         return setErrors(obj);
       setErrors({});
+      setIsLoading(true);
+      const update = await axiosPrivate.patch(`user/user/edit_user_profile`, {
+        area_code: formDetails.areaCode,
+        dob: formDetails?.dob,
+        email: formDetails?.email,
+        name: formDetails?.name,
+        phone_no: formDetails.phoneNumber,
+      });
+      setIsLoading(false);
+      if (update?.status === 200) {
+        Toast.success('Successfully updated!');
+        setTimeout(() => {
+          return navigation.replace('Drawer');
+        }, 3000);
+      } else {
+        Toast.error('Something went wrong!');
+      }
     } catch (err) {
-      console.log(err);
+      setIsLoading(false);
+      Toast.error('Something went wrong!');
+      console.log('error while updating profile', err?.response?.data);
     }
   };
 
-  const handleImageLibrary = async () => {
-    const options = {
-      mediaType: 'photo',
-      selectionLimit: 1,
-      includeBase64: false,
-    };
-    await launchImageLibrary(options)
-      .then(res => {
-        if (res?.assets) {
-          const image = res?.assets.map(item => setImageUri(item?.uri));
-          console.log(image);
-        } else if (res?.didCancel) {
-          console.log('dsada');
-        } else if (res?.errorMessage) {
-          console.log('sdsadsa23123', res);
-        }
-      })
-      .catch(err => console.log('adsdasd', err));
-  };
+  // const handleImageLibrary = async () => {
+  //   const options = {
+  //     mediaType: 'photo',
+  //     selectionLimit: 1,
+  //     includeBase64: false,
+  //   };
+  //   await launchImageLibrary(options)
+  //     .then(res => {
+  //       if (res?.assets) {
+  //         const image = res?.assets.map(item => setImageUri(item?.uri));
+  //         console.log(image);
+  //       } else if (res?.didCancel) {
+  //         console.log('dsada');
+  //       } else if (res?.errorMessage) {
+  //         console.log('sdsadsa23123', res);
+  //       }
+  //     })
+  //     .catch(err => console.log('adsdasd', err));
+  // };
+
   return (
     <SafeAreaView style={{flex: 1}}>
+      <Loader visible={isLoading} />
+      <ToastManager style={{width: width * 0.9}} />
       <GobackHeader bg title={'Edit Profile'} />
       <View style={styles.container}>
-        <View style={styles.profileImageView}>
-          <View style={styles.imageView}>
-            <Image
-              source={{
-                uri: imageUri,
-              }}
-              style={styles.image}
-            />
-            <TouchableOpacity
-              style={{
-                position: 'absolute',
-                top: 80,
-                left: width * 0.16,
-                borderRadius: 15,
-                backgroundColor: 'white',
-              }}
-              onPress={handleImageLibrary}>
-              <MaterialIcons
-                name="photo-camera"
-                size={width * 0.07}
-                color={COLORS.primary}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
         <KeyboardAvoidingWrapper>
           <View>
             <Text style={styles.inputTitleTxt}>Username</Text>
             <Input
+              value={formDetails.userName}
               leftIcon={icons.user}
               placeholder="Username*"
               errors={errors}
@@ -135,6 +138,7 @@ const Profile = () => {
             />
             <Text style={styles.inputTitleTxt}>Email</Text>
             <Input
+              value={formDetails.email}
               leftIcon={icons.email}
               placeholder="Email*"
               errors={errors}
@@ -165,6 +169,7 @@ const Profile = () => {
               maxLength={10}
               keyboardType={'phone-pad'}
               onChangeCountry={onChangeCountry}
+              editable={false}
             />
             <Text style={styles.inputTitleTxt}>Date of Birth (Optional)</Text>
             <Input
@@ -215,10 +220,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginVertical: 15,
   },
   inputTitleTxt: {
     color: COLORS.black,
-    fontSize: normalize(FONTSIZE.small),
+    fontSize: normalize(FONTSIZE.xxSmall),
     marginTop: 5,
   },
   input: {
