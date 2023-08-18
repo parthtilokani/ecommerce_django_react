@@ -130,8 +130,9 @@ const EditAd = () => {
       //if sub category and dynamic_fields are present
       if (subcategories?.length > 0 && data?.dynamic_field?.length > 0) {
         const dymFields =
-          subcategories?.find((c) => c.id == data?.sub_category)
-            ?.dynamic_field || [];
+          subcategories?.find(
+            (c) => Number(c.id) === Number(data?.sub_category)
+          )?.dynamic_field || [];
         if (dymFields?.length > 0) {
           let obj = {};
           data?.dynamic_field?.map((e) => (obj[e?.field_name] = e?.value));
@@ -177,7 +178,8 @@ const EditAd = () => {
 
   const handleSubCategoryClick = (idx) => {
     const dymFields =
-      subcategories?.find((c) => c.id == idx)?.dynamic_field || [];
+      subcategories?.find((c) => Number(c.id) === Number(idx))?.dynamic_field ||
+      [];
     setDynamicFields([...dymFields?.map((df) => ({ ...df, value: "" }))]);
   };
 
@@ -330,7 +332,7 @@ const EditAd = () => {
                 onChange={handleChange}>
                 <option value=''>--select--</option>
                 {subcategories
-                  ?.filter((e) => e.category == data.category)
+                  ?.filter((e) => Number(e.category) === Number(data.category))
                   ?.map((subcategory) => (
                     <option value={subcategory.id} key={subcategory.id}>
                       {subcategory.name}
@@ -441,7 +443,7 @@ const EditAd = () => {
             </div>
             <div>
               <label className='form-label m-0' htmlFor='district'>
-                City :
+                District :
               </label>
               <select
                 className={`form-control form-control-sm${

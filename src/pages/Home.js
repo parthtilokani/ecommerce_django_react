@@ -272,7 +272,7 @@ const Home = () => {
       <MostRecentAds />
 
       {/*Our Top Locations*/}
-      <div id='home-top-locations'>
+      {/* <div id='home-top-locations'>
         <div className='text-center py-4 mx-1'>
           <div className='h2 fw-bold'>Our Top Locations</div>
         </div>
@@ -294,7 +294,7 @@ const Home = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/*Info Panel*/}
       <InfoPanel />

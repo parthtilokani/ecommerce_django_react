@@ -70,8 +70,7 @@ const PackageAndPricing = () => {
     axiosPrivate
       .post(`/ads_plan/payment/sucess`, { response })
       .then((res) => {
-        console.log(response);
-        console.log(res);
+        toast.success("Plan purchased successfully");
         navigate(`/profile`);
       })
       .catch((err) => toast.error("Payment failed!"));
@@ -96,8 +95,14 @@ const PackageAndPricing = () => {
               </div>
               <div className='op-features'>{plan?.description || "-"}</div>
               <div>
-                <button onClick={() => buyPackage(plan?.id)}>
-                  {auth?.accessToken ? "Purchase" : "Register"}
+                <button
+                  onClick={() => buyPackage(plan?.id)}
+                  disabled={plan.id === 1}>
+                  {plan.id === 1
+                    ? "Active"
+                    : auth?.accessToken
+                    ? "Purchase"
+                    : "Register"}
                 </button>
               </div>
             </div>

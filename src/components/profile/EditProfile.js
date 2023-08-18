@@ -10,7 +10,6 @@ const EditProfile = ({ setEditModel, userData, refetchUser }) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     name: userData?.name,
-    username: userData?.username,
     gender: userData?.gender,
     dob: userData?.dob,
   });
@@ -30,7 +29,6 @@ const EditProfile = ({ setEditModel, userData, refetchUser }) => {
   const handleSubmit = () => {
     let obj = {
       name: isValid("Name", data.name),
-      username: isValid("Username", data.username, "username"),
     };
     if (Object.values(obj).filter((e) => e !== "").length > 0)
       return setErrors(obj);
@@ -46,11 +44,10 @@ const EditProfile = ({ setEditModel, userData, refetchUser }) => {
       .catch((err) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
-        const { name, username } = err?.response?.data;
+        const { name } = err?.response?.data;
         setErrors((prev) => ({
           ...prev,
           name: name && name?.length > 0 ? name[0] : "",
-          username: username && username?.length > 0 ? username[0] : "",
         }));
       })
       .finally(() => setLoading(false));
@@ -71,18 +68,6 @@ const EditProfile = ({ setEditModel, userData, refetchUser }) => {
             errors={errors}
             mandatory={true}
             placeholder='name'
-          />
-        </div>
-        <div>
-          <FormInput
-            labelName={"Username"}
-            type='text'
-            id='username'
-            value={data.username}
-            onChange={handleChange}
-            errors={errors}
-            mandatory={true}
-            placeholder='username'
           />
         </div>
         <div>

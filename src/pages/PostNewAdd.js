@@ -409,7 +409,7 @@ const PostNewAdd = () => {
                 </div>
                 <div>
                   <label className='form-label m-0' htmlFor='district'>
-                    City :
+                    District :
                   </label>
                   <select
                     className={`form-control form-control-sm${

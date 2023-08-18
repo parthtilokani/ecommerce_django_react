@@ -152,18 +152,6 @@ const ViewAd = () => {
                         </div>
                       ))}
                     {ad?.dynamic_field
-                      ?.filter((df) => df?.field_type === "TextArea")
-                      ?.map((df, i) => (
-                        <div key={i} className='py-1'>
-                          <span className='fw-bold'>{df?.field_name}</span> :{" "}
-                          {df?.value}
-                        </div>
-                      ))}
-                  </div>
-                  <div className='col-lg-4'>
-                    <div className='h5 fw-bold'>Overview</div>
-                    <hr className='m-0' />
-                    {ad?.dynamic_field
                       ?.filter((df) =>
                         [
                           "Date",
@@ -180,7 +168,14 @@ const ViewAd = () => {
                           {df?.value}
                         </div>
                       ))}
-                    <div className='py-1'>0 views</div>
+                    {ad?.dynamic_field
+                      ?.filter((df) => df?.field_type === "TextArea")
+                      ?.map((df, i) => (
+                        <div key={i} className='py-1'>
+                          <span className='fw-bold'>{df?.field_name}</span> :{" "}
+                          {df?.value}
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>

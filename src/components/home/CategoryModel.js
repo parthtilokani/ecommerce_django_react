@@ -14,43 +14,51 @@ const CategoryModel = ({
       style={categoryView ? {} : { display: "none" }}>
       <div className='card'>
         <div className='h5 p-1 text-center'>Select Category</div>
-        <div className='px-3 m-card-body'>
-          <ul
-            style={{
-              listStyle: "none",
-            }}>
-            <hr className='m-1' />
-            {selectedCategory?.name && (
-              <li
+        <div className='px-3 category-model-body row align-items-stretch'>
+          {selectedCategory?.name && (
+            <div className='col-4'>
+              <div
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   setSelectedCategory("");
                   setSelectedSubCategory("");
                   setCategoryView(false);
                 }}>
-                <p className='mx-2 fw-bold'>Remove Category</p>
-                <hr className='m-1' />
-              </li>
-            )}
-            {categories?.length > 0 &&
-              categories?.map((category, idx) => (
-                <li
-                  key={idx}
+                <div className='c-card d-flex flex-column justify-content-center align-items-center'>
+                  <div className='img-wrapper'>
+                    <img src={"/assets/svgs/subcategory.svg"} alt='' />
+                  </div>
+                  <div className='c-name'>Unselect</div>
+                </div>
+              </div>
+            </div>
+          )}
+          {categories?.length > 0 &&
+            categories?.map((category, idx) => (
+              <div key={idx} className='col-4'>
+                <div
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     setSelectedCategory(category);
                     setSelectedSubCategory("");
                     setCategoryView(false);
                   }}>
-                  <p
-                    style={{ overflow: "hidden", whiteSpace: "nowrap" }}
-                    className='mx-2'>
-                    {category.name}
-                  </p>
-                  <hr className='m-1' />
-                </li>
-              ))}
-          </ul>
+                  <div className='c-card d-flex flex-column justify-content-center align-items-center'>
+                    <div className='img-wrapper'>
+                      <img
+                        src={category?.icon}
+                        alt=''
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/assets/svgs/subcategory.svg";
+                        }}
+                      />
+                    </div>
+                    <div className='c-name text-center'>{category?.name}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
         <img
           src='./assets/svgs/close.svg'

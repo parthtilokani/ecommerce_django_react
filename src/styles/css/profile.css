@@ -33,6 +33,32 @@
   border-radius: 8px;
   padding: 5px;
 }
+
+.profile-action {
+  width: 30px;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  cursor: pointer;
+}
+.profile-action.edit {
+  background-color: rgb(174, 244, 174);
+}
+.profile-action.change {
+  background-color: rgb(187, 174, 244);
+}
+.profile-action.delete {
+  background-color: rgb(244, 174, 174);
+}
+.profile-action img {
+  width: 80%;
+  aspect-ratio: 1;
+}
+
 /*Models*/
 #edit-profile {
   backdrop-filter: blur(10px);

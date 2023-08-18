@@ -70,8 +70,9 @@ const Profile = () => {
       setDeleteModel(0);
       toast.success("Ad post deleted!");
       refetch();
+      refetchUser();
     },
-    onError: () => toast.error("Something went wrong! Retry"),
+    onError: (err) => toast.error("Something went wrong! Retry"),
   });
 
   const { mutate: deleteUser, isLoading: isDeletingUser } = useMutation({
@@ -82,7 +83,10 @@ const Profile = () => {
       setDeleteUserModel(false);
       toast.success("User deleted!");
     },
-    onError: () => toast.error("Something went wrong! Retry"),
+    onError: (err) => {
+      const { error } = err?.response?.data;
+      toast.error(error || "Something went wrong! Retry");
+    },
   });
 
   useEffect(() => {
@@ -107,12 +111,30 @@ const Profile = () => {
             src='./assets/svgs/profile-ph.svg'
             alt='Profile'
           />
+          <div
+            className='d-flex justify-content-end align-items-center'
+            style={{ paddingTop: "100px" }}>
+            <div
+              className='profile-action edit'
+              onClick={() => setEditModel(true)}>
+              <img src='./assets/svgs/edit.png' alt='edit' />
+            </div>
+            <div
+              className='profile-action change'
+              onClick={() => setChangePasswordModel(true)}>
+              <img src='./assets/svgs/change.png' alt='change' />
+            </div>
+            <div
+              className='profile-action delete'
+              onClick={() => setDeleteUserModel(true)}>
+              <img src='./assets/svgs/delete.png' alt='delete' />
+            </div>
+          </div>
           <div className='w-100'>
             <div
               style={{
                 maxWidth: "1200px",
                 margin: "auto",
-                paddingTop: "100px",
               }}>
               <div className='row text-center fw-bold'>
                 <div className='col-lg-6'>
@@ -129,6 +151,11 @@ const Profile = () => {
                 <div className='col-lg-6'>
                   <div className='info-card'>
                     Phone No : {userData?.phone_no}
+                  </div>
+                </div>
+                <div className='col-lg-6'>
+                  <div className='info-card'>
+                    Remaining Monthly Credits : {userData?.remaining_credits}
                   </div>
                 </div>
               </div>
@@ -216,7 +243,7 @@ const Profile = () => {
               </div>
             ))
           ) : (
-            <NoAdsCard />
+            <NoAdsCard profile={true} />
           )}
         </div>
 
@@ -227,8 +254,11 @@ const Profile = () => {
               id='datatable_info'
               role='status'
               aria-live='polite'>
-              Showing {currentPage * itemPerPage - itemPerPage + 1} to{" "}
-              {Math.min(currentPage * itemPerPage, totalData)} of {totalData}{" "}
+              Showing{" "}
+              {myAds?.results?.length > 0
+                ? currentPage * itemPerPage - itemPerPage + 1
+                : 0}{" "}
+              to {Math.min(currentPage * itemPerPage, totalData)} of {totalData}{" "}
               entries
             </div>
           </div>
@@ -309,53 +339,25 @@ const Profile = () => {
 
       <div id='price-and-packages'>
         <div className='h3 fw-bold m-3 mb-1'>Price and Package :</div>
-        <div className='row mx-auto our-pricing-main justify-content-center'>
-          <div className='col-xl-3 col-lg-4 col-md-6'>
-            <div className='our-pricing-card mx-auto'>
-              <div className='h4'>{userData?.plan_id?.name}</div>
-              <div className='h1 pricing'>
-                ₹ {userData?.plan_id?.price}
-                <span>/Per month</span>
-              </div>
-              <div className='op-features'>
-                {userData?.plan_id?.ads_number_restriction} Regular Ads
-              </div>
-              <div className='op-features'>
-                {userData?.plan_id?.description || "-"}
-              </div>
-              <div>
-                <button>Active</button>
+        <div className='row mx-auto our-pricing-main justify-content-evenly'>
+          {userData?.plan_ids?.map((plan, i) => (
+            <div className='col-xl-3 col-lg-4 col-md-6' key={i}>
+              <div className='our-pricing-card mx-auto'>
+                <div className='h4'>{plan?.name}</div>
+                <div className='h1 pricing'>
+                  ₹ {plan?.price}
+                  <span>/Per month</span>
+                </div>
+                <div className='op-features'>
+                  {plan?.ads_number_restriction} Regular Ads
+                </div>
+                <div className='op-features'>{plan?.description || "-"}</div>
+                <div>
+                  <button>Active</button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div id='my-settings py-2'>
-        <div className='h3 fw-bold m-3 mb-0'>Settings :</div>
-        <div className='px-4'>
-          <p className='fw-bold p-2'>
-            <span className='pointer' onClick={() => setEditModel(true)}>
-              Edit Profile
-            </span>
-          </p>
-          <p className='fw-bold p-2'>
-            <span
-              className='pointer'
-              onClick={() => setChangePasswordModel(true)}>
-              Change Password
-            </span>
-          </p>
-          <p className='text-danger fw-bold p-2'>
-            <span className='pointer' onClick={() => setDeleteUserModel(true)}>
-              Delete Account
-            </span>
-          </p>
-          {/* <p className='fw-bold p-2'>
-            Notifications :{" "}
-            <button className='btn btn-sm btn-dark'>Enabled</button>
-          </p>
-          <p className='fw-bold p-2'>Logout from all devices</p> */}
+          ))}
         </div>
       </div>
 

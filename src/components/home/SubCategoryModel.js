@@ -14,54 +14,65 @@ const SubCategoryModel = ({
       style={subCategoryView ? {} : { display: "none" }}>
       <div className='card'>
         <div className='h5 p-1 text-center'>Select Sub-Category</div>
-        <div className='px-3' style={{ maxHeight: 200, overflowY: "scroll" }}>
-          <ul
-            style={{
-              listStyle: "none",
-            }}>
-            <hr className='m-1' />
-            {selectedSubCategory?.name && (
-              <li
+        <div className='px-3 category-model-body row align-items-stretch'>
+          {selectedSubCategory?.name && (
+            <div className='col-4'>
+              <div
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   setSelectedSubCategory("");
                   setSubCategoryView(false);
                 }}>
-                <p className='mx-2 fw-bold text-center'>Remove SubCategory</p>
-                <hr className='m-1' />
-              </li>
-            )}
-            {!selectedCategory?.name && (
-              <li>
-                <p className='mx-2 fw-bold text-center'>Select Category</p>
-                <hr className='m-1' />
-              </li>
-            )}
-            {subcategories?.length > 0 &&
-              subcategories
-                ?.filter((subc) =>
-                  selectedCategory?.id
-                    ? Number(subc?.category) ===
-                      Number(selectedCategory?.id || 0)
-                    : false
-                )
-                ?.map((subcategory, idx) => (
-                  <li
-                    key={idx}
+                <div className='c-card d-flex flex-column justify-content-center align-items-center'>
+                  <div className='img-wrapper'>
+                    <img src={"/assets/svgs/subcategory.svg"} alt='' />
+                  </div>
+                  <div className='c-name'>Unselect</div>
+                </div>
+              </div>
+            </div>
+          )}
+          {!selectedCategory?.name && (
+            <div className='col-4'>
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setSelectedSubCategory("");
+                  setSubCategoryView(false);
+                }}>
+                <div className='c-card d-flex flex-column justify-content-center align-items-center'>
+                  <div className='img-wrapper'>
+                    <img src={"/assets/svgs/subcategory.svg"} alt='' />
+                  </div>
+                  <div className='c-name'>Select Category</div>
+                </div>
+              </div>
+            </div>
+          )}
+          {subcategories?.length > 0 &&
+            subcategories
+              ?.filter((subc) =>
+                selectedCategory?.id
+                  ? Number(subc?.category) === Number(selectedCategory?.id || 0)
+                  : false
+              )
+              ?.map((subcategory, idx) => (
+                <div key={idx} className='col-4'>
+                  <div
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       setSelectedSubCategory(subcategory);
                       setSubCategoryView(false);
                     }}>
-                    <p
-                      style={{ overflow: "hidden", whiteSpace: "nowrap" }}
-                      className='mx-2'>
-                      {subcategory.name}
-                    </p>
-                    <hr className='m-1' />
-                  </li>
-                ))}
-          </ul>
+                    <div className='c-card d-flex flex-column justify-content-center align-items-center'>
+                      <div className='img-wrapper'>
+                        <img src={"/assets/svgs/subcategory.svg"} alt='' />
+                      </div>
+                      <div className='c-name'>{subcategory?.name}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
         </div>
         <img
           src='./assets/svgs/close.svg'

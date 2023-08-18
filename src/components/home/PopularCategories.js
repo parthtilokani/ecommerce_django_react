@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { axiosOpen } from "../../utils/axios.js";
 import { URI } from "../../utils/API.js";
+import { Link } from "react-router-dom";
 
 const PopularCategories = () => {
   const [fetchedQueries, setFetchedQueries] = useState(false);
@@ -34,24 +35,32 @@ const PopularCategories = () => {
         {categories?.length > 0 &&
           categories?.map((category, i) => (
             <div key={i} className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3'>
-              <div className='c-card d-flex flex-column justify-content-center align-items-center'>
-                <div className='img-wrapper'>
-                  <img
-                    src={
-                      URI +
-                      "/ads_category_icon" +
-                      category?.category?.icon?.split("ads_category_icon")[1]
-                    }
-                    alt=''
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/assets/svgs/subcategory.svg";
-                    }}
-                  />
+              <Link
+                to='/search'
+                state={{
+                  category: category?.category,
+                  subcategory: {},
+                  search: "",
+                }}>
+                <div className='c-card d-flex flex-column justify-content-center align-items-center'>
+                  <div className='img-wrapper'>
+                    <img
+                      src={
+                        URI +
+                        "/ads_category_icon" +
+                        category?.category?.icon?.split("ads_category_icon")[1]
+                      }
+                      alt=''
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/assets/svgs/subcategory.svg";
+                      }}
+                    />
+                  </div>
+                  <div className='h5'>{category?.category?.name}</div>
+                  <div className='h6'>{category?.count} Ads</div>
                 </div>
-                <div className='h5'>{category?.category?.name}</div>
-                <div className='h6'>{category?.count} Ads</div>
-              </div>
+              </Link>
             </div>
           ))}
       </div>

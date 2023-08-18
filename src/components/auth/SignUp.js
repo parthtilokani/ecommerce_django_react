@@ -6,11 +6,12 @@ import { axiosOpen } from "../../utils/axios.js";
 import { isValid } from "../../utils/support.js";
 
 const SignUp = ({ setSignUpMethod, setMessage }) => {
+  const [profileId, setProfileId] = useState();
   const [otpMessage, setOtpMessage] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [OTPView, setOTPView] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [clock, setClock] = useState(5 * 60);
+  const [clock, setClock] = useState(60);
   const [data, setData] = useState({
     name: "",
     username: "",
@@ -38,6 +39,93 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
     setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
+  const handleSubmit = () => {
+    if (profileId) return handleEditSubmit();
+    let obj = {
+      name: isValid("Name", data.name),
+      username: isValid("Username", data.username, "username"),
+      email: isValid("Email", data.email, "email"),
+      phone_no: isValid("Phone number", data.phone_no, "phonenumber"),
+      password: isValid("Password", data.password, "password"),
+      c_password: isValid("Comfirm password", data.c_password),
+    };
+    if (!obj?.c_password)
+      obj.c_password =
+        data.password !== data.c_password ? "Password doen't match" : "";
+    if (Object.values(obj).filter((e) => e !== "").length > 0)
+      return setErrors(obj);
+    setErrors({});
+    setLoading(true);
+    axiosOpen
+      .post("/user/user", { ...data, area_code: data.area_code || "91" })
+      .then(({ data }) => {
+        setProfileId(data?.id);
+        setOTPView(true);
+        handleGetOTP();
+      })
+      .catch((err) => {
+        if (!err?.response)
+          return setErrors({ message: "No internet connection!" });
+        const { name, username, email, phone_no, password } =
+          err?.response?.data;
+        setErrors((prev) => ({
+          ...prev,
+          name: name && name?.length > 0 ? name[0] : "",
+          phone_no: phone_no && phone_no?.length > 0 ? phone_no[0] : "",
+          username: username && username?.length > 0 ? username[0] : "",
+          email: email && email?.length > 0 ? email[0] : "",
+          password: password && password?.length > 0 ? password[0] : "",
+        }));
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const handleEditSubmit = () => {
+    let obj = {
+      name: isValid("Name", data.name),
+      username: isValid("Username", data.username, "username"),
+      email: isValid("Email", data.email, "email"),
+      phone_no: isValid("Phone number", data.phone_no, "phonenumber"),
+      password: isValid("Password", data.password, "password"),
+      c_password: isValid("Comfirm password", data.c_password),
+    };
+    if (!obj?.c_password)
+      obj.c_password =
+        data.password !== data.c_password ? "Password doen't match" : "";
+    if (Object.values(obj).filter((e) => e !== "").length > 0)
+      return setErrors(obj);
+    setErrors({});
+    setLoading(true);
+    axiosOpen
+      .patch(
+        "/user/user/edit_user_registration",
+        {
+          ...data,
+          area_code: data.area_code || "91",
+        },
+        { params: { profile_id: profileId } }
+      )
+      .then(() => {
+        setOTPView(true);
+        handleGetOTP();
+      })
+      .catch((err) => {
+        if (!err?.response)
+          return setErrors({ message: "No internet connection!" });
+        const { name, username, email, phone_no, password } =
+          err?.response?.data;
+        setErrors((prev) => ({
+          ...prev,
+          name: name && name?.length > 0 ? name[0] : "",
+          phone_no: phone_no && phone_no?.length > 0 ? phone_no[0] : "",
+          username: username && username?.length > 0 ? username[0] : "",
+          email: email && email?.length > 0 ? email[0] : "",
+          password: password && password?.length > 0 ? password[0] : "",
+        }));
+      })
+      .finally(() => setLoading(false));
+  };
+
   const handleGetOTP = () => {
     setOtpMessage("");
     setErrors({});
@@ -47,7 +135,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
       .then((res) => {
         setOtpMessage("OTP sent. You will receive SMS or Call.");
         setOtpSent(true);
-        setClock(5 * 60);
+        setClock(60);
         const newInterval = setInterval(() => {
           setClock((prev) => {
             if (prev === 0) {
@@ -71,45 +159,6 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
             message: err?.response?.data?.error,
           }));
         else setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
-      })
-      .finally(() => setLoading(false));
-  };
-
-  const handleSubmit = () => {
-    let obj = {
-      name: isValid("Name", data.name),
-      username: isValid("Username", data.username, "username"),
-      email: isValid("Email", data.email, "email"),
-      phone_no: isValid("Phone number", data.phone_no, "phonenumber"),
-      password: isValid("Password", data.password, "password"),
-      c_password: isValid("Comfirm password", data.c_password),
-    };
-    if (!obj?.c_password)
-      obj.c_password =
-        data.password !== data.c_password ? "Password doen't match" : "";
-    if (Object.values(obj).filter((e) => e !== "").length > 0)
-      return setErrors(obj);
-    setErrors({});
-    setLoading(true);
-    axiosOpen
-      .post("/user/user", { ...data, area_code: data.area_code || "91" })
-      .then(() => {
-        setOTPView(true);
-        handleGetOTP();
-      })
-      .catch((err) => {
-        if (!err?.response)
-          return setErrors({ message: "No internet connection!" });
-        const { name, username, email, phone_no, password } =
-          err?.response?.data;
-        setErrors((prev) => ({
-          ...prev,
-          name: name && name?.length > 0 ? name[0] : "",
-          phone_no: phone_no && phone_no?.length > 0 ? phone_no[0] : "",
-          username: username && username?.length > 0 ? username[0] : "",
-          email: email && email?.length > 0 ? email[0] : "",
-          password: password && password?.length > 0 ? password[0] : "",
-        }));
       })
       .finally(() => setLoading(false));
   };
@@ -196,6 +245,12 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
                   ? `Valid till ${clock} second/s.`
                   : "OTP has expired!"}
               </div>
+            </div>
+
+            <div className='mt-2 text-center'>
+              <span className='already-user' onClick={() => setOTPView(false)}>
+                Edit Details
+              </span>
             </div>
           </div>
 

@@ -9,7 +9,8 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
   const [otpCount, setOtpCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [clock, setClock] = useState(5 * 60);
+  const [otpSentOnce, setOtpSentOnce] = useState(false);
+  const [clock, setClock] = useState(60);
   const { setAuth } = useAuth();
   const [data, setData] = useState({
     phonenumber: "",
@@ -37,8 +38,9 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
       .then((res) => {
         setOtpMessage("OTP sent. You will receive SMS or Call.");
         setOtpSent(true);
+        setOtpSentOnce(true);
         setOtpCount(1);
-        setClock(5 * 60);
+        setClock(60);
         const newInterval = setInterval(() => {
           setClock((prev) => {
             if (prev === 0) {
@@ -90,11 +92,11 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
       .catch((err) => {
         if (!err?.response)
           return setErrors({ message: "No internet connection!" });
-        const { phone_no, detail, Details } = err?.response?.data;
+        const { phone_no, detail, Details, error } = err?.response?.data;
         setErrors((prev) => ({
           ...prev,
           phone_no: phone_no && phone_no?.length > 0 ? phone_no[0] : "",
-          message: Details || detail || "",
+          message: error || Details || detail || "",
         }));
       })
       .finally(() => setLoading(false));
@@ -160,7 +162,7 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
           style={{ padding: "14px 16px", fontSize: "17px" }}
           value={data.otp}
           onChange={handleChange}
-          disabled={!otpSent}
+          disabled={!otpSentOnce}
         />
       </div>
       <div style={{ minHeight: 20 }}>

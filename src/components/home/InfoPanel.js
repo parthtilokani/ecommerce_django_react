@@ -4,12 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosOpen } from "../../utils/axios.js";
 
 const InfoPanel = () => {
-  const [fetchedQueries, setFetchedQueries] = useState([false, false]);
+  const [fetchedQueries, setFetchedQueries] = useState([false, false, false]);
   const { data: total_ads } = useQuery({
     queryKey: ["total_ads"],
     queryFn: async () => {
       const { data } = await axiosOpen.get("/ads/ads/total_count");
-      setFetchedQueries((prev) => [true, prev[1]]);
+      setFetchedQueries((prev) => [true, prev[1], prev[2]]);
       return data?.total_count;
     },
     enabled: !fetchedQueries[0],
@@ -21,10 +21,19 @@ const InfoPanel = () => {
         page: 1,
         page_size: 1000,
       });
-      setFetchedQueries((prev) => [prev[0], true]);
+      setFetchedQueries((prev) => [prev[0], true, prev[2]]);
       return data?.count || 100;
     },
     enabled: !fetchedQueries[1],
+  });
+  const { data: total_users } = useQuery({
+    queryKey: ["total_users"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/user/user/get_users_count");
+      setFetchedQueries((prev) => [prev[0], prev[1], true]);
+      return data?.registered_user || 100;
+    },
+    enabled: !fetchedQueries[2],
   });
 
   return (
@@ -54,7 +63,7 @@ const InfoPanel = () => {
                     <img src='/assets/svgs/users.svg' alt='' />
                   </div>
                   <div className='mt-4'>
-                    <div className='h2 fw-bold text-white'>3242+</div>
+                    <div className='h2 fw-bold text-white'>{total_users}+</div>
                     <p className='h5 text-white'>Registered Users</p>
                   </div>
                 </div>

@@ -46,9 +46,11 @@ const Contact = () => {
   };
 
   return (
-    <div id='contact-main'>
+    <div
+      id='contact-main'
+      className='d-flex justify-content-center align-items-center'>
       <div className='contact-body'>
-        <div className='contact-map'></div>
+        {/* <div className='contact-map'></div> */}
         <div className='row'>
           <div className='col-md-6 mt-3'>
             <div className='h4'>Information</div>
