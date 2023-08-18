@@ -52,7 +52,7 @@ const style = {
 
 const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
   <div>
-    <p>Delete City?</p>
+    <p>Delete District?</p>
     <button className="btn btn-danger btn-sm mx-1" onClick={deleteCategory}>
       Sure
     </button>
@@ -111,7 +111,7 @@ export default function Cities() {
   const { mutate: postCity, isLoading: isSaving } = useMutation({
     mutationFn: (formData) => axiosPrivate.post('/ads/district', formData),
     onSuccess: () => {
-      toast.success('City saved!');
+      toast.success('District saved!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
@@ -121,7 +121,7 @@ export default function Cities() {
       axiosPrivate.patch(`/ads/district/${id}`, formData);
     },
     onSuccess: () => {
-      toast.success('City updated!');
+      toast.success('District updated!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
@@ -129,7 +129,7 @@ export default function Cities() {
   const { mutate: deleteCity, isLoading: isDeleting } = useMutation({
     mutationFn: (id) => axiosPrivate.delete(`/ads/district/${id}`),
     onSuccess: () => {
-      toast.success('City deleted!');
+      toast.success('District deleted!');
       refetch();
     },
     onError: () => toast.error('Something went wrong! Retry'),
@@ -170,16 +170,16 @@ export default function Cities() {
   return (
     <>
       <Helmet>
-        <title>Cities | Classified Ads</title>
+        <title>Districts | Classified Ads</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Cities
+            Districts
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
-            New City
+            New District
           </Button>
         </Stack>
 
@@ -276,7 +276,7 @@ export default function Cities() {
         >
           <Box sx={style}>
             <div>
-              <h5>{district.id ? 'Edit' : 'Add'} City</h5>
+              <h5>{district.id ? 'Edit' : 'Add'} District</h5>
               <hr />
             </div>
             <div className="w-100">
