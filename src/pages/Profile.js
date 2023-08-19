@@ -195,7 +195,7 @@ const Profile = () => {
                         ad?.ads_image?.length > 0 &&
                         ad?.ads_image[0] &&
                         ad?.ads_image[0]?.image
-                          ? URI + "/" + ad?.ads_image[0].image
+                          ? ad?.ads_image[0].image
                           : "https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/themes/classima/assets/img/noimage-listing-thumb.jpg"
                       }
                       alt=''
@@ -340,24 +340,45 @@ const Profile = () => {
       <div id='price-and-packages'>
         <div className='h3 fw-bold m-3 mb-1'>Price and Package :</div>
         <div className='row mx-auto our-pricing-main justify-content-evenly'>
-          {userData?.plan_ids?.map((plan, i) => (
-            <div className='col-xl-3 col-lg-4 col-md-6' key={i}>
-              <div className='our-pricing-card mx-auto'>
-                <div className='h4'>{plan?.name}</div>
-                <div className='h1 pricing'>
-                  ₹ {plan?.price}
-                  <span>/Per month</span>
-                </div>
-                <div className='op-features'>
-                  {plan?.ads_number_restriction} Regular Ads
-                </div>
-                <div className='op-features'>{plan?.description || "-"}</div>
-                <div>
-                  <button>Active</button>
+          {userData?.user_ads_plans
+            .reduce((accumulator, current) => {
+              const existingPlan = accumulator.find(
+                (plan) => plan.ads_plan.id === current.ads_plan.id
+              );
+
+              if (existingPlan) {
+                existingPlan.count++;
+              } else {
+                accumulator.push({
+                  ...current,
+                  count: 1,
+                });
+              }
+
+              return accumulator;
+            }, [])
+            ?.map(({ ads_plan, count }, i) => (
+              <div className='col-xl-3 col-lg-4 col-md-6' key={i}>
+                <div className='our-pricing-card mx-auto'>
+                  <div className='h4'>{`${ads_plan?.name}${
+                    count > 1 ? " x " + count : ""
+                  }`}</div>
+                  <div className='h1 pricing'>
+                    ₹ {ads_plan?.price}
+                    <span>/Per month</span>
+                  </div>
+                  <div className='op-features'>
+                    {ads_plan?.ads_number_restriction} Regular Ads
+                  </div>
+                  <div className='op-features'>
+                    {ads_plan?.description || "-"}
+                  </div>
+                  <div>
+                    <button>Active</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
