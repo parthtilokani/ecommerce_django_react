@@ -97,8 +97,8 @@ const PackageAndPricing = () => {
               <div>
                 <button
                   onClick={() => buyPackage(plan?.id)}
-                  disabled={plan.id === 1}>
-                  {plan.id === 1
+                  disabled={Number(plan.price) === 0}>
+                  {Number(plan.price) === 0
                     ? "Active"
                     : auth?.accessToken
                     ? "Purchase"

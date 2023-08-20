@@ -452,7 +452,7 @@ const EditAd = () => {
                 id='district'
                 value={data.district}
                 onChange={handleChange}>
-                <option value=''>Select City</option>
+                <option value=''>Select District</option>
                 {cities
                   ?.filter((e) => Number(e.state) === Number(data.state))
                   ?.map((e) => (

@@ -154,6 +154,7 @@
   font-size: 13px;
   color: grey;
   font-weight: bold;
+  text-align: center;
 }
 .category-model-body .c-card:hover .c-name {
   color: white;
