@@ -69,13 +69,14 @@ export default function SubCategories() {
   const [open2, setOpen2] = useState(false);
   const [fetchedQueries, setFetchedQueries] = useState([false, false]);
 
-  const initialSubCategory = { name: '', category: '' };
+  const initialSubCategory = { name: '', category: '', no_of_images: 12 };
   const [subCategory, setSubCategory] = useState(initialSubCategory);
   const [newFields, setNewFields] = useState([]);
 
   const initialDF = {
     field_name: '',
     field_type: '',
+    is_required: 'true',
   };
   const [newField, setNewField] = useState(initialDF);
 
@@ -177,7 +178,13 @@ export default function SubCategories() {
   const handleSubmit = () => {
     if (!subCategory.name.trim()) return toast.error('Name is required!');
     if (!subCategory.category) return toast.error('Category is required!');
-    const body = { name: subCategory.name, category: subCategory.category, dynamic_field: newFields || [] };
+    if (!subCategory.no_of_images) return toast.error('No of Images is required!');
+    const body = {
+      name: subCategory.name,
+      category: subCategory.category,
+      dynamic_field: newFields || [],
+      no_of_images: subCategory.no_of_images,
+    };
     if (subCategory?.id) patchSubCategory({ body, id: subCategory.id });
     else postSubCategory(body);
     handleClose();
@@ -312,6 +319,22 @@ export default function SubCategories() {
                 </div>
               </div>
             </div>
+            <div className="row">
+              <div className="col-lg-6">
+                <div className="w-100 mt-2">
+                  <TextField
+                    id="no_of_images"
+                    type="number"
+                    label="No of Images*"
+                    variant="outlined"
+                    className="w-100"
+                    value={subCategory.no_of_images}
+                    onChange={handleChangeForm}
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+            </div>
             <div className="mt-3">
               <div className="h6 fw-bold">Dynamic Fields :</div>
               <div className="mt-1">
@@ -321,6 +344,7 @@ export default function SubCategories() {
                       <th> </th>
                       <th>Field Name</th>
                       <th>Field Type</th>
+                      <th>Is Required</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -330,6 +354,7 @@ export default function SubCategories() {
                         <td>{i + 1}</td>
                         <td>{f?.field_name}</td>
                         <td>{f?.field_type}</td>
+                        <td>{f?.is_required}</td>
                         <td>
                           <Iconify
                             icon="material-symbols:edit"
@@ -418,6 +443,18 @@ export default function SubCategories() {
                   </p>
                 </div>
               )}
+              <div className="w-100 mt-2">
+                <CustomSelect
+                  id="is_required"
+                  label="Is Required"
+                  data={[
+                    { value: 'true', label: 'True' },
+                    { value: 'false', label: 'False' },
+                  ]}
+                  value={newField?.is_required}
+                  handleChange={handleChangeField}
+                />
+              </div>
             </div>
             <hr />
             <div className="mt-2 text-end">

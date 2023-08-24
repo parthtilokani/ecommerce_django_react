@@ -17,9 +17,9 @@ const InputFields = lazy(() => import('./pages/master/InputFields'));
 const Categories = lazy(() => import('./pages/master/Categories'));
 const SubCategories = lazy(() => import('./pages/master/SubCategories'));
 
-const Countries = lazy(() => import('./pages/master/Countries'));
-const States = lazy(() => import('./pages/master/States'));
-const Cities = lazy(() => import('./pages/master/Cities'));
+// const Countries = lazy(() => import('./pages/master/Countries'));
+// const States = lazy(() => import('./pages/master/States'));
+// const Cities = lazy(() => import('./pages/master/Cities'));
 
 const AdsPlans = lazy(() => import('./pages/master/AdPlans'));
 
@@ -47,9 +47,9 @@ export default function Router() {
           <Route path="/master/inputfields" element={<InputFields />} />
           <Route path="/master/sub-categories" element={<SubCategories />} />
 
-          <Route path="/master/countries" element={<Countries />} />
+          {/* <Route path="/master/countries" element={<Countries />} />
           <Route path="/master/states" element={<States />} />
-          <Route path="/master/cities" element={<Cities />} />
+          <Route path="/master/cities" element={<Cities />} /> */}
 
           <Route path="/master/ads-plans" element={<AdsPlans />} />
 
