@@ -22,6 +22,8 @@ import {
   TablePagination,
   TableHead,
   TableSortLabel,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
@@ -76,7 +78,7 @@ export default function SubCategories() {
   const initialDF = {
     field_name: '',
     field_type: '',
-    is_required: 'true',
+    is_required: false,
   };
   const [newField, setNewField] = useState(initialDF);
 
@@ -155,13 +157,15 @@ export default function SubCategories() {
   };
 
   const handleChangeForm = (e) => setSubCategory((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  const handleChangeField = (e) => setNewField((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  const handleChangeField = (e) => {
+    if (e.target.id === 'is_required') return setNewField((prev) => ({ ...prev, is_required: !prev.is_required }));
+    setNewField((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  };
 
   const handleAddNewField = () => {
     if (!newField?.field_name?.trim() || !newField?.field_type) return;
     if (newField.field_type === 'Select' && !newField?.options?.trim()) return;
     if (newField?.options) newField.options = newField.options.split(',').map((e) => e.trim());
-    console.log(newField);
     if (newField?.idx) {
       const clone = newFields;
       clone[newField.idx - 1] = newField;
@@ -354,7 +358,7 @@ export default function SubCategories() {
                         <td>{i + 1}</td>
                         <td>{f?.field_name}</td>
                         <td>{f?.field_type}</td>
-                        <td>{f?.is_required}</td>
+                        <td>{f?.is_required?.toString()}</td>
                         <td>
                           <Iconify
                             icon="material-symbols:edit"
@@ -444,15 +448,16 @@ export default function SubCategories() {
                 </div>
               )}
               <div className="w-100 mt-2">
-                <CustomSelect
-                  id="is_required"
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      id="is_required"
+                      checked={newField?.is_required}
+                      onChange={handleChangeField}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                  }
                   label="Is Required"
-                  data={[
-                    { value: 'true', label: 'True' },
-                    { value: 'false', label: 'False' },
-                  ]}
-                  value={newField?.is_required}
-                  handleChange={handleChangeField}
                 />
               </div>
             </div>
