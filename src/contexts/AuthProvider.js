@@ -26,8 +26,6 @@ export const AuthProvider = ({ children }) => {
         );
       } catch (error) {
         console.error("Error refreshing token:", error);
-        // Handle token refresh error if needed
-        // For example, you can log the user out or show an error message
         setAuth({});
         localStorage.removeItem("auth");
       }
@@ -52,8 +50,8 @@ export const AuthProvider = ({ children }) => {
         scheduleTokenRefresh();
       } catch (error) {
         console.error("Error refreshing token:", error);
-        // Handle token refresh error if needed
-        // For example, you can log the user out or show an error message
+        setAuth({});
+        localStorage.removeItem("auth");
       }
     };
 

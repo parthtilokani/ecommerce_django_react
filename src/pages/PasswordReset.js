@@ -26,10 +26,12 @@ const PasswordReset = () => {
     (() => {
       if (auth?.accessToken) return navigate("/");
 
-      axiosOpen.post(`/user/password_reset/validate_token/`).catch(() => {
-        toast.error("Link expired");
-        navigate("/");
-      });
+      axiosOpen
+        .post(`/user/password_reset/validate_token/`, { token })
+        .catch(() => {
+          toast.error("Link expired");
+          navigate("/");
+        });
     })();
   }, [auth]);
 
@@ -39,9 +41,15 @@ const PasswordReset = () => {
     },
     onSuccess: (res) => {
       toast.success("Password reset successful!");
+      navigate("/login", { replace: true });
     },
     onError: (err) => {
       console.log(err);
+      const { password } = err?.response?.data;
+      setErrors((prev) => ({
+        ...prev,
+        password: password && password?.length > 0 ? password[0] : "",
+      }));
       toast.error(err?.response?.data?.detail || "Something went wrong! Retry");
     },
   });

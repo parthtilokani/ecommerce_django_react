@@ -7,74 +7,54 @@ const LocationModel = ({
   loading,
   searchLocation,
   setSearchLocation,
-  handleLocationSearch,
   setLocation,
   setLocationView,
   addressList,
   setError,
-  handleLocationSearchByClick,
+  handleGetLocation,
 }) => {
   return (
     <div
       className='location-model'
       style={locationView ? {} : { display: "none" }}>
       <div className='card'>
-        <div className='h5 p-1 text-center mt-3'>Select Location</div>
+        <div className='h5 p-1 text-center mt-1 mb-0'>Select Location</div>
         {error && <div className='text-center text-danger'>{error}</div>}
         {ourLocation?.name && (
-          <div className='fw-bold px-4'>
-            Selected Location : <span>{ourLocation?.name}</span>
+          <div className='fw-bold px-3 mb-2'>
+            Selected : <span>{ourLocation?.name}</span>
           </div>
         )}
-        <div className='row mx-3 my-1'>
-          <div className='col-10 p-0 pe-1'>
-            <input
-              className='form-control form-control-sm'
-              placeholder='Search Location'
-              value={searchLocation}
-              onChange={(e) => setSearchLocation(e.target.value)}
-              id='location-search'
-            />
-          </div>
-          <div className='col-2 p-0'>
-            <div
-              style={{
-                margin: "auto",
-                backgroundColor: "#43c6ac",
-                width: "100%",
-                height: 30,
-                textAlign: "center",
-                borderRadius: 5,
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                if (loading) return;
-                handleLocationSearchByClick();
-              }}>
-              <img
-                src='/assets/svgs/search.svg'
-                alt='search'
-                style={{ height: 25 }}
-              />
-            </div>
-          </div>
+        <div className='px-3'>
+          <button className='get-location' onClick={handleGetLocation}>
+            Get current location
+          </button>
+          <p className='text-center'>or</p>
+          <input
+            className='form-control form-control-sm'
+            placeholder='Search Location'
+            value={searchLocation}
+            onChange={(e) => setSearchLocation(e.target.value)}
+            id='location-search'
+          />
         </div>
         {addressList.length > 0 ? (
-          <div className='px-3' style={{ maxHeight: 200, overflowY: "scroll" }}>
+          <div className='px-3'>
             <ul
               style={{
                 listStyle: "none",
               }}>
               <hr className='m-1' />
-              {addressList.map((address, index) => (
+              {addressList.slice(0, 6).map((address, index) => (
                 <li
                   key={index}
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     setLocation((prev) => ({
                       ...prev,
-                      name: address.formatted_address,
-                      ...address?.geometry?.location,
+                      name: address?.description || address?.formatted_address,
+                      ...(address?.geometry?.location || {}),
+                      place_id: address?.place_id,
                     }));
                     setLocationView(false);
                     setSearchLocation("");
@@ -82,7 +62,7 @@ const LocationModel = ({
                   <p
                     style={{ overflow: "hidden", whiteSpace: "nowrap" }}
                     className='mx-2'>
-                    {address.formatted_address}
+                    {address?.description || address?.formatted_address}
                   </p>
                   <hr className='m-1' />
                 </li>
@@ -90,10 +70,12 @@ const LocationModel = ({
             </ul>
           </div>
         ) : (
-          <div className='text-center'>No location found!</div>
+          searchLocation && (
+            <div className='text-center'>No location found!</div>
+          )
         )}
         <img
-          src='./assets/svgs/close.svg'
+          src='/assets/svgs/close.svg'
           className='close-btn'
           alt=''
           onClick={() => {

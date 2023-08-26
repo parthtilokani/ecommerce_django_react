@@ -43,6 +43,13 @@ const Navbar = () => {
               Home
             </Link>
           </li>
+          <li>
+            <Link
+              to='/home#our-pricing-and-packages'
+              onClick={() => setIsOpen(false)}>
+              Pricing and Packages
+            </Link>
+          </li>
           {/* <li>
             <Link>All Categories</Link>
           </li> */}

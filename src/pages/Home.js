@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { axiosOpen } from "../utils/axios.js";
@@ -15,10 +15,14 @@ import MostRecentAds from "../components/home/MostRecentAds.js";
 import LocationModel from "../components/home/LocationModel.js";
 import CategoryModel from "../components/home/CategoryModel.js";
 import SubCategoryModel from "../components/home/SubCategoryModel.js";
-import { handleLocationSearch } from "../utils/commonRequests.js";
+import {
+  handleLocationSearch,
+  handleGetCurrentLocation,
+} from "../utils/commonRequests.js";
 
 const Home = () => {
   const { location: ourLocation, setLocation } = useOurLocation();
+  const location = useLocation();
 
   const [locationView, setLocationView] = useState(false);
   const [categoryView, setCategoryView] = useState(false);
@@ -67,6 +71,14 @@ const Home = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    (() => {
+      if (location.hash === "#our-pricing-and-packages") {
+        document.getElementById("our-pricing-and-packages").scrollIntoView();
+      }
+    })();
+  }, [location]);
+
   const handleGetLocation = () => {
     setLoading(true);
     setError("");
@@ -82,19 +94,12 @@ const Home = () => {
         const { latitude, longitude } = position.coords;
         try {
           setLoading(true);
-
-          // const apiKey = "";
-          // const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&location_type=APPROXIMATE&key=${apiKey}`;
-          // const res = await fetch(url, { method: "GET" });
-
-          const res = await axiosOpen.get("/ads/ads/get_current_address", {
-            params: { lat: latitude, lng: longitude },
-          });
-          const data = await res.data;
+          const data = await handleGetCurrentLocation({ latitude, longitude });
           if (data.status === "OK") {
             setLocation((prev) => ({
               ...prev,
               name: data?.results[0].formatted_address,
+              place_id: data?.results[0].place_id,
               ...data?.results[0]?.geometry?.location,
             }));
             setAddressList(data.results);
@@ -116,28 +121,33 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      handleLocationSearch({
-        searchLocation,
-        setAddressList,
-        setLoading,
-        setError,
-      });
+    const timer = setTimeout(async () => {
+      try {
+        if (searchLocation.trim() === "") return setAddressList([]);
+        const data = await handleLocationSearch(searchLocation);
+        if (data.status === "OK") {
+          setError("");
+          setAddressList([...data.results]);
+        } else if (data.status === "ZERO_RESULTS") {
+          setError("");
+          setAddressList([]);
+        } else {
+          setAddressList([]);
+          setError("Unable to fetch location data");
+        }
+        setLoading(false);
+      } catch (error) {
+        setAddressList([]);
+        console.log(error);
+        setError("Unable to retrieve your location");
+        setLoading(false);
+      }
     }, 300);
 
     return () => {
       clearTimeout(timer);
     };
   }, [searchLocation]);
-
-  const handleLocationSearchByClick = () => {
-    handleLocationSearch({
-      searchLocation,
-      setAddressList,
-      setLoading,
-      setError,
-    });
-  };
 
   return (
     <div className='position-relative'>
@@ -153,9 +163,7 @@ const Home = () => {
                   <div>
                     <img src='/assets/svgs/location.svg' alt='location' />
                   </div>
-                  <div
-                    className='p-hldr'
-                    style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+                  <div className='p-hldr' style={{ overflow: "hidden" }}>
                     {ourLocation?.name ? ourLocation?.name : "Location"}
                   </div>
                 </div>
@@ -241,7 +249,7 @@ const Home = () => {
           setLocationView,
           addressList,
           setError,
-          handleLocationSearchByClick,
+          handleGetLocation,
         }}
       />
       <CategoryModel

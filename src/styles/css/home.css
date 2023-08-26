@@ -98,6 +98,10 @@
   #home-search div:nth-child(4) .input-wrapper {
     border-radius: 0;
   }
+  #home-search .p-hldr {
+    overflow: hidden;
+    word-break: break-all;
+  }
 }
 /*Models*/
 .location-model {
@@ -118,6 +122,7 @@
   max-width: 400px;
   background-color: white;
   position: relative;
+  overflow: hidden;
 }
 .location-model .m-card-body {
   max-height: 300px;
@@ -132,6 +137,20 @@
   top: 0;
   right: 0;
   cursor: pointer;
+}
+.location-model .get-location {
+  background-color: var(--btn-color-secondary);
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 5px 0;
+  border-radius: 3px;
+}
+.location-model .get-location:hover {
+  background-color: var(--btn-color-secondary-hover);
+}
+.location-model .form-control {
+  border-color: var(--btn-color-secondary);
 }
 
 .category-model-body .c-card {
@@ -163,6 +182,7 @@
   border-radius: 50%;
   width: 61px;
   height: 61px;
+  object-fit: contain;
 }
 
 /*Popular Categories*/
@@ -203,6 +223,7 @@
   border-radius: 50%;
   width: 61px;
   height: 61px;
+  object-fit: contain;
 }
 
 /*Featured Ads*/
@@ -217,7 +238,7 @@
 .featured-ads-main .fa-card {
   max-width: 300px;
   margin: auto;
-  min-height: 350px;
+  min-height: 325px;
   background-color: white;
   cursor: pointer;
   transition: all 0.3s ease-out;
@@ -228,6 +249,24 @@
   padding: 1rem;
 }
 .featured-ads-main .fa-card-body .h6 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.featured-ads-main .fa-card-body p {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 13px;
+}
+.featured-ads-main .fa-card-body d-flex {
+  margin-top: 10px;
+}
+.featured-ads-main .fa-card-body span {
+  font-size: 12px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -350,14 +389,14 @@
 }
 
 /*Our Pricing and Packages*/
-#home-our-pricing {
+#our-pricing-and-packages {
   min-height: calc(100vh - 64px);
   padding: 40px 0;
 }
-#home-our-pricing .our-pricing-main {
+#our-pricing-and-packages .our-pricing-main {
   max-width: 1300px;
 }
-#home-our-pricing .our-pricing-card {
+#our-pricing-and-packages .our-pricing-card {
   width: 300px;
   text-align: center;
   background-color: var(--bg-color-secondary);
@@ -365,37 +404,35 @@
   transition: all 0.3s ease-out;
   cursor: pointer;
 }
-#home-our-pricing .our-pricing-card div {
+#our-pricing-and-packages .our-pricing-card div {
   padding: 17px;
 }
-#home-our-pricing .our-pricing-card .pricing {
+#our-pricing-and-packages .our-pricing-card .pricing {
   background-color: var(--secondary);
   color: white;
 }
-#home-our-pricing .our-pricing-card .pricing span {
+#our-pricing-and-packages .our-pricing-card .pricing span {
   font-size: 15px;
 }
-#home-our-pricing .our-pricing-card .op-features {
+#our-pricing-and-packages .our-pricing-card .op-features {
   border-bottom: 1px solid rgba(128, 128, 128, 0.2);
 }
-#home-our-pricing .our-pricing-card button {
+#our-pricing-and-packages .our-pricing-card button {
   height: 50px;
   width: 200px;
   background-color: var(--secondary);
   border: none;
   color: white;
 }
-#home-our-pricing .our-pricing-card:hover {
+#our-pricing-and-packages .our-pricing-card:hover {
   background-color: var(--bg-color-secondary-hover);
 }
-#home-our-pricing .our-pricing-card:hover .pricing,
-#home-our-pricing .our-pricing-card:hover button {
+#our-pricing-and-packages .our-pricing-card:hover .pricing,
+#our-pricing-and-packages .our-pricing-card:hover button {
   background-color: var(--btn-color-secondary-hover);
 }
 
 /*No ads card*/
-.no-ads-card {
-}
 .no-ads-card .body {
   border: 1px solid rgba(128, 128, 128, 0.5);
   border-radius: 8px;

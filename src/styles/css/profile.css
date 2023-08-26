@@ -33,6 +33,20 @@
   border-radius: 8px;
   padding: 5px;
 }
+#profile-hero .info-card .upgrade {
+  background-color: var(--btn-color-secondary);
+  font-size: 14px;
+  padding: 3px 5px;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  margin: 0 10px;
+  font-weight: bold;
+  transition: all 0.3s ease-in;
+}
+#profile-hero .info-card .upgrade:hover {
+  background-color: var(--btn-color-secondary-hover);
+}
 
 .profile-action {
   width: 30px;

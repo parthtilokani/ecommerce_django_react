@@ -11,7 +11,10 @@ import useOurLocation from "../hooks/useOurLocation.js";
 import LocationModel from "../components/home/LocationModel.js";
 import CategoryModel from "../components/home/CategoryModel.js";
 import SubCategoryModel from "../components/home/SubCategoryModel.js";
-import { handleLocationSearch } from "../utils/commonRequests.js";
+import {
+  handleLocationSearch,
+  handleGetCurrentLocation,
+} from "../utils/commonRequests.js";
 import { axiosOpen } from "../utils/axios.js";
 import NoAdsCard from "../components/profile/NoAdsCard.js";
 
@@ -48,14 +51,15 @@ const Search = () => {
       const paramsObj = {
         page: currentPage,
         page_size: itemPerPage,
-        lat: ourLocation?.lat,
-        long: ourLocation?.lng,
+        latitude: ourLocation?.lat,
+        longitude: ourLocation?.lng,
+        place_id: ourLocation?.place_id,
       };
 
       if (search) paramsObj.search = search;
       if (selectedCategory?.id) paramsObj.category = selectedCategory?.id;
       if (selectedSubCategory?.id)
-        paramsObj.subcategory = selectedSubCategory?.id;
+        paramsObj.sub_category = selectedSubCategory?.id;
 
       const { data } = await axiosOpen.get("/ads/ads", {
         params: paramsObj,
@@ -98,19 +102,74 @@ const Search = () => {
   });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      handleLocationSearch({
-        searchLocation,
-        setAddressList,
-        setLoading,
-        setError,
-      });
+    const timer = setTimeout(async () => {
+      try {
+        if (searchLocation.trim() === "") return setAddressList([]);
+        const data = await handleLocationSearch(searchLocation);
+        if (data.status === "OK") {
+          setError("");
+          setAddressList([...data.results]);
+        } else if (data.status === "ZERO_RESULTS") {
+          setError("");
+          setAddressList([]);
+        } else {
+          setAddressList([]);
+          setError("Unable to fetch location data");
+        }
+        setLoading(false);
+      } catch (error) {
+        setAddressList([]);
+        console.log(error);
+        setError("Unable to retrieve your location");
+        setLoading(false);
+      }
     }, 300);
 
     return () => {
       clearTimeout(timer);
     };
   }, [searchLocation]);
+
+  const handleGetLocation = () => {
+    setLoading(true);
+    setError("");
+
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          setLoading(true);
+          const data = await handleGetCurrentLocation({ latitude, longitude });
+          if (data.status === "OK") {
+            setLocation((prev) => ({
+              ...prev,
+              name: data?.results[0].formatted_address,
+              place_id: data?.results[0].place_id,
+              ...data?.results[0]?.geometry?.location,
+            }));
+            setAddressList(data.results);
+          } else {
+            setError("Unable to fetch location data");
+          }
+          setLoading(false);
+        } catch (error) {
+          console.log(error);
+          setError("Unable to retrieve your location");
+          setLoading(false);
+        }
+      },
+      () => {
+        setError("Unable to retrieve your location");
+        setLoading(false);
+      }
+    );
+  };
 
   return (
     <div>
@@ -127,9 +186,7 @@ const Search = () => {
                   <div>
                     <img src='/assets/svgs/location.svg' alt='location' />
                   </div>
-                  <div
-                    className='p-hldr'
-                    style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+                  <div className='p-hldr' style={{ overflow: "hidden" }}>
                     {ourLocation?.name ? ourLocation?.name : "Location"}
                   </div>
                 </div>
@@ -207,6 +264,7 @@ const Search = () => {
           setLocationView,
           addressList,
           setError,
+          handleGetLocation,
         }}
       />
       <CategoryModel
@@ -259,7 +317,8 @@ const Search = () => {
                     <div className='fa-card-body'>
                       <div>
                         <div className='h6 fw-bold'>{ad?.ad_title}</div>
-                        <div className='d-flex align-items-center'>
+                        <p className=''>{ad?.ad_description}</p>
+                        <div className='d-flex align-items-center mt-1'>
                           <img src='/assets/svgs/time.svg' alt='' />
                           <span>
                             {ad?.posted_on &&
@@ -279,9 +338,8 @@ const Search = () => {
                         </div>
                         <div className='d-flex align-items-center'>
                           <img src='/assets/svgs/location.svg' alt='' />
-                          <span>{ad?.district_name || "No Location"}</span>
+                          <span>{ad?.location || "No Location"}</span>
                         </div>
-                        <div className='h4 fw-bold'>₹ {ad?.price}</div>
                       </div>
                     </div>
                   </div>

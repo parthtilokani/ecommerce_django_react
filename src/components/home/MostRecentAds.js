@@ -51,7 +51,8 @@ const MostRecentAds = () => {
                 </div>
                 <div className='fa-card-body'>
                   <div className='h6 fw-bold'>{ad?.ad_title}</div>
-                  <div className='d-flex align-items-center'>
+                  <p className=''>{ad?.ad_description}</p>
+                  <div className='d-flex align-items-center mt-1'>
                     <img src='/assets/svgs/time.svg' alt='' />
                     <span>
                       {ad?.posted_on &&
@@ -71,9 +72,8 @@ const MostRecentAds = () => {
                   </div>
                   <div className='d-flex align-items-center'>
                     <img src='/assets/svgs/location.svg' alt='' />
-                    <span>{ad?.district_name || "No Location"}</span>
+                    <span>{ad?.location || "No Location"}</span>
                   </div>
-                  <div className='h4 fw-bold'>₹ {ad?.price}</div>
                 </div>
               </div>
             </Link>

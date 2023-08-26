@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import "../styles/css/profile.css";
 import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
 import { Link, useNavigate } from "react-router-dom";
-import { URI } from "../utils/API.js";
 import AdCardSkeleton from "../components/skeletons/AdCardSkeleton.js";
 import EditProfile from "../components/profile/EditProfile.js";
 import ChangePassword from "../components/profile/ChangePassword.js";
@@ -155,7 +154,16 @@ const Profile = () => {
                 </div>
                 <div className='col-lg-6'>
                   <div className='info-card'>
-                    Remaining Monthly Credits : {userData?.remaining_credits}
+                    Credits : {userData?.remaining_credits}{" "}
+                    <button
+                      className='upgrade'
+                      onClick={() =>
+                        navigate("/home#our-pricing-and-packages", {
+                          replace: true,
+                        })
+                      }>
+                      Get more credits
+                    </button>
                   </div>
                 </div>
               </div>
@@ -205,7 +213,8 @@ const Profile = () => {
                   <div className='fa-card-body'>
                     <div onClick={() => navigate(`/ads/view/${ad?.id}`)}>
                       <div className='h6 fw-bold'>{ad?.ad_title}</div>
-                      <div className='d-flex align-items-center'>
+                      <p className=''>{ad?.ad_description}</p>
+                      <div className='d-flex align-items-center mt-1'>
                         <img src='/assets/svgs/time.svg' alt='' />
                         <span>
                           {ad?.posted_on &&
@@ -221,9 +230,8 @@ const Profile = () => {
                       </div>
                       <div className='d-flex align-items-center'>
                         <img src='/assets/svgs/location.svg' alt='' />
-                        <span>{ad?.district_name || "No Location"}</span>
+                        <span>{ad?.location || "No Location"}</span>
                       </div>
-                      <div className='h4 fw-bold'>₹ {ad?.price}</div>
                     </div>
 
                     <div className='d-flex justify-content-end'>
@@ -338,10 +346,10 @@ const Profile = () => {
       </div>
 
       <div id='price-and-packages'>
-        <div className='h3 fw-bold m-3 mb-1'>Price and Package :</div>
+        <div className='h3 fw-bold m-3 mb-1'>My Subscriptions :</div>
         <div className='row mx-auto our-pricing-main justify-content-evenly'>
           {userData?.user_ads_plans
-            .reduce((accumulator, current) => {
+            ?.reduce((accumulator, current) => {
               const existingPlan = accumulator.find(
                 (plan) => plan.ads_plan.id === current.ads_plan.id
               );
@@ -360,15 +368,12 @@ const Profile = () => {
             ?.map(({ ads_plan, count }, i) => (
               <div className='col-xl-3 col-lg-4 col-md-6' key={i}>
                 <div className='our-pricing-card mx-auto'>
-                  <div className='h4'>{`${ads_plan?.name}${
+                  <div className='h4 text-capitalize'>{`${ads_plan?.name}${
                     count > 1 ? " x " + count : ""
                   }`}</div>
-                  <div className='h1 pricing'>
-                    ₹ {ads_plan?.price}
-                    <span>/Per month</span>
-                  </div>
+                  <div className='h1 pricing'>₹ {ads_plan?.price}</div>
                   <div className='op-features'>
-                    {ads_plan?.ads_number_restriction} Regular Ads
+                    {ads_plan?.ads_number_restriction} Ads /per month
                   </div>
                   <div className='op-features'>
                     {ads_plan?.description || "-"}

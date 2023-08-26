@@ -115,22 +115,13 @@ const ViewAd = () => {
                         className='skeleton skeleton-text h4'
                         style={{ width: "200px" }}></div>
                     ) : (
-                      <span>{ad?.district_name || "No Location"}</span>
+                      <span>{ad?.location || "No Location"}</span>
                     )}
                   </div>
                 </div>
-                <div className='h4 fw-bold'>
-                  {isLoading ? (
-                    <div
-                      className='skeleton skeleton-text h4'
-                      style={{ width: "200px" }}></div>
-                  ) : (
-                    `₹ ${ad?.price}`
-                  )}
-                </div>
 
-                <div className='row'>
-                  <div className='col-lg-8 mb-2'>
+                <div>
+                  <div className='mb-2'>
                     <div className='py-1'>
                       {isLoading ? (
                         <>
@@ -144,7 +135,9 @@ const ViewAd = () => {
                       )}
                     </div>
                     {ad?.dynamic_field
-                      ?.filter((df) => df?.field_type === "Text")
+                      ?.filter(
+                        (df) => df?.field_type === "Text" && df?.value?.trim()
+                      )
                       ?.map((df, i) => (
                         <div className='fw-bold py-1' key={i}>
                           <span className='fw-bold'>{df?.field_name}</span> :{" "}
@@ -152,15 +145,17 @@ const ViewAd = () => {
                         </div>
                       ))}
                     {ad?.dynamic_field
-                      ?.filter((df) =>
-                        [
-                          "Date",
-                          "Time",
-                          "Select",
-                          "PhoneNumber",
-                          "Number",
-                          "Price",
-                        ].includes(df?.field_type)
+                      ?.filter(
+                        (df) =>
+                          [
+                            "Date",
+                            "Time",
+                            "Select",
+                            "PhoneNumber",
+                            "Number",
+                            "Price",
+                          ].includes(df?.field_type) &&
+                          df?.value?.toString()?.trim()
                       )
                       ?.map((df, i) => (
                         <div key={i} className='py-1'>
@@ -169,7 +164,10 @@ const ViewAd = () => {
                         </div>
                       ))}
                     {ad?.dynamic_field
-                      ?.filter((df) => df?.field_type === "TextArea")
+                      ?.filter(
+                        (df) =>
+                          df?.field_type === "TextArea" && df?.value?.trim()
+                      )
                       ?.map((df, i) => (
                         <div key={i} className='py-1'>
                           <span className='fw-bold'>{df?.field_name}</span> :{" "}

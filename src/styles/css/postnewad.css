@@ -108,6 +108,9 @@
   line-height: 7px;
   color: #43c6ac;
   font-weight: bold;
+  padding: 1px;
+  padding-top: 2px;
+  border-radius: 2px;
 }
 #post-new-ad .btn-back {
   background-color: var(--primary);

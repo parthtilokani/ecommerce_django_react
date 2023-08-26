@@ -49,14 +49,29 @@ const Contact = () => {
     <div
       id='contact-main'
       className='d-flex justify-content-center align-items-center'>
-      <div className='contact-body'>
+      <div className='contact-body px-3 px-sm-4'>
         {/* <div className='contact-map'></div> */}
         <div className='row'>
           <div className='col-md-6 mt-3'>
             <div className='h4'>Information</div>
-            <div>Address Icon : Here will go the address</div>
-            <div>Phone Icon : Here will go the contact number</div>
-            <div>Email Icon : Here will go the email</div>
+            <div className='info-card mb-2'>
+              <div>
+                <img src='./assets/svgs/address.png' alt='address' />
+              </div>
+              <div>the address</div>
+            </div>
+            <div className='info-card mb-2'>
+              <div>
+                <img src='./assets/svgs/phone.png' alt='phone' />
+              </div>
+              <div>the contact number</div>
+            </div>
+            <div className='info-card'>
+              <div>
+                <img src='./assets/svgs/email.png' alt='email' />
+              </div>
+              <div>the email</div>
+            </div>
           </div>
           <div className='col-md-6 mt-3'>
             <div className='h4'>Send Us A Message</div>
@@ -120,7 +135,7 @@ const Contact = () => {
               </div>
               <div>
                 <button
-                  className='btn btn-primary'
+                  className='btn submit'
                   disabled={isLoading}
                   onClick={handleSubmit}>
                   {isLoading ? "Submitting" : "Submit"}
