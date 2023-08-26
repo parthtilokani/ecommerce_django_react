@@ -68,6 +68,13 @@
 .profile-action.delete {
   background-color: rgb(244, 174, 174);
 }
+.profile-action.edit-phone {
+  margin: 0px 0px 0px 4px;
+  padding: 0px 1px 1px 2px;
+  width: 20px;
+  aspect-ratio: 1;
+  background-color: rgb(174, 244, 174);
+}
 .profile-action img {
   width: 80%;
   aspect-ratio: 1;
@@ -125,6 +132,35 @@
   position: relative;
 }
 #change-password .close-btn {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+#change-phone-no {
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 7;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease-out;
+}
+#change-phone-no .card {
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  position: relative;
+}
+#change-phone-no .close-btn {
   position: absolute;
   width: 25px;
   height: 25px;

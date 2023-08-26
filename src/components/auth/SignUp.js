@@ -4,6 +4,7 @@ import FormInput from "../input/FormInput.js";
 
 import { axiosOpen } from "../../utils/axios.js";
 import { isValid } from "../../utils/support.js";
+import { useEffect } from "react";
 
 const SignUp = ({ setSignUpMethod, setMessage }) => {
   const [profileId, setProfileId] = useState();
@@ -26,6 +27,25 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
   });
   const [termsChecked, setTermsChecked] = useState(false);
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    let newInterval;
+
+    if (clock === 0) {
+      setErrors({});
+      setOtpSent(false);
+      clearInterval(newInterval);
+    }
+
+    newInterval = setInterval(() => {
+      setClock((prev) => {
+        if (prev === 0) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(newInterval);
+  }, [clock]);
 
   const handleChange = (e) => {
     if (e.target.id === "area_code" && /[^0-9]/.test(e.target.value)) return;
@@ -136,27 +156,16 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
         setOtpMessage("OTP sent. You will receive SMS or Call.");
         setOtpSent(true);
         setClock(60);
-        const newInterval = setInterval(() => {
-          setClock((prev) => {
-            if (prev === 0) {
-              setErrors({});
-              setOtpSent(false);
-              clearInterval(newInterval);
-              return prev;
-            }
-            return prev - 1;
-          });
-        }, 1000);
       })
       .catch((err) => {
         setOtpMessage("");
         if (!err?.response)
-          return setErrors({ message: "No internet connection!" });
+          return setErrors({ otp: "No internet connection!" });
         console.log(err.response);
         if (err?.response?.data?.error)
           setErrors((prev) => ({
             ...prev,
-            message: err?.response?.data?.error,
+            otp: err?.response?.data?.error,
           }));
         else setErrors((prev) => ({ ...prev, otp: "Couldn't send OTP." }));
       })
@@ -182,7 +191,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
       .catch((err) => {
         console.error(err);
         if (!err?.response)
-          return setErrors({ message: "No internet connection!" });
+          return setErrors({ otp: "No internet connection!" });
         setErrors((prev) => ({ ...prev, otp: "OTP verification failed!" }));
       })
       .finally(() => setLoading(false));
@@ -217,16 +226,8 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
               <button
                 className='col-sm-3 col-4 fw-bold btn btn-sm btn-primary signup-btn'
                 disabled={loading}
-                onClick={() => {
-                  otpSent ? handleOTPVerify() : handleGetOTP();
-                }}>
-                {loading
-                  ? otpSent
-                    ? "Verifing"
-                    : "Sending"
-                  : otpSent
-                  ? "Verify"
-                  : "Resend"}
+                onClick={handleOTPVerify}>
+                {loading ? "Sending" : "Verify"}
               </button>
             </div>
             <div style={{ minHeight: 30 }}>
@@ -241,14 +242,23 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
                 </div>
               )}
               <div style={{ fontSize: "14px" }} className='fw-bold mt-1'>
-                {clock !== 0
-                  ? `Valid till ${clock} second/s.`
-                  : "OTP has expired!"}
+                {clock !== 0 && otpSent ? (
+                  `Resend in ${clock} second/s.`
+                ) : (
+                  <span className='already-user' onClick={handleGetOTP}>
+                    Resend
+                  </span>
+                )}
               </div>
             </div>
 
             <div className='mt-2 text-center'>
-              <span className='already-user' onClick={() => setOTPView(false)}>
+              <span
+                className='already-user'
+                onClick={() => {
+                  setOTPView(false);
+                  setClock(0);
+                }}>
                 Edit Details
               </span>
             </div>

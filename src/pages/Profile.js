@@ -11,6 +11,7 @@ import EditProfile from "../components/profile/EditProfile.js";
 import ChangePassword from "../components/profile/ChangePassword.js";
 import NoAdsCard from "../components/profile/NoAdsCard.js";
 import useAuth from "../hooks/useAuth.js";
+import ChangePhoneNo from "../components/profile/ChangePhoneNo.js";
 
 const Profile = () => {
   const { setAuth } = useAuth();
@@ -19,6 +20,7 @@ const Profile = () => {
 
   const [editModel, setEditModel] = useState(false);
   const [changePasswordModel, setChangePasswordModel] = useState(false);
+  const [changePhoneNoModel, setChangePhoneNoModel] = useState(false);
   const [deleteModel, setDeleteModel] = useState(0);
   const [deleteUserModel, setDeleteUserModel] = useState(false);
   const [password, setPassword] = useState("");
@@ -149,7 +151,14 @@ const Profile = () => {
                 </div>
                 <div className='col-lg-6'>
                   <div className='info-card'>
-                    Phone No : {userData?.phone_no}
+                    <div className='d-flex justify-content-center'>
+                      <div>Phone No : {userData?.phone_no}</div>
+                      <div
+                        className='profile-action edit-phone'
+                        onClick={() => setChangePhoneNoModel(true)}>
+                        <img src='./assets/svgs/edit.png' alt='edit' />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className='col-lg-6'>
@@ -180,6 +189,9 @@ const Profile = () => {
       )}
       {changePasswordModel && (
         <ChangePassword setChangePasswordModel={setChangePasswordModel} />
+      )}
+      {changePhoneNoModel && (
+        <ChangePhoneNo {...{ setChangePhoneNoModel, refetchUser }} />
       )}
 
       <div id='my-ads'>
