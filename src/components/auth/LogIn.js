@@ -16,6 +16,7 @@ export const LogIn = ({ setSignUpMethod, message }) => {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -98,6 +99,7 @@ export const LogIn = ({ setSignUpMethod, message }) => {
           value={data.email}
           autoComplete='off'
           onChange={handleChange}
+          maxLength={100}
         />
         <div
           style={{ fontSize: "10px", color: "red", height: 10 }}
@@ -105,17 +107,30 @@ export const LogIn = ({ setSignUpMethod, message }) => {
           {errors?.email && errors?.email}
         </div>
       </div>
-      <div className='mt-3'>
+      <div className='mt-3 position-relative'>
         <input
-          type='password'
+          type={showPassword ? "text" : "password"}
           id='password'
           placeholder='Password'
           className={`form-control ${errors?.password ? " is-invalid" : ""}`}
-          style={{ padding: "14px 16px", fontSize: "17px" }}
+          style={{ padding: "14px 50px 14px 16px", fontSize: "17px" }}
           value={data.password}
           onChange={handleChange}
+          maxLength={100}
           autoComplete='off'
         />
+        <div
+          className='icon-div'
+          onClick={() => setShowPassword((prev) => !prev)}>
+          <img
+            src={
+              showPassword
+                ? "/assets/svgs/eye-close.png"
+                : "/assets/svgs/eye-open.png"
+            }
+            alt='passsword'
+          />
+        </div>
         <div
           style={{ fontSize: "10px", color: "red", height: 10 }}
           className='mx-1'>

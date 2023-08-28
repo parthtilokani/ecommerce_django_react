@@ -28,6 +28,7 @@ const Profile = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(8);
   const [totalData, setTotalData] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [fetchedQueries, setFetchedQueries] = useState([false, false]);
   const { data: userData, refetch: refetchUser } = useQuery({
@@ -432,21 +433,34 @@ const Profile = () => {
         </div>
       )}
       {deleteUserModel && (
-        <div className='signup-otp-model'>
+        <div className='signup-otp-model' id='delete-user-model'>
           <div className='card'>
             <div className='text-center h4 fw-bold'>Delete your account ?</div>
 
-            <div className='my-2'>
+            <div className='my-2 position-relative'>
               <input
-                type='password'
+                type={showPassword ? "text" : "password"}
                 id='password'
                 placeholder='Password'
                 className='form-control'
-                style={{ padding: "14px 16px", fontSize: "17px" }}
+                style={{ padding: "14px 50px 14px 16px", fontSize: "17px" }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete='off'
+                maxLength={100}
               />
+              <div
+                className='icon-div'
+                onClick={() => setShowPassword((prev) => !prev)}>
+                <img
+                  src={
+                    showPassword
+                      ? "/assets/svgs/eye-close.png"
+                      : "/assets/svgs/eye-open.png"
+                  }
+                  alt='passsword'
+                />
+              </div>
             </div>
             <div className='mt-1 text-center d-flex justify-content-center'>
               <div>

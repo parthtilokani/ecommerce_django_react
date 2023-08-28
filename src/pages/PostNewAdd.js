@@ -281,7 +281,9 @@ const PostNewAdd = () => {
             <>
               <div className='row'>
                 <div className='col-md-6'>
-                  <div className='h5 fw-bold'>Choose category :</div>
+                  <div className='h5 fw-bold'>
+                    Choose category<span className='text-danger'>*</span> :
+                  </div>
                   <ul className='categories'>
                     {isLoadingCategories && (
                       <li>
@@ -305,7 +307,9 @@ const PostNewAdd = () => {
                   </ul>
                 </div>
                 <div className='col-md-6' ref={subCategoryRef}>
-                  <div className='h5 fw-bold'>Choose subcategory :</div>
+                  <div className='h5 fw-bold'>
+                    Choose subcategory<span className='text-danger'>*</span> :
+                  </div>
                   <ul className='categories'>
                     {selectedCategory ? (
                       subcategories
@@ -340,7 +344,7 @@ const PostNewAdd = () => {
                 <div className='col-md-6'>
                   <div>
                     <label className='form-label m-0' htmlFor='ad_title'>
-                      Ad title* :
+                      Ad title<span className='text-danger'>*</span> :
                     </label>
                     <input
                       type='text'
@@ -359,7 +363,7 @@ const PostNewAdd = () => {
                   </div>
                   <div>
                     <label className='form-label m-0' htmlFor='ad_description'>
-                      Ad description* :
+                      Ad description<span className='text-danger'>*</span> :
                     </label>
                     <textarea
                       className={`form-control form-control-sm${
@@ -376,7 +380,7 @@ const PostNewAdd = () => {
                   </div>
                   <div>
                     <label className='form-label m-0' htmlFor='location'>
-                      Location* :
+                      Location<span className='text-danger'>*</span> :
                     </label>
                     <input
                       type='text'
@@ -399,7 +403,14 @@ const PostNewAdd = () => {
                         className='form-label m-0'
                         htmlFor={df?.field_name}>
                         {df?.field_name}
-                        {df?.is_required && "*"} :
+                        {df?.is_required ? (
+                          <span className='text-danger'>*</span>
+                        ) : (
+                          <span style={{ color: "grey", fontSize: 12 }}>
+                            <sup>(optional)</sup>
+                          </span>
+                        )}{" "}
+                        :
                       </label>
                       {getSystemDynamicField({
                         ...df,

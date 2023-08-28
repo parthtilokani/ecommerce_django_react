@@ -19,20 +19,24 @@ import { axiosOpen } from "../utils/axios.js";
 import NoAdsCard from "../components/profile/NoAdsCard.js";
 
 const Search = () => {
-  const { category, subcategory, search: searchText } = useLocation().state;
+  const { state } = useLocation();
 
   const [locationView, setLocationView] = useState(false);
   const [categoryView, setCategoryView] = useState(false);
   const [subCategoryView, setSubCategoryView] = useState(false);
-  const [search, setSearch] = useState(searchText);
+  const [search, setSearch] = useState(state?.searchText || "");
 
   const [searchLocation, setSearchLocation] = useState("");
   const [addressList, setAddressList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [selectedCategory, setSelectedCategory] = useState(category);
-  const [selectedSubCategory, setSelectedSubCategory] = useState(subcategory);
+  const [selectedCategory, setSelectedCategory] = useState(
+    state?.category || {}
+  );
+  const [selectedSubCategory, setSelectedSubCategory] = useState(
+    state?.subcategory || {}
+  );
 
   const { location: ourLocation, setLocation } = useOurLocation();
 

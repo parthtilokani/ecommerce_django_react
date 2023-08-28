@@ -214,9 +214,9 @@ const Home = () => {
               </div>
               <div className='col-lg-12 col-xl-2 cols'>
                 <Link
-                  to={ourLocation?.lat ? "/search" : ""}
+                  to={ourLocation?.name ? "/search" : ""}
                   onClick={() => {
-                    if (!ourLocation?.lat) setLocationView(true);
+                    if (!ourLocation?.name) setLocationView(true);
                   }}
                   state={{
                     category: selectedCategory,

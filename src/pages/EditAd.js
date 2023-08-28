@@ -347,7 +347,7 @@ const EditAd = () => {
             <div className='col-md-6'>
               <div>
                 <label className='form-label m-0' htmlFor='category'>
-                  Category* :
+                  Category<span className='text-danger'>*</span> :
                 </label>
                 <select
                   type='text'
@@ -370,7 +370,7 @@ const EditAd = () => {
               </div>
               <div>
                 <label className='form-label m-0' htmlFor='sub_category'>
-                  Sub Category* :
+                  Sub Category<span className='text-danger'>*</span> :
                 </label>
                 <select
                   type='text'
@@ -397,7 +397,7 @@ const EditAd = () => {
               </div>
               <div>
                 <label className='form-label m-0' htmlFor='ad_title'>
-                  Ad title* :
+                  Ad title<span className='text-danger'>*</span> :
                 </label>
                 <input
                   type='text'
@@ -415,7 +415,7 @@ const EditAd = () => {
               </div>
               <div>
                 <label className='form-label m-0' htmlFor='ad_description'>
-                  Ad description* :
+                  Ad description<span className='text-danger'>*</span> :
                 </label>
                 <textarea
                   className={`form-control form-control-sm${
@@ -431,7 +431,7 @@ const EditAd = () => {
               </div>
               <div>
                 <label className='form-label m-0' htmlFor='location'>
-                  Location* :
+                  Location<span className='text-danger'>*</span> :
                 </label>
                 <input
                   type='text'
@@ -451,7 +451,14 @@ const EditAd = () => {
                 <div className='mt-2' key={i}>
                   <label className='form-label m-0' htmlFor={df?.field_name}>
                     {df?.field_name}
-                    {df?.is_required && "*"} :
+                    {df?.is_required ? (
+                      <span className='text-danger'>*</span>
+                    ) : (
+                      <span style={{ color: "grey", fontSize: 12 }}>
+                        <sup>(optional)</sup>
+                      </span>
+                    )}{" "}
+                    :
                   </label>
                   {getSystemDynamicField({
                     ...df,

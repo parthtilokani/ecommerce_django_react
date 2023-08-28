@@ -27,6 +27,10 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
   });
   const [termsChecked, setTermsChecked] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirm_password: false,
+  });
 
   useEffect(() => {
     let newInterval;
@@ -406,27 +410,58 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
           optional={true}
         />
       </div>
-      <div>
+      <div className='position-relative'>
         <FormInput
           labelName={"Password"}
-          type='password'
+          type={showPassword.password ? "text" : "password"}
           id='password'
           value={data.password}
           onChange={handleChange}
           errors={errors}
           mandatory={true}
         />
+        <div
+          className='icon-div register'
+          onClick={() =>
+            setShowPassword((prev) => ({ ...prev, password: !prev.password }))
+          }>
+          <img
+            src={
+              showPassword.password
+                ? "/assets/svgs/eye-close.png"
+                : "/assets/svgs/eye-open.png"
+            }
+            alt='passsword'
+          />
+        </div>
       </div>
-      <div>
+      <div className='position-relative'>
         <FormInput
           labelName={"Confirm Password"}
-          type='password'
+          type={showPassword.confirm_password ? "text" : "password"}
           id='c_password'
           value={data.c_password}
           onChange={handleChange}
           errors={errors}
           mandatory={true}
         />
+        <div
+          className='icon-div register'
+          onClick={() =>
+            setShowPassword((prev) => ({
+              ...prev,
+              confirm_password: !prev.confirm_password,
+            }))
+          }>
+          <img
+            src={
+              showPassword.confirm_password
+                ? "/assets/svgs/eye-close.png"
+                : "/assets/svgs/eye-open.png"
+            }
+            alt='passsword'
+          />
+        </div>
       </div>
       <div className='form-check mt-2'>
         <input

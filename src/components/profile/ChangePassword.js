@@ -14,6 +14,11 @@ const ChangePassword = ({ setChangePasswordModel }) => {
     confirm_new_password: "",
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState({
+    old_password: false,
+    new_password: false,
+    confirm_new_password: false,
+  });
 
   const handleChange = (e) =>
     setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -66,10 +71,10 @@ const ChangePassword = ({ setChangePasswordModel }) => {
       <div className='card'>
         <div className='text-center h4 fw-bold'>Change Password</div>
 
-        <div>
+        <div className='position-relative'>
           <FormInput
             labelName='Old Password'
-            type='password'
+            type={showPassword.old_password ? "text" : "password"}
             id='old_password'
             value={data.old_password}
             onChange={handleChange}
@@ -77,11 +82,28 @@ const ChangePassword = ({ setChangePasswordModel }) => {
             mandatory={true}
             placeholder='old password'
           />
+          <div
+            className='icon-div'
+            onClick={() =>
+              setShowPassword((prev) => ({
+                ...prev,
+                old_password: !prev.old_password,
+              }))
+            }>
+            <img
+              src={
+                showPassword.old_password
+                  ? "/assets/svgs/eye-close.png"
+                  : "/assets/svgs/eye-open.png"
+              }
+              alt='passsword'
+            />
+          </div>
         </div>
-        <div>
+        <div className='position-relative'>
           <FormInput
             labelName='New Password'
-            type='password'
+            type={showPassword.new_password ? "text" : "password"}
             id='new_password'
             value={data.new_password}
             onChange={handleChange}
@@ -89,11 +111,28 @@ const ChangePassword = ({ setChangePasswordModel }) => {
             mandatory={true}
             placeholder='new password'
           />
+          <div
+            className='icon-div'
+            onClick={() =>
+              setShowPassword((prev) => ({
+                ...prev,
+                new_password: !prev.new_password,
+              }))
+            }>
+            <img
+              src={
+                showPassword.new_password
+                  ? "/assets/svgs/eye-close.png"
+                  : "/assets/svgs/eye-open.png"
+              }
+              alt='passsword'
+            />
+          </div>
         </div>
-        <div>
+        <div className='position-relative'>
           <FormInput
             labelName='Confirm New Password'
-            type='password'
+            type={showPassword.confirm_new_password ? "text" : "password"}
             id='confirm_new_password'
             value={data.confirm_new_password}
             onChange={handleChange}
@@ -101,6 +140,23 @@ const ChangePassword = ({ setChangePasswordModel }) => {
             mandatory={true}
             placeholder='confirm new password'
           />
+          <div
+            className='icon-div'
+            onClick={() =>
+              setShowPassword((prev) => ({
+                ...prev,
+                confirm_new_password: !prev.confirm_new_password,
+              }))
+            }>
+            <img
+              src={
+                showPassword.confirm_new_password
+                  ? "/assets/svgs/eye-close.png"
+                  : "/assets/svgs/eye-open.png"
+              }
+              alt='passsword'
+            />
+          </div>
         </div>
         <div className='mt-1 text-end'>
           <button

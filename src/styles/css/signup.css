@@ -39,6 +39,23 @@
   border-radius: 5px;
   text-align: center;
 }
+#signup-bg .icon-div {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  cursor: pointer;
+}
+#signup-bg .icon-div.register {
+  top: 26px;
+  right: 7px;
+}
+#signup-bg .icon-div img {
+  width: 30px;
+  aspect-ratio: 1;
+}
+#signup-bg .icon-div.register img {
+  width: 20px;
+}
 /*Models*/
 .signup-otp-model {
   backdrop-filter: blur(10px);
