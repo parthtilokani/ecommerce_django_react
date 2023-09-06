@@ -30,7 +30,6 @@ import { toast } from 'react-toastify';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 import Iconify from '../../components/iconify';
-import { URI } from '../../utils/API';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
@@ -64,7 +63,6 @@ const DeleteCategoryToast = ({ closeToast, deleteCategory }) => (
 
 export default function Categories() {
   const axiosPrivate = useAxiosPrivate();
-  const Folder = '/ads_category_icon';
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
@@ -236,11 +234,7 @@ export default function Categories() {
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
-                            <Avatar
-                              alt={name}
-                              src={URI + Folder + icon.split('ads_category_icon')[1]}
-                              style={{ margin: 'auto' }}
-                            />
+                            <Avatar alt={name} src={icon} style={{ margin: 'auto' }} />
                           </TableCell>
                           <TableCell align="center">
                             <Button

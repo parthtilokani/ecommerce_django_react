@@ -17,14 +17,12 @@ const InputFields = lazy(() => import('./pages/master/InputFields'));
 const Categories = lazy(() => import('./pages/master/Categories'));
 const SubCategories = lazy(() => import('./pages/master/SubCategories'));
 
-// const Countries = lazy(() => import('./pages/master/Countries'));
-// const States = lazy(() => import('./pages/master/States'));
-// const Cities = lazy(() => import('./pages/master/Cities'));
-
 const AdsPlans = lazy(() => import('./pages/master/AdPlans'));
 
-const Users = lazy(() => import('./pages/Users'));
+// const Users = lazy(() => import('./pages/Users'));
 const PlanOrders = lazy(() => import('./pages/PlanOrders'));
+const ContactRequests = lazy(() => import('./pages/ContactRequests'));
+const Logo = lazy(() => import('./pages/Logo'));
 
 // ----------------------------------------------------------------------
 
@@ -47,14 +45,12 @@ export default function Router() {
           <Route path="/master/inputfields" element={<InputFields />} />
           <Route path="/master/sub-categories" element={<SubCategories />} />
 
-          {/* <Route path="/master/countries" element={<Countries />} />
-          <Route path="/master/states" element={<States />} />
-          <Route path="/master/cities" element={<Cities />} /> */}
-
           <Route path="/master/ads-plans" element={<AdsPlans />} />
 
-          <Route path="/users" element={<Users />} />
+          {/* <Route path="/users" element={<Users />} /> */}
           <Route path="/plan_orders" element={<PlanOrders />} />
+          <Route path="/contact_requests" element={<ContactRequests />} />
+          <Route path="/logo" element={<Logo />} />
         </Route>
       </Route>
       <Route element={<SimpleLayout />}>

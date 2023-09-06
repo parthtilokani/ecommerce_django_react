@@ -22,7 +22,7 @@ import Scrollbar from '../../components/scrollbar/Scrollbar';
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'input', label: 'Input' },
-  { id: 'action', label: 'Actions' },
+  // { id: 'action', label: 'Actions' },
 ];
 
 export default function InputFields() {
@@ -65,9 +65,9 @@ export default function InputFields() {
                         <TableCell align="center">
                           <InputControl />
                         </TableCell>
-                        <TableCell align="center">
+                        {/* <TableCell align="center">
                           <Button variant="contained">View Doc</Button>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     );
                   })}

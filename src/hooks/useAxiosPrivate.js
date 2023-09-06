@@ -4,9 +4,8 @@ import useAuth from './useAuth';
 import { axiosPrivate } from '../utils/axios';
 
 const useAxiosPrivate = () => {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
 
-  // Create a new instance of axiosOpen only when auth changes
   const axiosInstance = useMemo(() => {
     const instance = axiosPrivate;
     instance.interceptors.request.use((config) => {
@@ -18,9 +17,13 @@ const useAxiosPrivate = () => {
 
     instance.interceptors.response.use(
       (response) => response,
-      async (error) =>
-        // Handle authentication-related errors or refresh token flow here
-        Promise.reject(error)
+      async (error) => {
+        if (error?.response?.status === 401) {
+          setAuth({});
+          localStorage.removeItem('auth');
+        }
+        return Promise.reject(error);
+      }
     );
 
     return instance;

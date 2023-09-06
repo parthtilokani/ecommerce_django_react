@@ -62,6 +62,16 @@ const navConfig = [
     path: '/plan_orders',
     icon: icon('ic_user'),
   },
+  {
+    title: 'Contact Requests',
+    path: '/contact_requests',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'Logo',
+    path: '/logo',
+    icon: icon('ic_user'),
+  },
   // {
   //   title: 'product',
   //   path: '/dashboard/products',
