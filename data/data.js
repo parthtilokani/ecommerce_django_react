@@ -49,45 +49,15 @@ const itemData = [
 ];
 
 const drawerItemList = [
-  // {
-  //   title: 'All Stores',
-  //   icon: icons.chat,
-  //   screen: 'AllStores',
-  // },
-  // {
-  //   title: 'FAQ',
-  //   icon: icons.chat,
-  //   screen: 'FAQ',
-  // },
-  // {
-  //   title: 'How to sell fast',
-  //   icon: icons.chat,
-  //   screen: 'FAQ',
-  // },
-  // {
-  //   title: 'About us',
-  //   icon: icons.chat,
-  //   screen: 'AboutUs',
-  // },
-  // {
-  //   title: 'Terms & Condition',
-  //   icon: icons.chat,
-  //   screen: 'TermsAndCondition',
-  // },
-  // {
-  //   title: 'Contact Us',
-  //   icon: icons.chat,
-  //   screen: 'Contactus',
-  // },
-  // {
-  //   title: 'App Settings',
-  //   icon: icons.chat,
-  //   screen: 'AppSetting',
-  // },
   {
     title: 'Share with friend',
     icon: icons.chat,
     screen: 'ShareApp',
+  },
+  {
+    title: 'Contact Us',
+    icon: icons.phone,
+    screen: 'Contactus',
   },
 ];
 

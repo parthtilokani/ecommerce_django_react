@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import {COLORS, FONTSIZE} from '../../constant/theme.js';
@@ -14,13 +15,17 @@ import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@tanstack/react-query';
 import {getCategory} from '../../utils/customHook/backEndCalls.js';
 import {axiosOpen} from '../../utils/axios.js';
-import Loader from '../Loader/Loader.jsx';
 import {baseURL} from '../../utils/Api.js';
 
-const Categories = ({scrollEnabled, categories = [], title, nav}) => {
+const Categories = ({
+  scrollEnabled,
+  categories = [],
+  title,
+  nav,
+  isLoading,
+}) => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  console.log('Cateeeee', categories);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -30,13 +35,17 @@ const Categories = ({scrollEnabled, categories = [], title, nav}) => {
   };
 
   const Item = ({item}) => {
+    console.log(item?.category?.icon);
     return (
       <TouchableOpacity
         style={styles.item}
         onPress={() => !nav && navigation.navigate('Category', {item: item})}>
         <Image
           source={{
-            uri: item.icon || baseURL.replace('/api', item?.category?.icon),
+            uri:
+              item.icon ||
+              item?.category?.icon ||
+              baseURL.replace('/api', item?.category?.icon),
           }}
           style={styles.imageStyle}
         />
@@ -62,6 +71,16 @@ const Categories = ({scrollEnabled, categories = [], title, nav}) => {
       </View>
     );
   };
+
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        size={'large'}
+        color={COLORS.primary}
+        style={{alignSelf: 'center', marginTop: 10}}
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>

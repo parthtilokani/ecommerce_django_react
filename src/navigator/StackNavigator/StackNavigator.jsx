@@ -25,6 +25,10 @@ import EditAdDetails from '../../screens/app/StackScreens/PostCategory/EditAdDet
 import LoginWithPhone from '../../screens/auth/LoginWithPhone.jsx';
 import ShowAdsDetails from '../../components/Ads/ShowAdsDetails.jsx';
 import Search from '../../screens/app/Search.jsx';
+import Allplans from '../../screens/app/StackScreens/Account/Allplans.jsx';
+import EditPhoneNumber from '../../screens/app/StackScreens/Account/EditPhoneNumber.jsx';
+import Contactus from '../../screens/app/DrawerScreens/Contactus.jsx';
+import Transaction from '../../screens/app/StackScreens/Account/Transaction.jsx';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
@@ -59,6 +63,10 @@ const StackNavigator = () => {
       <Stack.Screen name="EditAdDetails" component={EditAdDetails} />
       <Stack.Screen name="Membership" component={Membership} />
       <Stack.Screen name="ShowAdsDetails" component={ShowAdsDetails} />
+      <Stack.Screen name="Allplans" component={Allplans} />
+      <Stack.Screen name="EditPhoneNumber" component={EditPhoneNumber} />
+      <Stack.Screen name="Contactus" component={Contactus} />
+      <Stack.Screen name="Transaction" component={Transaction} />
     </Stack.Navigator>
   );
 };

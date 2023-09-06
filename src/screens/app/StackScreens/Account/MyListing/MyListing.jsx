@@ -47,6 +47,7 @@ const MyListing = () => {
       });
       setLoading(false);
       setMyAds(data || []);
+      console.log('mylistinggggggg', JSON.stringify(data));
     } catch (e) {
       setLoading(false);
       Toast.error('Session is invalid or expired!');
@@ -114,7 +115,6 @@ const MyListing = () => {
 
   return (
     <SafeAreaView>
-      <Loader visible={loading} />
       <CustomAlert
         visible={customAlert}
         title={'Alert!'}
@@ -125,7 +125,7 @@ const MyListing = () => {
         }}
       />
       <ToastManager style={{width: width * 0.9, height: height * 0.1}} />
-      <GobackHeader bg title="My Listing" resetBack />
+      <GobackHeader bg title="My Listing" />
       <ListGridAds
         data={myAds?.results}
         title={'My Ads'}
@@ -140,6 +140,7 @@ const MyListing = () => {
         }
         onNextPress={() => setCurrentPage(prev => prev + 1)}
         onPrevPress={() => setCurrentPage(prev => prev - 1)}
+        isLoading={loading}
       />
     </SafeAreaView>
   );

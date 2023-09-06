@@ -1,14 +1,16 @@
-import {Pressable, StyleSheet, Text, FlatList} from 'react-native';
+import {Pressable, StyleSheet, Text, FlatList, View} from 'react-native';
 import React, {useState} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Input from '../../../../components/Inputs/Input.jsx';
 import {
   COLORS,
   FONTSIZE,
+  SHADOWS,
   height,
   normalize,
   width,
 } from '../../../../constant/index.js';
+import {Dropdown} from 'react-native-element-dropdown';
 
 export const PostAdDynamicFields = ({
   dynamic_field,
@@ -51,6 +53,15 @@ export const PostAdDynamicFields = ({
     );
   };
   const {field_type, field_name, options} = dynamic_field;
+  let arrayOfObjects;
+  if (options?.length > 0) {
+    arrayOfObjects = options?.map((label, index) => ({
+      id: index + 1,
+      value: label,
+    }));
+  } else {
+    arrayOfObjects = [{id: 1, value: value}];
+  }
   switch (field_type) {
     case 'Text':
       return (
@@ -81,7 +92,7 @@ export const PostAdDynamicFields = ({
               styles.input,
               {height: viewHeight, minHeight: height * 0.05},
             ]}
-            maxLength={250}
+            maxLength={25}
             onContentSizeChange={handleContentSizeChange}
           />
         </>
@@ -194,12 +205,30 @@ export const PostAdDynamicFields = ({
       return (
         <>
           <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
-          <FlatList
+          <Dropdown
+            style={[styles.dropdown, {...SHADOWS.small}]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            itemTextStyle={{color: COLORS.black}}
+            iconStyle={styles.iconStyle}
+            data={arrayOfObjects}
+            maxHeight={300}
+            labelField="value"
+            valueField="value"
+            placeholder={'Select options'}
+            value={value}
+            onChange={item => {
+              console.log(item?.value);
+              handleSelectChange(item?.value);
+            }}
+          />
+          {/* <FlatList
             data={options}
             renderItem={renderSelectTypeItem}
             numColumns={4}
             scrollEnabled={false}
-          />
+          /> */}
         </>
       );
 
@@ -234,18 +263,25 @@ const styles = StyleSheet.create({
 
   dropdown: {
     width: width * 0.9,
+    height: height * 0.07,
     margin: 5,
     borderBottomColor: 'gray',
     borderBottomWidth: 0.5,
+    borderRadius: 10,
+    backgroundColor: COLORS.lightWhite,
   },
   icon: {
     marginRight: 5,
   },
   placeholderStyle: {
+    marginLeft: 10,
     fontSize: 16,
+    color: COLORS.black,
   },
   selectedTextStyle: {
     fontSize: 16,
+    marginLeft: 10,
+    color: COLORS.black,
   },
   iconStyle: {
     width: 20,
@@ -254,5 +290,6 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    color: COLORS.black,
   },
 });

@@ -103,9 +103,7 @@ const CustomDrawerContent = () => {
         renderItem={renderFlatItems}
         ListFooterComponent={<View style={{height: 10}} />}
       />
-      <Text style={styles.copyRightTxt}>
-        2023 © All right reserved by {appName}
-      </Text>
+      <Text style={styles.copyRightTxt}>© All right reserved by {appName}</Text>
     </View>
   );
 };

@@ -52,7 +52,6 @@ const SignIn = ({navigation}) => {
     if (await isConnectedToInternet()) {
       setLoading(true);
       const response = await signIN(data);
-
       setLoading(false);
       if (response.success) {
         setAuth(response?.res);
@@ -62,7 +61,12 @@ const SignIn = ({navigation}) => {
         }, 3000);
       } else {
         console.log(response);
+        setLoading(false);
         if (!response?.res) return Toast.error('Invalid Credentials');
+        setFormDetails({
+          email: '',
+          password: '',
+        });
         return Toast.error(response?.res);
       }
     }

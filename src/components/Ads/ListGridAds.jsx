@@ -7,6 +7,7 @@ import {
   Image,
   SafeAreaView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import GridFlatAds from './GridFlatAds.jsx';
@@ -16,7 +17,6 @@ import icons from '../../constant/icons.js';
 import {height, normalize, width} from '../../constant/index.js';
 import GobackHeader from '../GobackHeader.jsx';
 import Button from '../Button/Button.jsx';
-import Loader from '../Loader/Loader.jsx';
 
 const ListGridAds = ({
   data,
@@ -32,6 +32,7 @@ const ListGridAds = ({
   onPrevPress,
   editDelete,
   deleteAds,
+  isLoading,
 }) => {
   const [isGrid, setIsGrid] = useState(false);
   const renderFooter = () => {
@@ -69,6 +70,16 @@ const ListGridAds = ({
       );
     }
   };
+  console.log(isLoading);
+
+  if (isLoading)
+    return (
+      <ActivityIndicator
+        size={'large'}
+        color={COLORS.primary}
+        style={{alignSelf: 'center', marginTop: 30}}
+      />
+    );
 
   return (
     <SafeAreaView>
@@ -141,6 +152,7 @@ const ListGridAds = ({
                 index={index}
                 deleteAds={deleteAds}
                 editDelete={editDelete}
+                isMyAds={title === 'My Ads'}
               />
             ) : (
               <ListFlatAds
@@ -148,6 +160,7 @@ const ListGridAds = ({
                 index={index}
                 deleteAds={deleteAds}
                 editDelete={editDelete}
+                isMyAds={title === 'My Ads'}
               />
             );
           }}

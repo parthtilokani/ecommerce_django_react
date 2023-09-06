@@ -13,18 +13,20 @@ import Icons from 'react-native-vector-icons/dist/MaterialIcons.js';
 import {useNavigation} from '@react-navigation/native';
 import {baseURL} from '../../utils/Api.js';
 
-const ListFlatAds = ({data, editDelete, deleteAds}) => {
+const ListFlatAds = ({data, editDelete, deleteAds, isMyAds}) => {
   const navigation = useNavigation();
-  let imageUri;
-  if (data?.ads_image[0]?.image.includes(baseURL?.replace('/api', ''))) {
-    imageUri = data?.ads_image[0]?.image;
-  } else {
-    imageUri = `${baseURL?.replace('/api', data?.ads_image[0]?.image)}`;
-  }
+  console.log(data);
+  const imageUri = data?.ads_image[0]?.image;
+  // let imageUri;
+  // if (data?.ads_image[0]?.image.includes(baseURL?.replace('/api', ''))) {
+  //   imageUri = data?.ads_image[0]?.image;
+  // } else {
+  //   imageUri = `${baseURL?.replace('/api', data?.ads_image[0]?.image)}`;
+  // }
   return (
     <TouchableOpacity
       style={[styles.container, SHADOWS.medium]}
-      onPress={() => navigation.navigate('ShowAdsDetails', {data})}>
+      onPress={() => navigation.navigate('ShowAdsDetails', {data, isMyAds})}>
       <View style={styles.image_soldOutView}>
         {data?.is_sold && (
           <View style={[styles.sold_outView, SHADOWS.medium]}>
@@ -40,14 +42,22 @@ const ListFlatAds = ({data, editDelete, deleteAds}) => {
       <View style={styles.rightSideView}>
         <Text style={styles.titleText}>{data?.ad_title}</Text>
         <View style={styles.category_locationContainer}>
+          <Image source={icons.description} style={styles.miniIcon} />
+          <Text style={styles.text} numberOfLines={1}>
+            {data?.ad_description}
+          </Text>
+        </View>
+        <View style={styles.category_locationContainer}>
           {/* icon */}
           <Image source={icons.tag} style={styles.miniIcon} />
-          <Text style={styles.text}>Sub-Category</Text>
+          <Text style={styles.text}>{data?.sub_category_name}</Text>
         </View>
         <View style={styles.category_locationContainer}>
           {/* icon */}
           <Image source={icons.location} style={styles.miniIcon} />
-          <Text style={styles.text}>Location</Text>
+          <Text style={[styles.text, {width: width * 0.4}]} numberOfLines={1}>
+            {data?.location || '--'}
+          </Text>
         </View>
         <View style={styles.category_locationContainer}>
           <Image source={icons.time} style={styles.miniIcon} />
@@ -63,29 +73,7 @@ const ListFlatAds = ({data, editDelete, deleteAds}) => {
               })}
           </Text>
         </View>
-        <View style={styles.category_locationContainer}>
-          <Image source={icons.rupee} style={styles.miniIcon} />
-          <Text style={styles.priceText} numberOfLines={1}>
-            ₹ {data?.price}
-          </Text>
-        </View>
       </View>
-      {/* {editDelete && (
-        <View
-          style={{
-            justifyContent: 'space-between',
-            marginVertical: 20,
-            marginHorizontal: 10,
-          }}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('EditAdDetails', {data: data})}>
-            <Icons name="edit" size={width * 0.07} color={COLORS.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => deleteAds(data?.id)}>
-            <Icons name="delete" size={width * 0.07} color={COLORS.primary} />
-          </TouchableOpacity>
-        </View>
-      )} */}
       {editDelete && (
         <View
           style={[
@@ -192,7 +180,7 @@ const styles = StyleSheet.create({
     marginRight: 7,
   },
   text: {
-    color: COLORS.gray,
+    color: COLORS.black,
     fontSize: normalize(FONTSIZE.small),
   },
   priceText: {

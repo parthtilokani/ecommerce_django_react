@@ -32,6 +32,7 @@ import {
 import Loader from '../../components/Loader/Loader.jsx';
 import PhoneOtpModal from '../../components/PhoneOtpModal/PhoneOtpModal.jsx';
 import ToastManager, {Toast} from 'toastify-react-native';
+import {axiosOpen} from '../../utils/axios.js';
 
 const SignUp = ({navigation}) => {
   const [formDetails, setFormDetails] = useState({
@@ -46,6 +47,7 @@ const SignUp = ({navigation}) => {
     dob: undefined,
     gender: '',
   });
+  const [profileId, setProfileId] = useState();
   const [optValue, setOtpValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
@@ -63,6 +65,7 @@ const SignUp = ({navigation}) => {
   };
 
   const onSignUp = async () => {
+    console.log('signupdata', profileId);
     try {
       let obj = {
         name: isValid('Name', formDetails.name, 'name'),
@@ -96,13 +99,15 @@ const SignUp = ({navigation}) => {
         phone_no: formDetails.phoneNumber,
         area_code: formDetails?.areaCode || '91',
         password: formDetails.password,
-        gender: formDetails.gender,
+        gender: checked,
         dob: formDetails.dob,
       };
       if (await isConnectedToInternet()) {
         setLoading(true);
         const response = await signUP(data);
-        setLoading(true);
+        console.log(response);
+        setProfileId(response?.res?.id);
+        setLoading(false);
         if (response?.success) {
           otpRequest();
         } else {
@@ -112,12 +117,78 @@ const SignUp = ({navigation}) => {
         setLoading(false);
       }
     } catch (err) {
-      setLoading(true);
+      setLoading(false);
       console.log('error in SignUp.JSX', err);
     }
   };
-  useEffect(() => {}, []);
 
+  const handleEditDetails = async () => {
+    console.log('editdetails');
+    let obj = {
+      name: isValid('Name', formDetails.name, 'name'),
+      userName: isValid('Username', formDetails.userName, 'username'),
+      email: isValid('Email', formDetails.email, 'email'),
+      phoneNumber: isValid(
+        'Phone number',
+        formDetails.phoneNumber,
+        'phonenumber',
+      ),
+      password: isValid('Password', formDetails.password, 'password'),
+      c_password: isValid(
+        'Confirm Password',
+        formDetails.c_password,
+        'c_password',
+      ),
+    };
+    if (!obj?.c_password)
+      obj.c_password =
+        formDetails.password !== formDetails.c_password
+          ? "Password doen't match"
+          : '';
+    if (Object.values(obj).filter(e => e !== '').length > 0)
+      return setErrors(obj);
+    setErrors({});
+
+    const data = {
+      name: formDetails.name,
+      username: formDetails.userName,
+      email: formDetails.email,
+      phone_no: formDetails.phoneNumber,
+      area_code: formDetails?.areaCode || '91',
+      password: formDetails.password,
+      gender: checked,
+      dob: formDetails.dob,
+    };
+    setLoading(true);
+    axiosOpen
+      .patch(
+        '/user/user/edit_user_registration',
+        {
+          ...data,
+          area_code: data.area_code || '91',
+        },
+        {params: {profile_id: profileId}},
+      )
+      .then(() => {
+        setLoading(false);
+        otpRequest();
+      })
+      .catch(err => {
+        setLoading(false);
+        if (!err?.response)
+          return setErrors({message: 'No internet connection!'});
+        const {name, username, email, phone_no, password} = err?.response?.data;
+        setErrors(prev => ({
+          ...prev,
+          name: name && name?.length > 0 ? name[0] : '',
+          phone_no: phone_no && phone_no?.length > 0 ? phone_no[0] : '',
+          username: username && username?.length > 0 ? username[0] : '',
+          email: email && email?.length > 0 ? email[0] : '',
+          password: password && password?.length > 0 ? password[0] : '',
+        }));
+      })
+      .finally(() => setLoading(false));
+  };
   // OTP Request
   const otpRequest = async () => {
     const data = {phone: formDetails.phoneNumber};
@@ -125,7 +196,7 @@ const SignUp = ({navigation}) => {
     if (response?.success) {
       Toast.success('Sign Up sucessful!\nYou will receive OTP on phone call');
       setTimeout(() => {
-        setOtpModalVisible(true);
+        setOtpModalVisible(prev => !prev);
       }, 3000);
     } else {
       Toast.error(response?.res);
@@ -144,7 +215,7 @@ const SignUp = ({navigation}) => {
       Toast.success('OTP verify sucessful! \nSignIn to continue.');
       setTimeout(() => {
         setOtpModalVisible(false);
-        navigation.navigate('SignIn');
+        navigation.replace('SignIn');
       }, 3000);
     }
   };
@@ -286,23 +357,23 @@ const SignUp = ({navigation}) => {
               <View style={styles.radioBtnView}>
                 <Text style={styles.radioBtnText}>Gender(Optional):</Text>
                 <RadioButton.Android
-                  value="Male"
-                  status={checked === 'Male' ? 'checked' : 'unchecked'}
-                  onPress={() => setChecked('Male')}
+                  value="male"
+                  status={checked === 'male' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('male')}
                 />
                 <Text style={styles.radioBtnText}>Male</Text>
                 <RadioButton.Android
-                  value="Female"
-                  status={checked === 'Female' ? 'checked' : 'unchecked'}
-                  onPress={() => setChecked('Female')}
+                  value="female"
+                  status={checked === 'female' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('female')}
                 />
                 <Text style={styles.radioBtnText}>Female</Text>
-                <RadioButton.Android
-                  value="Other"
-                  status={checked === 'Other' ? 'checked' : 'unchecked'}
-                  onPress={() => setChecked('Other')}
+                {/* <RadioButton.Android
+                  value="other"
+                  status={checked === 'other' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('other')}
                 />
-                <Text style={styles.radioBtnText}>Other</Text>
+                <Text style={styles.radioBtnText}>Other</Text> */}
               </View>
             </View>
           </KeyboardAvoidingWrapper>
@@ -317,8 +388,9 @@ const SignUp = ({navigation}) => {
 
           {/* OTP Modal */}
           <PhoneOtpModal
-            visible={true}
-            isVisibleOTPView={true}
+            visible={otpModalVisible}
+            setVisible={setOtpModalVisible}
+            isVisibleOTPView={otpModalVisible}
             onModalClose={() => setOtpModalVisible(false)}
             verifyOTP={verifyOTP}
             handleOTPvalueChange={text => setOtpValue(text)}
@@ -334,7 +406,9 @@ const SignUp = ({navigation}) => {
               },
             ]}
             disable={!checkboxValue}
-            onPress={onSignUp}
+            onPress={() => {
+              profileId ? handleEditDetails() : onSignUp();
+            }}
           />
 
           {/* Create account view */}

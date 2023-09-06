@@ -46,24 +46,17 @@ export const signUP = async values => {
     }
     return {res: (response.data = 'Something went wrong'), success: false};
   } catch (e) {
-    console.log('error in signup', JSON.stringify(e?.response?.data));
+    console.log('error in signup', JSON.stringify(e));
     if (!e?.response) return {success: false, res: 'Something went wrong!'};
-    return {success: false, res: 'Something went wrong!'};
-    // if (e?.response?.data?.phone_no[0])
-    //   return {
-    //     res: e?.response?.data?.phone_no[0],
-    //     success: false,
-    //   };
-    // if (e?.response?.data?.email[0])
-    //   return {
-    //     res: e?.response?.data?.email[0],
-    //     success: false,
-    //   };
-    // if (e?.response?.data?.username[0])
-    //   return {
-    //     res: e?.response?.data?.username[0],
-    //     success: false,
-    //   };
+    // return {success: false, res: 'Something went wrong!'};
+    const {name, username, email, phone_no, gender} = e?.response?.data;
+    if (email)
+      return {res: 'User with this email already exists.', success: false};
+    if (username)
+      return {res: 'User with this username already exists.', success: false};
+    if (phone_no)
+      return {res: 'User with this phone no already exists.', success: false};
+    if (gender) return {res: 'Other is not a valid choice', success: false};
   }
 };
 
@@ -103,7 +96,7 @@ export const verifyOtp = async (values, url) => {
         refresh: response?.data?.refresh,
         access: response?.data?.access,
       });
-      return {res: 'Success', success: true};
+      return {res: response?.data, success: true};
     }
     return {res: 'Failed to send OTP', success: false};
   } catch (e) {

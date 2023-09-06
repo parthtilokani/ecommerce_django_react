@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ListGridAds from '../Ads/ListGridAds.jsx';
 import Header from '../Header/Header.jsx';
 import AppHeader from '../AppHeader.jsx';
@@ -17,24 +17,25 @@ const Category = ({navigation}) => {
   const {
     params: {item},
   } = useRoute();
-  // const [nextPage, setNextPage] = useState('');
-  // const [prevPage, setPrevPage] = useState('');
-  const [url, setUrl] = useState('ads/ads');
+  const [ads, setAds] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const {
-    data: ads,
-    isLoading: loading,
-    error: error,
-    refetch,
-  } = useQuery({
-    queryKey: ['ads'],
-    queryFn: async () => {
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
       const data = await axiosOpen('ads/ads');
-      return data?.data?.results?.filter(
-        e => e?.sub_category === item?.category?.id,
+      setAds(
+        data?.data?.results?.filter(e => e?.category === item?.category?.id),
       );
-    },
-  });
+      setIsLoading(false);
+    } catch (e) {
+      setIsLoading(false);
+      console.log(e);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -47,6 +48,7 @@ const Category = ({navigation}) => {
           onChnagePress={() => navigation.replace('AllCategories')}
           changeLayoutStyle
           scrollEnabled={true}
+          isLoading={isLoading}
         />
       </View>
     </View>

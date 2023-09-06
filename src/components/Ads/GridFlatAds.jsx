@@ -14,18 +14,19 @@ import Icons from 'react-native-vector-icons/dist/MaterialIcons.js';
 import {baseURL} from '../../utils/Api.js';
 import {useNavigation} from '@react-navigation/native';
 
-const GridFlatAds = ({data, deleteAds, editDelete}) => {
+const GridFlatAds = ({data, deleteAds, editDelete, isMyAds}) => {
   const navigation = useNavigation();
-  let imageUri;
-  if (data?.ads_image[0]?.image.includes(baseURL?.replace('/api', ''))) {
-    imageUri = data?.ads_image[0]?.image;
-  } else {
-    imageUri = `${baseURL?.replace('/api', data?.ads_image[0]?.image)}`;
-  }
+  const imageUri = data?.ads_image[0]?.image;
+  // let imageUri;
+  // if (data?.ads_image[0]?.image.includes(baseURL?.replace('/api', ''))) {
+  //   imageUri = data?.ads_image[0]?.image;
+  // } else {
+  //   imageUri = `${baseURL?.replace('/api', data?.ads_image[0]?.image)}`;
+  // }
   return (
     <TouchableOpacity
       style={[styles.container, SHADOWS.medium]}
-      onPress={() => navigation.navigate('ShowAdsDetails', {data})}>
+      onPress={() => navigation.navigate('ShowAdsDetails', {data, isMyAds})}>
       <View style={styles.image_soldOutView}>
         {data?.is_sold && (
           <View style={[styles.sold_outView, SHADOWS.medium]}>
@@ -79,17 +80,23 @@ const GridFlatAds = ({data, deleteAds, editDelete}) => {
           {data?.ad_title}
         </Text>
         <View style={styles.category_locationContainer}>
+          <Image source={icons.description} style={styles.miniIcon} />
+          <Text style={styles.text} numberOfLines={1}>
+            {data?.ad_description}
+          </Text>
+        </View>
+        <View style={styles.category_locationContainer}>
           {/* icon */}
           <Image source={icons.tag} style={styles.miniIcon} />
           <Text style={styles.text} numberOfLines={1}>
-            Sub-Category
+            {data?.sub_category_name}
           </Text>
         </View>
         <View style={styles.category_locationContainer}>
           {/* icon */}
           <Image source={icons.location} style={styles.miniIcon} />
-          <Text style={styles.text} numberOfLines={1}>
-            Location
+          <Text style={[styles.text, {width: width * 0.3}]} numberOfLines={1}>
+            {data?.location || '--'}
           </Text>
         </View>
         <View style={styles.category_locationContainer}>
@@ -106,12 +113,12 @@ const GridFlatAds = ({data, deleteAds, editDelete}) => {
               })}
           </Text>
         </View>
-        <View style={styles.category_locationContainer}>
+        {/* <View style={styles.category_locationContainer}>
           <Image source={icons.rupee} style={styles.miniIcon} />
           <Text style={styles.priceText} numberOfLines={1}>
             ₹ {data?.price}
           </Text>
-        </View>
+        </View> */}
       </View>
     </TouchableOpacity>
   );
@@ -124,7 +131,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightWhite,
     borderRadius: 5,
     maxWidth: width * 0.49,
-    height: (height * 0.41) / 0.95,
+    height: (height * 0.42) / 0.95,
     alignSelf: 'center',
     padding: 5,
     margin: 5,

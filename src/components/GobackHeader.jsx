@@ -3,14 +3,18 @@ import React from 'react';
 import {COLORS, FONTSIZE, icons, normalize, width} from '../constant';
 import {useNavigation} from '@react-navigation/native';
 
-const GobackHeader = ({title, bg, resetBack}) => {
+const GobackHeader = ({title, bg, resetBack, screen}) => {
   const navigation = useNavigation();
   return (
     <View style={[styles.container, bg && {backgroundColor: COLORS.primary}]}>
       <Pressable
         style={{position: 'absolute', left: 15}}
         onPress={() =>
-          resetBack ? navigation.replace('Drawer') : navigation.goBack()
+          resetBack
+            ? navigation.replace('Drawer')
+            : screen
+            ? navigation.replace('Drawer', {screen: 'Main', params: {tab: 4}})
+            : navigation.goBack()
         }>
         <Image
           source={icons.back}

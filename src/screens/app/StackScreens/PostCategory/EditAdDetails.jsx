@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {PERMISSIONS} from 'react-native-permissions';
@@ -38,6 +39,8 @@ import {HelperText} from 'react-native-paper';
 import {baseURL} from '../../../../utils/Api.js';
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
 import {axiosOpen} from '../../../../utils/axios.js';
+import Geolocation from 'react-native-geolocation-service';
+import {Getlocation} from '../../../../utils/Getlocation.js';
 
 const EditAdDetails = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -45,8 +48,7 @@ const EditAdDetails = () => {
     params: {data},
   } = useRoute();
   const navigation = useNavigation();
-
-  const [imageUri, setImageUri] = useState(new Array(12).fill(null));
+  const [imageUri, setImageUri] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [viewHeight, setViewHeight] = useState();
   const [showDateTimeModal, setShowDateTimeModal] = useState({
@@ -56,53 +58,25 @@ const EditAdDetails = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formDetails, setFormDetails] = useState({
+    category: data?.category,
+    subcategory: data?.sub_category,
     ad_title: data?.ad_title || '',
-    price: data?.price || '',
+    location: data?.location || '',
     description: data?.ad_description || '',
+    latitude: data?.latitude,
+    longitude: data?.longitude,
+    place_id: '',
   });
   const [errors, setErrors] = useState({});
   const [dynamicFields, setDynamicFields] = useState([
     ...(data?.dynamic_field || []),
   ]);
 
-  useEffect(() => {
-    fetchCountry();
-    fetchState();
-    fetchDistrict();
-  }, []);
-
-  const fetchCountry = async () => {
-    const {data} = await axiosOpen.get('/ads/country', {
-      page: 1,
-      page_size: 1000,
-    });
-    setCountryList(data?.results);
-  };
-  const fetchState = async () => {
-    const {data} = await axiosOpen.get('/ads/state', {
-      page: 1,
-      page_size: 1000,
-    });
-    setStateList(data?.results);
-  };
-  const fetchDistrict = async () => {
-    const {data} = await axiosOpen.get('/ads/district', {
-      page: 1,
-      page_size: 1000,
-    });
-    setDistList(data?.results);
-  };
-
-  const [country, setCountry] = useState('');
-  const [countryList, setCountryList] = useState([]);
-
-  const [state, setState] = useState('');
-  const [filteredState, setFilteredState] = useState([]);
-  const [stateList, setStateList] = useState([]);
-
-  const [district, setDistrict] = useState('');
-  const [filteredDist, setFilteredDist] = useState([]);
-  const [distList, setDistList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [categorySelected, setCategorySelected] = useState(false);
+  const [subCategoryList, setSubCategoryList] = useState([]);
+  const [filteredSubCategoryList, setFilteredSubCategoryList] = useState([]);
+  const [numberOfImages, setNumberOfImages] = useState(12);
 
   const handleInputChange = (field, value) => {
     setFormDetails(prevState => ({...prevState, [field]: value}));
@@ -117,16 +91,123 @@ const EditAdDetails = () => {
   };
 
   useEffect(() => {
-    const image = data?.images;
-    const newImages = [
-      ...image.map(e => {
-        e['uri'] = baseURL.replace('/api', e?.image);
-        return e;
-      }),
-    ];
-    console.log(newImages);
-    setImageUri([...newImages, ...new Array(12 - newImages.length).fill(null)]);
+    (async () => {
+      const category = await axiosOpen('/ads/category');
+      const subCategory = await axiosOpen('/ads/subcategory');
+      setCategoryList(category?.data);
+      setSubCategoryList(subCategory?.data);
+
+      if (formDetails?.subcategory != '') {
+        const getImageLength = subCategory?.data
+          ?.filter(e => e?.category === formDetails?.category)
+          ?.filter(e => e?.id === formDetails?.subcategory);
+        setNumberOfImages(getImageLength[0]?.no_of_images);
+
+        for (let i = 0; i < dynamicFields.length; i++) {
+          if (getImageLength[0]?.dynamic_field[i]?.field_type === 'Select') {
+            dynamicFields[i].options =
+              getImageLength[0]?.dynamic_field[i]?.options;
+          }
+        }
+        // );
+        const image = data?.images;
+        const newImages = [
+          ...image?.map(e => {
+            e['uri'] = baseURL.replace('/api', e?.image);
+            return e;
+          }),
+        ];
+        setImageUri([
+          ...newImages,
+          ...new Array(getImageLength[0]?.no_of_images - newImages.length).fill(
+            null,
+          ),
+        ]);
+      }
+    })();
+  }, [formDetails?.subcategory]);
+
+  /////////////// location code ////////////////////////
+  const [searchValue, setSearchValue] = useState(null);
+  const [addressList, setAddressList] = useState([]);
+
+  useEffect(() => {
+    checkLocationPermission();
   }, []);
+
+  let debounceTimeout;
+
+  useEffect(() => {
+    debounceSearch();
+
+    // Clean up the debounce timeout
+    return () => clearTimeout(debounceTimeout);
+  }, [formDetails?.location]);
+
+  const debounceSearch = () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      onSearchLocation(formDetails.location);
+    }, 500);
+  };
+
+  const checkLocationPermission = async forceFetch => {
+    const permission =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+        : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+
+    const isPermissionGranted = await CheckPermission(permission);
+    if (!isPermissionGranted) return false;
+    setLoading(true);
+    if (forceFetch) {
+      Getlocation()
+        .then(e => {
+          setLoading(false);
+          setFormDetails(prev => ({
+            ...prev,
+            location: e[0]?.formatted_address,
+            latitude: e[0]?.geometry?.location?.lat,
+            longitude: e[0]?.geometry?.location?.lng,
+            place_id: e[0]?.place_id,
+          }));
+          setAddressList(e);
+        })
+        .catch(err => {
+          setLoading(false);
+        });
+    }
+  };
+
+  const onSearchLocation = async text => {
+    try {
+      if (formDetails?.location.trim() === '') return;
+
+      // const apiKey = 'AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70';
+      // const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${text}&location_type=APPROXIMATE&result_type=street_address|route|intersection|locality|sublocality|premise&key=${apiKey}`;
+
+      // const res = await fetch(url, {method: 'GET'});
+
+      const res = await axiosOpen.get('/ads/ads/get_place_id_from_address', {
+        params: {address: text},
+      });
+
+      const data = res;
+      if (data.status === 200) {
+        setAddressList([...data?.data?.results]);
+      } else if (data.status === 'ZERO_RESULTS') {
+        setAddressList([]);
+      } else {
+        setAddressList([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      setAddressList([]);
+      setLoading(false);
+    }
+  };
+
+  /////////////// location code ////////////////////////
 
   const onChangeCountry = country => {
     setFormDetails(prevState => ({
@@ -184,17 +265,25 @@ const EditAdDetails = () => {
   const handleImageLibrary = async () => {
     const options = {
       mediaType: 'photo',
-      selectionLimit: 12,
+      selectionLimit: numberOfImages,
       includeBase64: false,
     };
     await launchImageLibrary(options)
       .then(res => {
         if (res?.assets) {
-          const image = res?.assets.map(item => item);
-          const newImages = [...imageUri.filter(e => e), ...image].slice(0, 12);
+          const image = res?.assets.filter(item => {
+            if (item?.fileSize > 1000000 * 4) {
+              Toast.error('Image Size Exceeds Limit');
+            }
+            return item?.fileSize < 1000000 * 4 && item;
+          });
+          const newImages = [...imageUri.filter(e => e), ...image].slice(
+            0,
+            numberOfImages,
+          );
           setImageUri([
             ...newImages,
-            ...new Array(12 - newImages.length).fill(null),
+            ...new Array(numberOfImages - newImages.length).fill(null),
           ]);
         } else if (res?.didCancel) {
           console.log('dsada');
@@ -204,15 +293,6 @@ const EditAdDetails = () => {
       })
       .catch(err => console.log('adsdasd', err));
   };
-
-  // const handleDelete = idx => {
-  //   const imageToDelete = imageUri.find((e, i) => i === idx);
-  //   if (imageToDelete?.id) {
-  //     deleteImage(imageToDelete.id).then(_ => {
-  //       setImageUri(prev => [...prev.filter((_, i) => i !== idx), null]);
-  //     });
-  //   } else setImageUri(prev => [...prev.filter((_, i) => i !== idx), null]);
-  // };
 
   const handleDelete = idx => {
     const imageToDelete = imageUri.find((e, i) => i === idx);
@@ -246,7 +326,7 @@ const EditAdDetails = () => {
   const {mutate: uploadAd} = useMutation({
     mutationFn: async formData => {
       console.log('function call postAd');
-      setLoading(true);
+      // setLoading(true);
       return await axiosPrivate.patch(`/ads/ads/${data?.id}`, formData);
     },
     onSuccess: res => {
@@ -254,7 +334,7 @@ const EditAdDetails = () => {
       if (res?.data?.id) handleSubmitImages(res?.data?.id);
     },
     onError: err => {
-      console.log('PostAds error', err);
+      console.log('PostAds error', err?.response?.data);
       setLoading(false);
       Toast.error('Error while uploading Ad');
     },
@@ -262,6 +342,7 @@ const EditAdDetails = () => {
 
   const {mutate: uploadImage} = useMutation({
     mutationFn: async formData => {
+      setLoading(true);
       return await axiosPrivate.post(`/ads/ads_image`, formData, {
         headers: {'Content-Type': 'multipart/form-data'},
       });
@@ -320,26 +401,21 @@ const EditAdDetails = () => {
       let obj = {
         ad_title: isValid('Ad title', formDetails?.ad_title),
         ad_description: isValid('Description', formDetails?.description),
-        price: isValid('Price', formDetails?.price),
+        location: isValid('Location', formDetails?.location),
+        subCategory: isValid(
+          'SubCategory',
+          formDetails?.subcategory?.toString(),
+        ),
       };
-      console.log('post', dynamicFields);
-
       dynamicFields?.forEach(
-        e => (obj[e?.field_name] = isValid(e?.field_name, e?.value)),
+        e =>
+          e?.is_required &&
+          (obj[e.field_name] = isValid(e.field_name, e.value)),
       );
 
       const len = imageUri.filter(e => e);
       if (len == 0) {
         obj.image = 'Please select atleast one image';
-      }
-      if (country == '') {
-        obj.country = 'Please select country';
-      }
-      if (state == '') {
-        obj.state = 'Please select state';
-      }
-      if (district == '') {
-        obj.district = 'Please select district';
       }
       if (Object.values(obj).filter(e => e !== '').length > 0) {
         console.log(obj);
@@ -348,24 +424,33 @@ const EditAdDetails = () => {
 
       setErrors({});
       const data = {
-        category: data?.category_id,
-        sub_category: data?.subcategory_id,
+        category: formDetails?.category,
+        sub_category: formDetails?.subcategory,
         ad_title: formDetails?.ad_title,
         ad_description: formDetails?.description,
-        price: formDetails?.price,
+        location: formDetails?.location,
+        latitude: formDetails?.latitude,
+        longitude: formDetails?.longitude,
         is_sold: false,
-        dynamic_field: dynamicFields,
-        city: district,
-        state: state,
-        country: country,
+        dynamic_field: dynamicFields
+          ?.filter(df => df?.value?.trim() !== '')
+          ?.map(df => ({
+            field_name: df?.field_name,
+            field_type: df?.field_type,
+            value: df?.value,
+          })),
+        place_id: formDetails?.place_id,
       };
-      console.log(data);
+      setCategorySelected(false);
       uploadAd(data);
     } catch (e) {
       console.error('dasdad', e);
     }
   };
 
+  console.log(
+    subCategoryList.filter(e => e?.category === formDetails.category),
+  );
   return (
     <SafeAreaView style={{flex: 1}}>
       <ToastManager duration={2000} style={{width: width * 0.9}} />
@@ -373,6 +458,64 @@ const EditAdDetails = () => {
       <Loader visible={loading} />
       <KeyboardAvoidingWrapper>
         <View style={styles.inputFieldView}>
+          <Text style={styles.inputFieldTitleTxt}>Category</Text>
+          <Dropdown
+            style={[styles.dropdown, {...SHADOWS.medium}]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            itemTextStyle={{color: COLORS.black}}
+            iconStyle={styles.iconStyle}
+            data={categoryList}
+            maxHeight={300}
+            labelField="name"
+            valueField="id"
+            placeholder={'Select category'}
+            value={formDetails.category}
+            onChange={item => {
+              setCategorySelected(true);
+              const sub = subCategoryList?.filter(
+                e => e?.category === item?.id,
+              );
+              setFormDetails(prev => ({...prev, subcategory: ''}));
+              setFilteredSubCategoryList(sub);
+              setFormDetails(prev => ({...prev, category: item?.id}));
+            }}
+          />
+          <Text style={styles.inputFieldTitleTxt}>SubCategory</Text>
+          <Dropdown
+            style={[styles.dropdown, {...SHADOWS.medium}]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            itemTextStyle={{color: COLORS.black}}
+            iconStyle={styles.iconStyle}
+            data={
+              categorySelected
+                ? filteredSubCategoryList
+                : subCategoryList.filter(
+                    e => e?.category === formDetails.category,
+                  )
+            }
+            maxHeight={300}
+            labelField="name"
+            valueField="id"
+            placeholder={'Select subcategory'}
+            value={formDetails?.subcategory}
+            onChange={item => {
+              setNumberOfImages(item.no_of_images);
+              setFormDetails(prev => ({...prev, subcategory: item?.id}));
+            }}
+            // disable={!categorySelected}
+          />
+          {errors?.subCategory && (
+            <HelperText
+              type="error"
+              style={{fontSize: 14, alignSelf: 'flex-start'}}>
+              {errors?.subCategory}
+            </HelperText>
+          )}
+
           <Text style={styles.inputFieldTitleTxt}>Ad Title</Text>
           <Input
             id={'ad_title'}
@@ -381,18 +524,6 @@ const EditAdDetails = () => {
             value={formDetails?.ad_title}
             onChangeText={text => handleInputChange('ad_title', text)}
             style={styles.input}
-          />
-          <Text style={styles.inputFieldTitleTxt}>Price</Text>
-          <Input
-            id={'price'}
-            placeholder={'Price'}
-            errors={errors}
-            value={formDetails?.price}
-            onChangeText={text =>
-              handleInputChange('price', text.replace(/[^0-9]/, ''))
-            }
-            style={styles.input}
-            keyboardType="number-pad"
           />
           <Text style={styles.inputFieldTitleTxt}>Description</Text>
           <Input
@@ -409,6 +540,85 @@ const EditAdDetails = () => {
             maxLength={250}
             onContentSizeChange={handleContentSizeChange}
           />
+
+          <Text style={styles.inputFieldTitleTxt}>Location</Text>
+          <Input
+            id={'location'}
+            placeholder={'Press icon to fetch current location'}
+            errors={errors}
+            value={formDetails?.location}
+            onChangeText={text => {
+              setSearchValue(text);
+              handleInputChange('location', text);
+            }}
+            // multiline
+            style={[
+              styles.input,
+              {height: viewHeight, minHeight: height * 0.05},
+            ]}
+            onFocus={() => setFormDetails(prev => ({...prev, location: ''}))}
+            onBlur={() => setSearchValue('')}
+            maxLength={250}
+            onLeftIconPress={() => checkLocationPermission(true)}
+            onContentSizeChange={handleContentSizeChange}
+            locationIcon={icons.gps}
+            loading={loading}
+          />
+
+          {addressList.length > 0 && searchValue && (
+            <View
+              style={[
+                {
+                  alignSelf: 'center',
+                  // position: 'absolute',
+                  // top: height * 0.435,
+                  padding: 10,
+                  width: width * 0.9,
+                  height: height * 0.2,
+                  backgroundColor: 'white',
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+
+                  elevation: 5,
+                  zIndex: 999,
+                  minHeight: '20%',
+                },
+                // {display: true},
+              ]}>
+              <FlatList
+                data={addressList}
+                scrollEnabled={false}
+                renderItem={({item}) => {
+                  console.log('latitude', item?.geometry?.location?.lat);
+                  return (
+                    <TouchableOpacity
+                      style={{marginVertical: 10}}
+                      onPress={() => {
+                        setAddressList([]);
+                        setSearchValue('');
+                        setFormDetails(prev => ({
+                          ...prev,
+                          location:
+                            item?.description || item?.formatted_address,
+                          latitude: item?.geometry?.location?.lat,
+                          longitude: item?.geometry?.location?.lng,
+                          place_id: item?.place_id,
+                        }));
+                      }}>
+                      <Text style={{color: COLORS.black}}>
+                        {item?.description || item?.formatted_address}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          )}
 
           {dynamicFields?.map((item, index) => {
             return (
@@ -428,84 +638,9 @@ const EditAdDetails = () => {
             );
           })}
 
-          <Text style={styles.inputFieldTitleTxt}>Country</Text>
-          <Dropdown
-            style={[styles.dropdown, SHADOWS.small]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            iconStyle={styles.iconStyle}
-            data={countryList}
-            maxHeight={300}
-            labelField="name"
-            valueField="id"
-            placeholder={'Select Country'}
-            value={country}
-            onChange={item => {
-              setCountry(item.id);
-              const a = stateList.filter(e => e?.country === item?.id);
-              setFilteredState(a);
-            }}
-          />
-          {errors?.country && (
-            <HelperText
-              type="error"
-              style={{fontSize: 14, alignSelf: 'flex-start'}}>
-              {errors?.country}
-            </HelperText>
-          )}
-
-          <Text style={styles.inputFieldTitleTxt}>State</Text>
-          <Dropdown
-            style={[styles.dropdown, SHADOWS.small]}
-            disable={country === ''}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            iconStyle={styles.iconStyle}
-            data={filteredState}
-            maxHeight={300}
-            labelField="name"
-            valueField="id"
-            placeholder={'Select State'}
-            value={state}
-            onChange={item => {
-              setState(item.id);
-              const a = distList.filter(e => e?.state === item?.id);
-              setFilteredDist(a);
-            }}
-          />
-          {errors?.state && (
-            <HelperText
-              type="error"
-              style={{fontSize: 14, alignSelf: 'flex-start'}}>
-              {errors?.state}
-            </HelperText>
-          )}
-          <Text style={styles.inputFieldTitleTxt}>District</Text>
-          <Dropdown
-            style={[styles.dropdown, SHADOWS.small]}
-            disable={state === ''}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            iconStyle={styles.iconStyle}
-            data={filteredDist}
-            maxHeight={300}
-            labelField="name"
-            valueField="id"
-            placeholder={'Select District'}
-            value={district}
-            onChange={item => {
-              setDistrict(item.id);
-            }}
-          />
-          {errors?.city && (
-            <HelperText
-              type="error"
-              style={{fontSize: 14, alignSelf: 'flex-start'}}>
-              {errors?.city}
-            </HelperText>
-          )}
-
-          <Text style={styles.inputFieldTitleTxt}>Upload upto 12 Images</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {`Upload upto ${numberOfImages} Images`} (Max size limit:4MB)
+          </Text>
           <HelperText
             type="error"
             style={{fontSize: 14, alignSelf: 'flex-start'}}>
@@ -555,7 +690,7 @@ const styles = StyleSheet.create({
   },
 
   dropdown: {
-    height: height * 0.06,
+    height: height * 0.05,
     width: width * 0.9,
     backgroundColor: COLORS.white,
     borderRadius: 8,

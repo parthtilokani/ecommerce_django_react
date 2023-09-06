@@ -10,15 +10,28 @@ import {
   Text,
   SafeAreaView,
   ActivityIndicator,
+  ScrollView,
+  Linking,
 } from 'react-native';
 import GobackHeader from '../GobackHeader.jsx';
-import {COLORS, width} from '../../constant/index.js';
+import {
+  COLORS,
+  FONTSIZE,
+  height,
+  icons,
+  normalize,
+  width,
+} from '../../constant/index.js';
 import {useRoute} from '@react-navigation/native';
 import {baseURL} from '../../utils/Api.js';
+import {getPostAge} from '../../utils/supportFunctions.js';
+import Ionicons from 'react-native-vector-icons/Ionicons.js';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons.js';
+import {measure} from 'react-native-reanimated';
 
 const ShowAdsDetails = () => {
   const {
-    params: {data},
+    params: {data, isMyAds},
   } = useRoute();
   // const data = [
   //   {id: '1', imageUrl: 'https://source.unsplash.com/user/c_v_r/1900x800'},
@@ -76,9 +89,13 @@ const ShowAdsDetails = () => {
   //   // Add more image objects as needed
   // ];
 
-  console.log('DADAD', data);
+  console.log('wewwewew', data?.create_user?.phone_no);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [whatsAppMsg, setWhatsAppMsg] = useState(
+    'Hi, I am interested in your ad posting',
+  );
   const scrollX = useRef(new Animated.Value(0)).current;
   const onViewRef = useRef(({viewableItems}) => {
     if (viewableItems.length > 0) {
@@ -88,13 +105,14 @@ const ShowAdsDetails = () => {
   const viewConfigRef = useRef({viewAreaCoveragePercentThreshold: 50});
 
   const renderItem = ({item}) => {
-    let imageUri;
-    if (data?.ads_image[0].image.includes(baseURL.replace('/api', ''))) {
-      imageUri = data?.ads_image[0]?.image;
-    } else {
-      imageUri = `${baseURL.replace('/api', data?.ads_image[0]?.image)}`;
-    }
-    console.log(imageUri);
+    const imageUri = item?.image;
+    // let imageUri;
+    // if (data?.ads_image[0].image.includes(baseURL.replace('/api', ''))) {
+    //   imageUri = data?.ads_image[0]?.image;
+    // } else {
+    //   imageUri = `${baseURL.replace('/api', data?.ads_image[0]?.image)}`;
+    // }
+    // console.log(imageUri);
     return (
       <View style={styles.imageContainer}>
         {loading && (
@@ -123,9 +141,26 @@ const ShowAdsDetails = () => {
     }
   };
 
+  const initiateWhatsApp = () => {
+    if (!data?.create_user?.phone_no)
+      return alert('The ad owner has not provided his phone number');
+    let url =
+      'whatsapp://send?text=' +
+      whatsAppMsg +
+      '&phone=91' +
+      data?.create_user?.phone_no;
+    Linking.openURL(url)
+      .then(data => {
+        console.log('WhatsApp Opened');
+      })
+      .catch(() => {
+        alert('Make sure Whatsapp installed on your device');
+      });
+  };
+
   const flatListRef = useRef(null);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <GobackHeader bg title={'Ad Details'} />
       <View style={styles.container}>
         <FlatList
@@ -158,75 +193,214 @@ const ShowAdsDetails = () => {
             <TouchableOpacity
               style={styles.buttonNext}
               onPress={handleNext}
-              disabled={currentIndex === data.length - 1}>
+              disabled={currentIndex === data?.ads_image.length - 1}>
               <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>
           </>
         )}
       </View>
       <View style={styles.indicatorContainer}>
-        {data?.ads_image.map((_, index) => {
-          const indicatorStyle =
-            index === currentIndex
-              ? styles.activeIndicator
-              : styles.inactiveIndicator;
-          return (
-            <Animated.View
-              key={index}
-              style={[styles.indicator, indicatorStyle]}
-            />
-          );
-        })}
-      </View>
-      <View style={{marginHorizontal: 10}}>
-        <Text>Title</Text>
-        <Text>{data?.ad_title}</Text>
-      </View>
-      <View
-        style={{
-          width: width * 0.9,
-          height: 1,
-          backgroundColor: COLORS.gray,
-          marginVertical: 10,
-          alignSelf: 'center',
-        }}
-      />
-      <View style={{marginHorizontal: 10}}>
-        <Text>Listed By : </Text>
-        <Text>{data?.create_user?.name}</Text>
-      </View>
-      <View
-        style={{
-          width: width * 0.9,
-          height: 1,
-          backgroundColor: COLORS.gray,
-          marginVertical: 10,
-          alignSelf: 'center',
-        }}
-      />
-      <View style={{marginHorizontal: 10}}>
-        <Text>Location : </Text>
-        <Text>
-          {data?.city_name +
-            ', ' +
-            data?.state_name +
-            ', ' +
-            data?.country_name}
+        <Text style={{color: COLORS.black}}>
+          {currentIndex + 1}/
+          {data?.ads_image.length > 0 ? data?.ads_image.length : '1'}
         </Text>
       </View>
-      <View
-        style={{
-          width: width * 0.9,
-          height: 1,
-          backgroundColor: COLORS.gray,
-          marginVertical: 10,
-          alignSelf: 'center',
-        }}
-      />
-      <View style={{marginHorizontal: 10}}>
-        <Text>Description : </Text>
-        <Text>{data?.ad_description}</Text>
-      </View>
+      <ScrollView style={{flex: 1, marginBottom: 55}}>
+        <View style={{marginHorizontal: 10, marginTop: 10}}>
+          <Text
+            style={{
+              color: COLORS.black,
+              fontSize: normalize(17),
+              fontWeight: '700',
+              marginLeft: 10,
+            }}>
+            {data?.ad_title}
+          </Text>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text
+              style={{
+                marginLeft: 10,
+                width: width * 0.65,
+                fontWeight: '500',
+                color: COLORS.black,
+                // backgroundColor: 'red',
+                // textAlign: 'right',
+              }}
+              numberOfLines={1}>
+              {data?.location || 'No Loaction'}
+            </Text>
+            <Text
+              style={{
+                fontWeight: '500',
+                color: COLORS.black,
+                textAlign: 'right',
+              }}>
+              {getPostAge(data?.posted_on)}
+            </Text>
+          </View>
+        </View>
+        <View
+          style={{
+            width: width * 0.95,
+            height: 1,
+            backgroundColor: COLORS.gray,
+            marginVertical: 10,
+            alignSelf: 'center',
+          }}
+        />
+
+        <View style={{marginHorizontal: 10, marginVertical: 10}}>
+          <View style={{flexDirection: 'row'}}>
+            <MaterialIcons name="category" size={20} color={COLORS.black} />
+
+            <Text
+              style={{
+                color: COLORS.black,
+                fontSize: normalize(FONTSIZE.xxSmall),
+                fontWeight: '500',
+                marginLeft: 5,
+              }}>
+              Category
+            </Text>
+          </View>
+          <Text
+            style={{
+              color: COLORS.black,
+              fontSize: normalize(FONTSIZE.xxSmall),
+              marginLeft: 25,
+            }}>
+            {data?.category_name}
+          </Text>
+        </View>
+
+        <View style={{marginHorizontal: 10, marginVertical: 10}}>
+          <View style={{flexDirection: 'row'}}>
+            <MaterialIcons name="category" size={20} color={COLORS.black} />
+
+            <Text
+              style={{
+                color: COLORS.black,
+                fontSize: normalize(FONTSIZE.xxSmall),
+                fontWeight: '500',
+                marginLeft: 5,
+              }}>
+              Sub Category
+            </Text>
+          </View>
+          <Text
+            style={{
+              color: COLORS.black,
+              fontSize: normalize(FONTSIZE.xxSmall),
+              marginLeft: 25,
+            }}>
+            {data?.sub_category_name}
+          </Text>
+        </View>
+
+        {data?.create_user?.name && (
+          <View style={{marginHorizontal: 10, marginVertical: 10}}>
+            <View style={{flexDirection: 'row'}}>
+              <Image source={icons.owner} style={{width: 20, height: 20}} />
+              <Text
+                style={{
+                  color: COLORS.black,
+                  fontSize: normalize(FONTSIZE.xxSmall),
+                  fontWeight: '500',
+                  marginLeft: 5,
+                }}>
+                Created User
+              </Text>
+            </View>
+            <Text
+              style={{
+                color: COLORS.black,
+                fontSize: normalize(FONTSIZE.xxSmall),
+                marginLeft: 25,
+              }}>
+              {data?.create_user?.name}
+            </Text>
+          </View>
+        )}
+
+        <View style={{marginHorizontal: 10}}>
+          <View style={{flexDirection: 'row'}}>
+            <Ionicons
+              name="information-circle-outline"
+              size={20}
+              color={COLORS.black}
+            />
+
+            <Text
+              style={{
+                color: COLORS.black,
+                fontSize: normalize(FONTSIZE.xxSmall),
+                fontWeight: '500',
+                marginLeft: 5,
+              }}>
+              About the Product
+            </Text>
+          </View>
+          <Text
+            style={{
+              color: COLORS.black,
+              fontSize: normalize(FONTSIZE.xxSmall),
+              marginLeft: 25,
+            }}>
+            {data?.ad_description}
+          </Text>
+        </View>
+      </ScrollView>
+      {!isMyAds && (
+        <View
+          style={{
+            backgroundColor: COLORS.white,
+            height: 65,
+            width: width,
+            justifyContent: 'center',
+            position: 'absolute',
+            bottom: 0,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginHorizontal: 30,
+            }}>
+            <Text
+              style={{
+                fontWeight: '700',
+                fontSize: normalize(17),
+                color: COLORS.black,
+              }}>
+              {/* ₹{data?.price} */}
+            </Text>
+            <TouchableOpacity
+              style={{
+                width: width * 0.3,
+                height: height * 0.05,
+                borderRadius: 10,
+                backgroundColor: 'green',
+                alignItems: 'center',
+                justifyContent: 'space-evenly',
+                alignSelf: 'center',
+                flexDirection: 'row',
+              }}
+              onPress={initiateWhatsApp}>
+              <Ionicons name="logo-whatsapp" size={20} color={COLORS.white} />
+              <Text
+                style={{
+                  color: COLORS.white,
+                  fontWeight: '700',
+                  fontSize: normalize(FONTSIZE.medium),
+                  marginRight: 5,
+                }}>
+                Chat
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -237,7 +411,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   imageContainer: {
-    width: Dimensions.get('window').width,
+    width: width,
     height: 250,
     alignItems: 'center',
     justifyContent: 'center',
@@ -249,9 +423,17 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   indicatorContainer: {
+    marginTop: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 10,
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    position: 'absolute',
+    top: height * 0.3,
+    left: width * 0.8,
   },
   indicator: {
     width: 8,

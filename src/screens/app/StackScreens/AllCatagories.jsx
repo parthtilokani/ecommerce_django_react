@@ -4,7 +4,8 @@ import GobackHeader from '../../../components/GobackHeader.jsx';
 import Categories from '../../../components/Categories/Categories.jsx';
 import {axiosOpen} from '../../../utils/axios.js';
 import {useQuery} from '@tanstack/react-query';
-import Loader from '../../../components/Loader/Loader.jsx';
+import {ActivityIndicator} from 'react-native-paper';
+import {COLORS} from '../../../constant/theme.js';
 
 const AllCatagories = () => {
   const [categoryData, setCategoryData] = useState(null);
@@ -23,7 +24,6 @@ const AllCatagories = () => {
 
   return (
     <View style={styles.container}>
-      <Loader visible={isLoading} />
       <GobackHeader resetBack bg title={'Category'} />
       <View style={styles.CategoriesView}>
         <Categories
@@ -31,6 +31,7 @@ const AllCatagories = () => {
           categories={categoryData}
           title={'Categories'}
           nav
+          isLoading={isLoading}
         />
       </View>
     </View>

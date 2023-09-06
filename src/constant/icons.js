@@ -24,6 +24,12 @@ import calendar from '../assets/calendar.png';
 import time from '../assets/time.png';
 import rupee from '../assets/rupee.png';
 import otp from '../assets/otp.png';
+import owner from '../assets/owner.png';
+import gps from '../assets/gps.png';
+import buy from '../assets/buy.png';
+import description from '../assets/description.png';
+import filter from '../assets/panel.png';
+import transaction from '../assets/bank-statement.png';
 
 export default {
   menu,
@@ -52,4 +58,10 @@ export default {
   time,
   rupee,
   otp,
+  owner,
+  gps,
+  buy,
+  description,
+  filter,
+  transaction,
 };

@@ -33,6 +33,9 @@ const LoginWithPhone = ({navigation}) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [phoneOtpModal, setPhoneOtpModal] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpSentOnce, setOtpSentOnce] = useState(false);
+  const [clock, setClock] = useState(60);
   const {setAuth} = useAuth();
 
   const handleInputChange = (field, value) => {
@@ -50,14 +53,29 @@ const LoginWithPhone = ({navigation}) => {
     if (Object.values(obj).filter(e => e !== '').length > 0)
       return setErrors(obj);
     setErrors({});
-
+    setLoading(true);
     const data = {phone: formDetails.phoneNumber};
     const response = await requestOtp(data);
+    setLoading(false);
     if (response?.success) {
-      Toast.success('You will receive OTP on phone number');
+      Toast.success('OTP sent. You will receive SMS or Call.');
       setPhoneOtpModal(true);
       setFormDetails(prev => ({...prev, btnText: 'Verify OTP'}));
+      setOtpSent(true);
+      setOtpSentOnce(true);
+      setClock(60);
+      const newInterval = setInterval(() => {
+        setClock(prev => {
+          if (prev === 0) {
+            setErrors({});
+            clearInterval(newInterval);
+            return prev;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
+      setLoading(false);
       Toast.error(response?.res);
     }
   };
@@ -84,7 +102,7 @@ const LoginWithPhone = ({navigation}) => {
       setAuth(response?.res);
       Toast.success('Login sucessful!');
       setTimeout(() => {
-        navigation.replace('Drawer');
+        return navigation.replace('Drawer');
       }, 3000);
     } else {
       Toast.error('OTP verify unsuccessful');
@@ -141,6 +159,20 @@ const LoginWithPhone = ({navigation}) => {
                   keyboardType={'phone-pad'}
                 />
               )}
+              {otpSent && (
+                <Text
+                  style={{
+                    fontSize: normalize(FONTSIZE.xxSmall),
+                    color: COLORS.black,
+                  }}
+                  onPress={onSendOTP}
+                  disabled={loading || clock > 0}>
+                  {clock === 0
+                    ? 'Resend OTP'
+                    : 'Resend otp in ' + clock + ' second/s.'}
+                </Text>
+              )}
+
               <Button
                 text={formDetails?.btnText}
                 style={styles.signInbtn}

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import GobackHeader from '../../../components/GobackHeader.jsx';
@@ -33,24 +34,6 @@ const Postad = ({navigation}) => {
       return data;
     },
   });
-
-  // const handlePress = idx => {
-  //   setState(prevState => ({
-  //     isVisible: !prevState.isVisible,
-  //     visibleId: idx,
-  //   }));
-
-  //   dropdownHeight.value = withTiming(state.isVisible ? 0 : height * 0.03, {
-  //     duration: 200,
-  //     easing: Easing.inOut(Easing.ease),
-  //   });
-  // };
-
-  // const dropdownStyle = useAnimatedStyle(() => {
-  //   return {
-  //     height: dropdownHeight.value,
-  //   };
-  // });
 
   const renderFlatItems = ({item, index}) => {
     return (
@@ -91,32 +74,30 @@ const Postad = ({navigation}) => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
-      <Loader visible={loading} />
+      {/* <Loader visible={loading} /> */}
       <GobackHeader bg resetBack title={'Post Your Ads'} />
       <View style={styles.flatListMainView}>
-        <FlatList
-          data={categories?.data}
-          keyExtractor={(item, index) => index}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderFlatItems}
-          ListHeaderComponent={flatHeader}
-          ListHeaderComponentStyle={{
-            backgroundColor: COLORS.lightWhite,
-            padding: 10,
-          }}
-          // ListEmptyComponent={() => (
-          //   <Text
-          //     style={{
-          //       alignSelf: 'center',
-          //       fontSize: normalize(FONTSIZE.medium),
-          //       color: COLORS.black,
-          //     }}>
-          //     Data not found
-          //   </Text>
-          // )}
-          stickyHeaderIndices={[0]}
-          ListFooterComponent={() => <View style={{height: height * 0.1}} />}
-        />
+        {loading ? (
+          <ActivityIndicator
+            size={'large'}
+            color={COLORS.primary}
+            style={{alignSelf: 'center', marginTop: 50}}
+          />
+        ) : (
+          <FlatList
+            data={categories?.data}
+            keyExtractor={(item, index) => index}
+            showsVerticalScrollIndicator={false}
+            renderItem={renderFlatItems}
+            ListHeaderComponent={flatHeader}
+            ListHeaderComponentStyle={{
+              backgroundColor: COLORS.lightWhite,
+              padding: 10,
+            }}
+            stickyHeaderIndices={[0]}
+            ListFooterComponent={() => <View style={{height: height * 0.1}} />}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

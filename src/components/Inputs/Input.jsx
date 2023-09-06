@@ -1,9 +1,11 @@
 import {
+  ActivityIndicator,
   Image,
   Platform,
   Pressable,
   StyleSheet,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {HelperText} from 'react-native-paper';
@@ -32,17 +34,25 @@ const Input = ({
   maxLength,
   keyboardType = 'default',
   onFocus,
+  onBlur,
   showSoftInputOnFocus = true,
   onChangeCountry,
   multiline,
   onContentSizeChange,
   editable = true,
+  onLeftIconPress,
+  locationIcon,
+  loading,
 }) => {
   const [secure, setSecure] = useState(true);
   return (
     <>
       <View style={[styles.container, SHADOWS.small, style]}>
-        {leftIcon && <Image source={leftIcon} style={styles.icon} />}
+        {leftIcon && (
+          <TouchableOpacity>
+            <Image source={leftIcon} style={styles.icon} />
+          </TouchableOpacity>
+        )}
         {id == 'phoneNumber' ? (
           <PhoneInput
             defaultCode="IN"
@@ -52,13 +62,15 @@ const Input = ({
             textInputStyle={{alignSelf: 'center'}}
             textContainerStyle={styles.phoneTextContainer}
             value={value}
+            disabled={!editable}
             disableArrowIcon
             textInputProps={{
               onChangeText: onChangeText,
               value: value,
               maxLength: maxLength,
               placeholder: placeholder,
-              style: styles.phoneInput,
+              onFocus: onFocus,
+              style: [styles.phoneInput, inputStyle],
               keyboardType: keyboardType,
               placeholderTextColor: 'grey',
             }}
@@ -78,10 +90,29 @@ const Input = ({
             multiline={multiline}
             keyboardType={keyboardType}
             onFocus={onFocus}
+            onBlur={onBlur}
             showSoftInputOnFocus={showSoftInputOnFocus}
             onContentSizeChange={onContentSizeChange}
             editable={editable}
           />
+        )}
+
+        {id === 'location' && loading ? (
+          <ActivityIndicator
+            size={'small'}
+            color={COLORS.primary}
+            style={{marginLeft: 20}}
+          />
+        ) : (
+          id === 'location' &&
+          !loading && (
+            <TouchableOpacity onPress={onLeftIconPress}>
+              <Image
+                source={locationIcon}
+                style={[styles.icon, {marginLeft: 20}]}
+              />
+            </TouchableOpacity>
+          )
         )}
         {isPassword && (
           <Pressable
@@ -148,7 +179,7 @@ const styles = StyleSheet.create({
   },
   countryCodeTextStyle: {
     fontSize: normalize(FONTSIZE.small),
-    color: COLORS.black,
+    // color: COLORS.black,
     bottom: Platform.OS == 'android' ? 15 : 0,
     textAlignVertical: 'center',
   },

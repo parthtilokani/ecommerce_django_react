@@ -2,7 +2,7 @@
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
 const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-const phoneNumberRegex = /^\d{10}$/;
+const phoneNumberRegex = /^[6-9]\d{9}$/;
 
 export const isEmptyValue = (value, id, setErrors) => {
   if (!value?.trim()) {

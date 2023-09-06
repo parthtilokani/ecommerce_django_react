@@ -8,26 +8,30 @@ import {
   Pressable,
   Modal,
   TextInput,
+  Linking,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {COLORS, FONTSIZE, SHADOWS} from '../../../constant/theme.js';
 import {
   removeUserSession,
   retrieveUserSession,
+  storeUserSession,
 } from '../../../utils/AsyncStorage/userSession.js';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome5.js';
 import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons.js';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons.js';
-import {height, normalize, width} from '../../../constant/index.js';
+import {height, icons, normalize, width} from '../../../constant/index.js';
 import CustomAlert from '../../../components/CustomAlert/CustomAlert.jsx';
 import ToastManager, {Toast} from 'toastify-react-native';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate.js';
 import Input from '../../../components/Inputs/Input.jsx';
 import Button from '../../../components/Button/Button.jsx';
 import useAuth from '../../../hooks/useAuth.js';
+import Loader from '../../../components/Loader/Loader.jsx';
 const Account = props => {
-  const {setAuth} = useAuth();
+  const {auth, setAuth} = useAuth();
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
   const axiosPrivate = useAxiosPrivate();
   const [customAlert, setCustomAert] = useState(false);
@@ -35,22 +39,25 @@ const Account = props => {
   const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      getUserInfo();
-      const token = await retrieveUserSession('userToken');
-      setIsLogin(token);
-    })();
-  }, []);
+    console.log('sadsad123123123', isFocused);
+    getUserInfo();
+    setIsLogin(auth?.access);
+  }, [auth, isFocused]);
 
   const getUserInfo = async () => {
     try {
-      const userInfo = await axiosPrivate('/user/user/get_current_user');
-      console.log(userInfo?.data);
+      setIsLoading(true);
+      const userInfo = await axiosPrivate.get('/user/user/get_current_user');
+      setIsLoading(false);
+
       setUserData(userInfo?.data);
     } catch (e) {
-      console.log('error userInfo', e);
+      setIsLoading(false);
+      console.log('error userInfo', e?.response?.data);
     }
   };
 
@@ -64,24 +71,29 @@ const Account = props => {
 
   const onDelete = async () => {
     try {
+      if (!password) return setError('Please enter password');
+      setIsLoading(true);
       const userInfo = await axiosPrivate.post(
         `/user/user/${userData?.id}/delete_user_account`,
         {password},
       );
+      setIsLoading(false);
       setDeleteAccount(false);
+      Toast.success('User deleted!');
       setAuth({});
       await removeUserSession('userToken');
-      Toast.success('User deleted!');
       setTimeout(() => {
         navigation.navigate('SignIn');
       }, 3000);
-      // setUserData(userInfo?.data);
     } catch (e) {
+      setIsLoading(false);
+      setError('');
       setDeleteAccount(false);
       Toast.error('Something went wrong! Retry');
       console.log('error while deleting account', e);
     }
   };
+
   const handleNavigation = async screen => {
     if (isLogin) {
       navigation.navigate(screen, {userData});
@@ -89,9 +101,11 @@ const Account = props => {
       navigation.navigate('SignIn');
     }
   };
+
   return (
     <ScrollView>
-      <ToastManager duration={2000} />
+      <ToastManager duration={2000} style={{width: width * 0.9}} />
+      <Loader visible={isLoading} />
       <CustomAlert
         visible={customAlert}
         title={'Alert!'}
@@ -99,6 +113,7 @@ const Account = props => {
         onOkPress={async () => {
           setCustomAert(false);
           await removeUserSession('userToken');
+          setAuth({});
           navigation.navigate('SignIn');
         }}
         onCancel={() => {
@@ -111,56 +126,82 @@ const Account = props => {
         message={'Are you sure to Delete this account?'}
         onOkPress={async () => {
           setDeleteAccount(false);
-          onDelete();
+          // await storeUserSession('userToken', {});
           await removeUserSession('userToken');
+          setAuth({});
+          onDelete();
           navigation.navigate('SignIn');
         }}
         onCancel={() => {
           setDeleteAccount(false);
         }}
       />
-      {userData && (
-        <View style={[styles.profileMainContainer, SHADOWS.small]}>
-          <View style={styles.profileView}>
-            {/* <Image
-            source={{
-              uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_xdDre4lqxczG2sdZ73IGUPaQlA4B0p9RhQdgkRbnCg&s',
-            }}
-            style={styles.profileImage}
-          /> */}
-          </View>
-          <View style={styles.name_usernameView}>
-            <View>
-              <Text style={{color: 'black', marginVertical: 5}}>
-                Name : {userData?.name}
+
+      <View style={[styles.menuListingMainContainer]}>
+        {userData && (
+          <>
+            <View
+              style={{
+                backgroundColor: COLORS.white,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                ...SHADOWS.medium,
+                borderRadius: 5,
+                padding: 5,
+                marginVertical: 10,
+                marginHorizontal: 5,
+              }}>
+              <Text
+                style={{
+                  fontSize: normalize(FONTSIZE.xxSmall),
+                  color: COLORS.black,
+                }}>
+                Remaining Credits : {userData?.remaining_credits}
               </Text>
-              <Text style={{color: 'black', marginVertical: 5}}>
-                Email : {userData?.email}
-              </Text>
-              <Text style={{color: 'black', marginVertical: 5}}>
-                Username : {userData?.username}
-              </Text>
+              <Button
+                style={{width: width * 0.25, height: height * 0.045}}
+                text={'Upgrade'}
+                onPress={() => navigation.navigate('Allplans')}
+              />
             </View>
-          </View>
+            <TouchableOpacity
+              style={styles.menuListingView}
+              onPress={() => {
+                navigation.replace('Profile', {userData});
+              }}>
+              <View style={styles.menuIconView}>
+                <MaterialIcons
+                  name="account-box"
+                  size={width * 0.08}
+                  color={COLORS.primary}
+                />
+              </View>
+              <View>
+                <Text style={styles.menuListingText}>Profile</Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    marginLeft: 10,
+                    fontSize: normalize(FONTSIZE.xxSmall),
+                  }}>
+                  Update and modify your profile
+                </Text>
+              </View>
+              <MaterialIcons
+                name="chevron-right"
+                size={25}
+                color={COLORS.primary}
+                style={{position: 'absolute', right: 20}}
+              />
+            </TouchableOpacity>
+          </>
+        )}
 
-          <Pressable
-            style={{
-              marginHorizontal: 20,
-              position: 'absolute',
-              right: 10,
-            }}
-            onPress={() => handleNavigation('Profile')}>
-            <Icon name="edit" size={width * 0.06} color={COLORS.primary} />
-          </Pressable>
-        </View>
-      )}
-
-      <View style={[styles.menuListingMainContainer, SHADOWS.small]}>
         <TouchableOpacity
           style={styles.menuListingView}
           onPress={() => {
-            handleNavigation('MyListing');
-            // navigation.navigate('MyListing')
+            navigation.navigate('MyListing', {userData});
           }}>
           <View style={styles.menuIconView}>
             <MaterialIcons
@@ -169,11 +210,32 @@ const Account = props => {
               color={COLORS.primary}
             />
           </View>
-          <Text style={styles.menuListingText}>My Listing</Text>
+          <View>
+            <Text style={styles.menuListingText}>My Listing</Text>
+            <Text
+              style={{
+                color: COLORS.black,
+                marginLeft: 10,
+                fontSize: normalize(FONTSIZE.xxSmall),
+              }}>
+              View your Ads listing here
+            </Text>
+          </View>
+          <MaterialIcons
+            name="chevron-right"
+            size={25}
+            color={COLORS.primary}
+            style={{position: 'absolute', right: 20}}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuListingView}
-          onPress={() => navigation.navigate('Membership')}>
+          onPress={() => {
+            if (!isLogin) return navigation.navigate('SignIn');
+            navigation.navigate('Membership', {
+              userInfo: userData || null,
+            });
+          }}>
           <View style={styles.menuIconView}>
             <MaterialIcons
               name="wallet-membership"
@@ -181,7 +243,83 @@ const Account = props => {
               color={COLORS.primary}
             />
           </View>
-          <Text style={styles.menuListingText}>My Membership</Text>
+          <View>
+            <Text style={styles.menuListingText}>My Membership</Text>
+            <Text
+              style={{
+                color: COLORS.black,
+                marginLeft: 10,
+                fontSize: normalize(FONTSIZE.xxSmall),
+              }}>
+              Check your Membership
+            </Text>
+          </View>
+          <MaterialIcons
+            name="chevron-right"
+            size={25}
+            color={COLORS.primary}
+            style={{position: 'absolute', right: 20}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.menuListingView}
+          onPress={() => {
+            if (!isLogin) return navigation.navigate('SignIn');
+            navigation.navigate('Transaction');
+          }}>
+          <View style={styles.menuIconView}>
+            <Image
+              source={icons.transaction}
+              style={{width: 30, height: 30, tintColor: COLORS.primary}}
+            />
+          </View>
+          <View>
+            <Text style={styles.menuListingText}>Transactions</Text>
+            <Text
+              style={{
+                color: COLORS.black,
+                marginLeft: 10,
+                fontSize: normalize(FONTSIZE.xxSmall),
+              }}>
+              Check your Transactions
+            </Text>
+          </View>
+
+          <MaterialIcons
+            name="chevron-right"
+            size={25}
+            color={COLORS.primary}
+            style={{position: 'absolute', right: 20}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.menuListingView}
+          onPress={() => {
+            navigation.navigate('Allplans');
+          }}>
+          <View style={styles.menuIconView}>
+            <Image
+              source={icons.buy}
+              style={{width: 30, height: 30, tintColor: COLORS.primary}}
+            />
+          </View>
+          <View>
+            <Text style={styles.menuListingText}>All Plans</Text>
+            <Text
+              style={{
+                color: COLORS.black,
+                marginLeft: 10,
+                fontSize: normalize(FONTSIZE.xxSmall),
+              }}>
+              Checkout our plans
+            </Text>
+          </View>
+          <MaterialIcons
+            name="chevron-right"
+            size={25}
+            color={COLORS.primary}
+            style={{position: 'absolute', right: 20}}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuListingView} onPress={onLogout}>
@@ -192,9 +330,21 @@ const Account = props => {
               color={COLORS.primary}
             />
           </View>
-          <Text style={styles.menuListingText}>
-            {!isLogin ? 'Login' : 'LogOut'}
-          </Text>
+          <View>
+            <Text style={styles.menuListingText}>
+              {!isLogin ? 'Login' : 'LogOut'}
+            </Text>
+            {isLogin && (
+              <Text
+                style={{
+                  color: COLORS.black,
+                  marginLeft: 10,
+                  fontSize: normalize(FONTSIZE.xxSmall),
+                }}>
+                {'Logout from this device'}
+              </Text>
+            )}
+          </View>
         </TouchableOpacity>
         {isLogin && (
           <TouchableOpacity
@@ -207,19 +357,65 @@ const Account = props => {
                 color={COLORS.primary}
               />
             </View>
-            <Text style={styles.menuListingText}>Delete Account</Text>
+            <View>
+              <Text style={styles.menuListingText}>Delete Account</Text>
+              <Text
+                style={{
+                  color: COLORS.black,
+                  marginLeft: 10,
+                  fontSize: normalize(FONTSIZE.xxSmall),
+                }}>
+                Delete account permenantaly
+              </Text>
+            </View>
           </TouchableOpacity>
         )}
       </View>
-      <Modal visible={deleteAccount} transparent>
+
+      <Modal
+        visible={deleteAccount}
+        transparent
+        onRequestClose={() => {
+          setError('');
+          setDeleteAccount(false);
+        }}>
         <View style={styles.container}>
           <View style={styles.alert}>
-            <TextInput
+            {/* <TextInput
               placeholder="Enter Password"
-              style={{width: '90%', borderWidth: 0.5}}
+              style={{width: '95%', borderWidth: 0.5}}
               onChangeText={e => setPassword(e)}
+            /> */}
+            <Input
+              id={'password'}
+              placeholder={'Enter Password'}
+              errors={{}}
+              onChangeText={e => setPassword(e)}
+              isPassword
+              style={{width: width * 0.8}}
             />
-            <Button style={styles.button} text={'Done'} onPress={onDelete} />
+            {error && (
+              <Text
+                style={{
+                  color: 'red',
+                  fontSize: normalize(FONTSIZE.small),
+                  alignSelf: 'flex-start',
+                  marginLeft: 10,
+                }}>
+                {error}
+              </Text>
+            )}
+            <View style={{flexDirection: 'row'}}>
+              <Button style={styles.button} text={'Done'} onPress={onDelete} />
+              <Button
+                style={styles.button}
+                text={'Close'}
+                onPress={() => {
+                  setError('');
+                  setDeleteAccount(false);
+                }}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -240,15 +436,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 20,
     borderRadius: 5,
-    width: '80%',
+    width: '90%',
     alignItems: 'center',
   },
   input: {
     marginVertical: 10,
   },
   button: {
-    width: width * 0.4,
+    width: width * 0.3,
     marginVertical: 10,
+    marginHorizontal: 10,
   },
   profileMainContainer: {
     backgroundColor: 'white',
@@ -290,17 +487,21 @@ const styles = StyleSheet.create({
     // height: height * 0.5,
     borderRadius: 10,
     marginBottom: height * 0.05,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     alignSelf: 'center',
     justifyContent: 'center',
   },
   menuListingView: {
+    height: height * 0.08,
     padding: 10,
     margin: 5,
-    marginVertical: 4,
+    marginVertical: 5,
+    borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
+    ...SHADOWS.medium,
+    backgroundColor: 'white',
   },
   menuIconView: {
     aspectRatio: 1,
@@ -314,6 +515,7 @@ const styles = StyleSheet.create({
   menuListingText: {
     marginHorizontal: 10,
     color: 'black',
-    fontSize: normalize(FONTSIZE.xxSmall),
+    fontSize: normalize(FONTSIZE.medium),
+    fontWeight: '500',
   },
 });

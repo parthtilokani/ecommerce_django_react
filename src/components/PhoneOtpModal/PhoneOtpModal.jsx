@@ -18,24 +18,22 @@ import Loader from '../Loader/Loader.jsx';
 import ToastManager, {Toast} from 'toastify-react-native';
 
 const PhoneOtpModal = ({
-  visible,
-  isVisibleOTPView = false,
+  visible: isVisible,
+  setVisible: setIsVisible,
   onModalClose,
   verifyOTP,
   handleOTPvalueChange,
 }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [optView, setOtpView] = useState(isVisibleOTPView);
   const [loading, setLoading] = useState(false);
-  const [optValue, setOtpValue] = useState('');
   const [errors, setErrors] = useState({});
-  const [clock, setClock] = useState(50);
+  const [clock, setClock] = useState(60);
 
   useEffect(() => {
-    if (optView) {
+    if (isVisible) {
       startTimer();
     }
-  }, [optView]);
+  }, [isVisible]);
 
   // OTP Timer
   const startTimer = () => {
@@ -52,33 +50,34 @@ const PhoneOtpModal = ({
   };
 
   const onSendOTP = async () => {
-    try {
-      let obj = {
-        phoneNumber: isValid('Phone number', phoneNumber, 'phonenumber'),
-      };
-      if (Object.values(obj).filter(e => e !== '').length > 0)
-        return setErrors(obj);
-      setErrors({});
+    startTimer();
+    // try {
+    //   let obj = {
+    //     phoneNumber: isValid('Phone number', phoneNumber, 'phonenumber'),
+    //   };
+    //   if (Object.values(obj).filter(e => e !== '').length > 0)
+    //     return setErrors(obj);
+    //   setErrors({});
 
-      if (await isConnectedToInternet()) {
-        const response = await requestOtp({phone: phoneNumber});
-        setLoading(true);
-        if (response?.success) {
-          Toast.success('You will receive OTP on phone call');
-          setOtpView(true);
-          startTimer();
-        } else {
-          Toast.error(response?.res);
-        }
-        setLoading(false);
-      }
-    } catch (err) {
-      Toast.error('Failed to send OTP!');
-    }
+    //   if (await isConnectedToInternet()) {
+    //     const response = await requestOtp({phone: phoneNumber});
+    //     setLoading(true);
+    //     if (response?.success) {
+    //       Toast.success('You will receive OTP on phone call');
+    //       setOtpView(true);
+    //       startTimer();
+    //     } else {
+    //       Toast.error(response?.res);
+    //     }
+    //     setLoading(false);
+    //   }
+    // } catch (err) {
+    //   Toast.error('Failed to send OTP!');
+    // }
   };
 
   return (
-    <Modal visible={visible} transparent>
+    <Modal visible={isVisible} transparent>
       <ToastManager />
       <Loader visible={loading} />
       <View style={styles.container}>
@@ -109,30 +108,44 @@ const PhoneOtpModal = ({
             onPress={verifyOTP}
           />
 
-          <Text style={{color: 'black', alignSelf: 'center'}}>
-            {clock} second/s
-          </Text>
-
-          <TouchableOpacity
-            onPress={onSendOTP}
-            // disabled={clock === 0 ? false : true}
-          >
-            <Text
-              style={{
-                color: clock === 0 ? COLORS.black : COLORS.gray,
-                fontWeight: '700',
-                textAlign: 'center',
-              }}>
-              Resend OTP
+          {clock > 0 ? (
+            <Text style={{color: 'black', alignSelf: 'center'}}>
+              Resend OTP in {clock} second/s
             </Text>
-          </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={onSendOTP}
+              disabled={clock === 0 ? false : true}>
+              <Text
+                style={{
+                  color: clock === 0 ? COLORS.black : COLORS.gray,
+                  fontSize: normalize(FONTSIZE.xxSmall),
+                  fontWeight: '700',
+                  textAlign: 'center',
+                }}>
+                Resend OTP
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          <Text
+            onPress={() => setIsVisible(false)}
+            style={{
+              fontSize: normalize(FONTSIZE.medium),
+              fontWeight: '700',
+              color: COLORS.black,
+              alignSelf: 'center',
+              marginTop: 10,
+            }}>
+            Edit Details
+          </Text>
         </View>
       </View>
     </Modal>
   );
 };
 
-export default React.memo(PhoneOtpModal);
+export default PhoneOtpModal;
 
 const styles = StyleSheet.create({
   container: {

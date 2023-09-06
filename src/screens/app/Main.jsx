@@ -11,7 +11,9 @@ import {useIsFocused, useRoute} from '@react-navigation/native';
 import CustomAlert from '../../components/CustomAlert/CustomAlert.jsx';
 import ToastManager, {Toast} from 'toastify-react-native';
 const Main = () => {
-  const [tab, setTab] = useState(0);
+  const payment = useRoute()?.params?.payment;
+  const fd = useRoute()?.params?.tab;
+  const [tab, setTab] = useState(fd || 0);
   const isFocused = useIsFocused();
   const [customAlert, setCustomAert] = useState(false);
 
@@ -19,14 +21,6 @@ const Main = () => {
     const backAction = () => {
       if (isFocused) {
         setCustomAert(true);
-        // Alert.alert('ALERT!', 'Are you sure you want to exit app?', [
-        //   {
-        //     text: 'Cancel',
-        //     onPress: () => null,
-        //     style: 'cancel',
-        //   },
-        //   {text: 'YES', onPress: () => BackHandler.exitApp()},
-        // ]);
         return true;
       } else {
         backHandler.remove();
@@ -45,7 +39,8 @@ const Main = () => {
   const getSelectedTab = tabNumber => {
     setTab(tabNumber);
   };
-  const payment = useRoute()?.params?.payment;
+
+  console.log('sadasdsad', fd);
   useEffect(() => {
     if (payment) {
       Toast.success('Plan purches successfully!');

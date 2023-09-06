@@ -1,15 +1,15 @@
 import {
   View,
-  Image,
   Text,
   SafeAreaView,
   Keyboard,
   StyleSheet,
+  Image,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons.js';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import GobackHeader from '../../../../components/GobackHeader.jsx';
 import {COLORS, FONTSIZE, SHADOWS} from '../../../../constant/theme.js';
 import Input from '../../../../components/Inputs/Input.jsx';
@@ -18,11 +18,11 @@ import {height, normalize, width} from '../../../../constant/index.js';
 import KeyboardAvoidingWrapper from '../../../../components/KeyboardAvoidingWrapper.jsx';
 import Button from '../../../../components/Button/Button.jsx';
 import {isValid} from '../../../../utils/supportFunctions.js';
-import {launchImageLibrary} from 'react-native-image-picker';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
 import ToastManager, {Toast} from 'toastify-react-native';
 import Loader from '../../../../components/Loader/Loader.jsx';
+import FontAwesome5 from 'react-native-vector-icons/dist/FontAwesome5.js';
 
 const Profile = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -30,6 +30,20 @@ const Profile = () => {
   const {
     params: {userData},
   } = useRoute();
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.replace('Drawer', {tab: 4});
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
   const [formDetails, setFormDetails] = useState({
     name: userData.name || '',
     userName: userData.username || '',
@@ -40,9 +54,8 @@ const Profile = () => {
     dob: userData.dob || undefined,
   });
   const [show, setShow] = useState(false);
-  const [imageUri, setImageUri] = useState(
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_xdDre4lqxczG2sdZ73IGUPaQlA4B0p9RhQdgkRbnCg&s',
-  );
+
+  const [editOn, setEditOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -85,9 +98,13 @@ const Profile = () => {
       });
       setIsLoading(false);
       if (update?.status === 200) {
+        setEditOn(false);
         Toast.success('Successfully updated!');
         setTimeout(() => {
-          return navigation.replace('Drawer');
+          return navigation.replace('Drawer', {
+            screen: 'Main',
+            params: {tab: 4},
+          });
         }, 3000);
       } else {
         Toast.error('Something went wrong!');
@@ -123,38 +140,48 @@ const Profile = () => {
     <SafeAreaView style={{flex: 1}}>
       <Loader visible={isLoading} />
       <ToastManager style={{width: width * 0.9}} />
-      <GobackHeader bg title={'Edit Profile'} />
+      <GobackHeader bg title={'Edit Profile'} screen={'Drawer'} />
       <View style={styles.container}>
         <KeyboardAvoidingWrapper>
           <View>
-            <Text style={styles.inputTitleTxt}>Username</Text>
-            <Input
-              value={formDetails.userName}
-              leftIcon={icons.user}
-              placeholder="Username*"
-              errors={errors}
-              style={styles.input}
-              editable={false}
-            />
-            <Text style={styles.inputTitleTxt}>Email</Text>
-            <Input
-              value={formDetails.email}
-              leftIcon={icons.email}
-              placeholder="Email*"
-              errors={errors}
-              style={styles.input}
-              editable={false}
-            />
+            {!editOn && (
+              <>
+                <Text style={styles.inputTitleTxt}>Username</Text>
+                <Input
+                  value={formDetails.userName}
+                  leftIcon={icons.user}
+                  placeholder="Username*"
+                  errors={errors}
+                  style={styles.input}
+                  inputStyle={{color: COLORS.gray}}
+                  editable={false}
+                />
+                <Text style={styles.inputTitleTxt}>Email</Text>
+                <Input
+                  value={formDetails.email}
+                  leftIcon={icons.email}
+                  placeholder="Email*"
+                  errors={errors}
+                  style={styles.input}
+                  inputStyle={{color: COLORS.gray}}
+                  editable={false}
+                />
+              </>
+            )}
+
             <Text style={styles.inputTitleTxt}>Name</Text>
             <Input
               id={'name'}
               value={formDetails.name}
               onChangeText={text => handleInputChange('name', text)}
               leftIcon={icons.user}
+              inputStyle={{color: editOn ? COLORS.black : COLORS.gray}}
               placeholder="Name*"
               errors={errors}
               style={styles.input}
+              editable={editOn}
             />
+
             <Text style={styles.inputTitleTxt}>Phone Number</Text>
             <Input
               id={'phoneNumber'}
@@ -164,13 +191,17 @@ const Profile = () => {
               onChangeText={text =>
                 handleInputChange('phoneNumber', text.replace(/[^0-9]/, ''))
               }
+              onFocus={() => navigation.navigate('EditPhoneNumber')}
               leftIcon={icons.phone}
               style={styles.input}
+              inputStyle={{color: editOn ? COLORS.black : COLORS.gray}}
               maxLength={10}
               keyboardType={'phone-pad'}
               onChangeCountry={onChangeCountry}
-              editable={false}
+              editable={editOn}
+              locationIcon={icons.gps}
             />
+
             <Text style={styles.inputTitleTxt}>Date of Birth (Optional)</Text>
             <Input
               id={'dob'}
@@ -180,11 +211,13 @@ const Profile = () => {
               // onChangeText={() => setShow(true)}
               leftIcon={icons.calendar}
               style={styles.input}
+              inputStyle={{color: editOn ? COLORS.black : COLORS.gray}}
               onFocus={() => {
                 setShow(true);
                 Keyboard.dismiss();
               }}
               showSoftInputOnFocus={false}
+              editable={editOn}
             />
             {show && (
               <DateTimePicker
@@ -202,9 +235,15 @@ const Profile = () => {
               />
             )}
             <Button
-              text={'Update Profile'}
+              text={editOn ? 'Submit' : 'Edit Profile'}
               style={styles.btnView}
-              onPress={onUpdateProfile}
+              onPress={() => {
+                if (!editOn) {
+                  setEditOn(true);
+                } else {
+                  onUpdateProfile();
+                }
+              }}
             />
           </View>
         </KeyboardAvoidingWrapper>
@@ -225,7 +264,7 @@ const styles = StyleSheet.create({
   inputTitleTxt: {
     color: COLORS.black,
     fontSize: normalize(FONTSIZE.xxSmall),
-    marginTop: 5,
+    marginTop: 10,
   },
   input: {
     height: height * 0.07,

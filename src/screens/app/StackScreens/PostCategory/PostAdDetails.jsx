@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -19,11 +20,11 @@ import {
   FONTSIZE,
   SHADOWS,
   height,
+  icons,
   normalize,
   width,
 } from '../../../../constant/index.js';
 import AdImage from '../../../../components/PostAdImage/AdImage.jsx';
-import {Dropdown} from 'react-native-element-dropdown';
 import Button from '../../../../components/Button/Button.jsx';
 import {CheckPermission} from '../../../../utils/Permission.js';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -34,16 +35,18 @@ import {useMutation} from '@tanstack/react-query';
 import {HelperText} from 'react-native-paper';
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
 import ToastManager, {Toast} from 'toastify-react-native';
+import {Getlocation} from '../../../../utils/Getlocation.js';
+import Geolocation from 'react-native-geolocation-service';
 import {axiosOpen} from '../../../../utils/axios.js';
 
 const PostAdDetails = () => {
   const {
-    params: {dynamic_field, category_id, subcategory_id},
+    params: {dynamic_field, category_id, subcategory_id, no_of_images},
   } = useRoute();
   const navigation = useNavigation();
   const axiosPrivate = useAxiosPrivate();
 
-  const [imageUri, setImageUri] = useState(new Array(12).fill(null));
+  const [imageUri, setImageUri] = useState(new Array(no_of_images).fill(null));
   const [viewHeight, setViewHeight] = useState();
   const [loading, setLoading] = useState(false);
   const [showDateTimeModal, setShowDateTimeModal] = useState({
@@ -53,13 +56,113 @@ const PostAdDetails = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [formDetails, setFormDetails] = useState({
     ad_title: '',
-    price: '',
     description: '',
+    location: '',
+    latitude: '',
+    longitude: '',
+    place_id: '',
   });
   const [errors, setErrors] = useState({});
   const [dynamicFields, setDynamicFields] = useState([
     ...(dynamic_field || []),
   ]);
+
+  /////////////// location code ////////////////////////
+
+  const [searchValue, setSearchValue] = useState(null);
+  const [addressList, setAddressList] = useState([]);
+
+  useEffect(() => {
+    checkLocationPermission();
+    // Geolocation.getCurrentPosition(
+    //   async position => {
+    //     console.log('position:----', position);
+    //     setFormDetails(prev => ({
+    //       ...prev,
+    //       latitude: position?.coords?.latitude,
+    //       longitude: position?.coords?.longitude,
+    //     }));
+    //   },
+    //   error => {
+    //     console.log('sadasdasdaq2e312', error.code, error.message);
+    //     reject(error);
+    //   },
+    //   {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    // );
+  }, []);
+
+  let debounceTimeout;
+
+  useEffect(() => {
+    debounceSearch();
+
+    // Clean up the debounce timeout
+    return () => clearTimeout(debounceTimeout);
+  }, [formDetails?.location]);
+
+  const debounceSearch = () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      onSearchLocation(formDetails.location);
+    }, 500);
+  };
+
+  const checkLocationPermission = async () => {
+    const permission =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+        : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+
+    const isPermissionGranted = await CheckPermission(permission);
+    if (!isPermissionGranted) return false;
+    setLoading(true);
+    Getlocation()
+      .then(e => {
+        setLoading(false);
+        setFormDetails(prev => ({
+          ...prev,
+          location: e[0]?.formatted_address,
+          latitude: e[0]?.geometry?.location?.lat,
+          longitude: e[0]?.geometry?.location?.lng,
+          place_id: e[0]?.place_id,
+        }));
+        setAddressList(e);
+      })
+      .catch(err => {
+        console.log('err,err');
+        setLoading(false);
+      });
+  };
+
+  const onSearchLocation = async text => {
+    try {
+      if (formDetails?.location.trim() === '') return;
+
+      // const apiKey = 'AIzaSyBTzu7NKnoo9HvEkqGh2ehrcOIcRp05Z70';
+      // const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${text}&location_type=APPROXIMATE&result_type=street_address|route|intersection|locality|sublocality|premise&key=${apiKey}`;
+
+      // const res = await fetch(url, {method: 'GET'});
+      const res = await axiosOpen.get('/ads/ads/get_place_id_from_address', {
+        params: {address: text},
+      });
+
+      const data = res;
+      if (data.status === 200) {
+        console.log(JSON.stringify(data));
+        setAddressList([...data?.data?.results]);
+      } else if (data.status === 'ZERO_RESULTS') {
+        setAddressList([]);
+      } else {
+        setAddressList([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      setAddressList([]);
+      setLoading(false);
+    }
+  };
+
+  /////////////// location code ////////////////////////
 
   const handleInputChange = (field, value) => {
     setFormDetails(prevState => ({...prevState, [field]: value}));
@@ -73,17 +176,6 @@ const PostAdDetails = () => {
     };
     setDynamicFields([...dynamicFieldsClone]);
   };
-
-  const [country, setCountry] = useState('');
-  const [countryList, setCountryList] = useState([]);
-
-  const [state, setState] = useState('');
-  const [filteredState, setFilteredState] = useState([]);
-  const [stateList, setStateList] = useState([]);
-
-  const [district, setDistrict] = useState('');
-  const [filteredDist, setFilteredDist] = useState([]);
-  const [distList, setDistList] = useState([]);
 
   const onChangeCountry = country => {
     setFormDetails(prevState => ({
@@ -138,20 +230,51 @@ const PostAdDetails = () => {
     }
   };
 
+  function formatBytes(bytes, decimals = 2) {
+    if (!+bytes) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = [
+      'Bytes',
+      'KiB',
+      'MiB',
+      'GiB',
+      'TiB',
+      'PiB',
+      'EiB',
+      'ZiB',
+      'YiB',
+    ];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  }
+
   const handleImageLibrary = async () => {
     const options = {
       mediaType: 'photo',
-      selectionLimit: 12,
+      selectionLimit: no_of_images,
       includeBase64: false,
     };
     await launchImageLibrary(options)
       .then(res => {
         if (res?.assets) {
-          const image = res?.assets.map(item => item);
-          const newImages = [...imageUri.filter(e => e), ...image].slice(0, 12);
+          const image = res?.assets.filter(item => {
+            if (item?.fileSize > 1000000 * 4) {
+              Toast.error('Image Size Exceeds Limit');
+            }
+            return item?.fileSize < 4000000 && item;
+          });
+
+          const newImages = [...imageUri.filter(e => e), ...image].slice(
+            0,
+            no_of_images,
+          );
           setImageUri([
             ...newImages,
-            ...new Array(12 - newImages.length).fill(null),
+            ...new Array(no_of_images - newImages.length).fill(null),
           ]);
         } else if (res?.didCancel) {
           console.log('dsada');
@@ -190,7 +313,7 @@ const PostAdDetails = () => {
   const {mutate: uploadAd, error} = useMutation({
     mutationFn: async formData => {
       console.log('function call postAd');
-      setLoading(true);
+      // setLoading(true);
       return await axiosPrivate.post(`/ads/ads`, formData);
     },
     onSuccess: res => {
@@ -199,15 +322,13 @@ const PostAdDetails = () => {
     onError: err => {
       console.log('PostAds error', err);
       setLoading(false);
-      Toast.error('Token expired! Login Again');
-      setTimeout(() => {
-        navigation.replace('SignIn');
-      }, 2000);
+      Toast.error('Something went wrong!');
     },
   });
 
   const {mutate: uploadImage} = useMutation({
     mutationFn: async formData => {
+      setLoading(true);
       return await axiosPrivate.post('/ads/ads_image', formData, {
         headers: {'Content-Type': 'multipart/form-data'},
       });
@@ -232,7 +353,7 @@ const PostAdDetails = () => {
     imageUri
       .filter(e => e)
       .forEach(img => {
-        const formData = new FormData();
+        let formData = new FormData();
         formData.append('image', {
           name: img?.fileName,
           type: img?.type,
@@ -240,7 +361,7 @@ const PostAdDetails = () => {
             Platform.OS === 'ios' ? img?.uri?.replace('file://', '') : img.uri,
         });
         formData.append('ads', ads_id);
-        uploadImage(formData);
+        return uploadImage(formData);
       });
   };
 
@@ -249,23 +370,16 @@ const PostAdDetails = () => {
       let obj = {
         ad_title: isValid('Ad title', formDetails?.ad_title),
         ad_description: isValid('Description', formDetails?.description),
-        price: isValid('Price', formDetails?.price),
+        location: isValid('Location', formDetails?.location),
       };
       dynamicFields.forEach(
-        e => (obj[e.field_name] = isValid(e.field_name, e.value)),
+        e =>
+          e?.is_required &&
+          (obj[e.field_name] = isValid(e.field_name, e.value)),
       );
       const len = imageUri.filter(e => e);
       if (len == 0) {
         obj.image = 'Please select atleast one image';
-      }
-      if (country == '') {
-        obj.country = 'Please select country';
-      }
-      if (state == '') {
-        obj.state = 'Please select state';
-      }
-      if (district == '') {
-        obj.district = 'Please select district';
       }
       if (Object.values(obj).filter(e => e !== '').length > 0)
         return setErrors(obj);
@@ -276,12 +390,18 @@ const PostAdDetails = () => {
         sub_category: subcategory_id,
         ad_title: formDetails?.ad_title,
         ad_description: formDetails?.description,
-        price: formDetails?.price,
+        location: formDetails?.location,
+        latitude: formDetails?.latitude,
+        longitude: formDetails?.longitude,
         is_sold: false,
-        dynamic_field: dynamicFields,
-        city: district,
-        state: state,
-        country: country,
+        dynamic_field: dynamicFields
+          .filter(df => df?.value?.trim() !== '')
+          .map(df => ({
+            field_name: df?.field_name,
+            field_type: df?.field_type,
+            value: df?.value,
+          })),
+        place_id: formDetails?.place_id,
       };
       uploadAd(data);
     } catch (e) {
@@ -289,39 +409,12 @@ const PostAdDetails = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCountry();
-    fetchState();
-    fetchDistrict();
-  }, []);
-
-  const fetchCountry = async () => {
-    const {data} = await axiosOpen.get('/ads/country', {
-      page: 1,
-      page_size: 1000,
-    });
-    setCountryList(data?.results);
-  };
-  const fetchState = async () => {
-    const {data} = await axiosOpen.get('/ads/state', {
-      page: 1,
-      page_size: 1000,
-    });
-    setStateList(data?.results);
-  };
-  const fetchDistrict = async () => {
-    const {data} = await axiosOpen.get('/ads/district', {
-      page: 1,
-      page_size: 1000,
-    });
-    setDistList(data?.results);
-  };
-
   return (
     <SafeAreaView style={{flex: 1}}>
       <ToastManager duration={2000} style={{width: width * 0.8}} />
       <GobackHeader bg title={'Post Your Ads'} />
       <Loader visible={loading} />
+
       <KeyboardAvoidingWrapper>
         <View style={styles.inputFieldView}>
           <Text style={styles.inputFieldTitleTxt}>Ad Title</Text>
@@ -332,18 +425,6 @@ const PostAdDetails = () => {
             value={formDetails?.ad_title}
             onChangeText={text => handleInputChange('ad_title', text)}
             style={styles.input}
-          />
-          <Text style={styles.inputFieldTitleTxt}>Price</Text>
-          <Input
-            id={'price'}
-            placeholder={'Price'}
-            errors={errors}
-            value={formDetails?.price}
-            onChangeText={text =>
-              handleInputChange('price', text?.replace(/[^0-9]/, ''))
-            }
-            style={styles.input}
-            keyboardType="number-pad"
           />
           <Text style={styles.inputFieldTitleTxt}>Description</Text>
           <Input
@@ -360,6 +441,85 @@ const PostAdDetails = () => {
             maxLength={250}
             onContentSizeChange={handleContentSizeChange}
           />
+
+          <Text style={styles.inputFieldTitleTxt}>Location</Text>
+          <Input
+            id={'location'}
+            placeholder={'Press icon to fetch current location'}
+            errors={errors}
+            value={formDetails?.location}
+            onChangeText={text => {
+              setSearchValue(text);
+              handleInputChange('location', text);
+            }}
+            // multiline
+            style={[
+              styles.input,
+              {height: viewHeight, minHeight: height * 0.05},
+            ]}
+            onFocus={() => setFormDetails(prev => ({...prev, location: ''}))}
+            onBlur={() => setSearchValue('')}
+            maxLength={250}
+            onLeftIconPress={() => checkLocationPermission()}
+            onContentSizeChange={handleContentSizeChange}
+            loading={loading}
+            locationIcon={icons.gps}
+          />
+          {addressList.length > 0 && searchValue && (
+            <View
+              style={[
+                {
+                  alignSelf: 'center',
+                  // position: 'absolute',
+                  // top: height * 0.435,
+                  padding: 10,
+                  width: width * 0.9,
+                  height: height * 0.2,
+                  backgroundColor: 'white',
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+
+                  elevation: 5,
+                  zIndex: 999,
+                  minHeight: '20%',
+                },
+                // {display: true},
+              ]}>
+              <FlatList
+                data={addressList}
+                scrollEnabled={false}
+                renderItem={({item}) => {
+                  console.log('latitude', item?.geometry?.location?.lat);
+                  return (
+                    <TouchableOpacity
+                      style={{marginVertical: 10}}
+                      onPress={() => {
+                        console.log(item?.place_id);
+                        setAddressList([]);
+                        setSearchValue('');
+                        setFormDetails(prev => ({
+                          ...prev,
+                          location:
+                            item?.description || item?.formatted_address,
+                          latitude: item?.geometry?.location?.lat,
+                          longitude: item?.geometry?.location?.lng,
+                          place_id: item?.place_id,
+                        }));
+                      }}>
+                      <Text style={{color: COLORS.black}}>
+                        {item?.description || item?.formatted_address}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          )}
 
           {dynamicFields?.map((item, index) => {
             return (
@@ -379,84 +539,10 @@ const PostAdDetails = () => {
             );
           })}
 
-          <Text style={styles.inputFieldTitleTxt}>Country</Text>
-          <Dropdown
-            style={[styles.dropdown, SHADOWS.small]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            iconStyle={styles.iconStyle}
-            data={countryList}
-            maxHeight={300}
-            labelField="name"
-            valueField="id"
-            placeholder={'Select Country'}
-            value={country}
-            onChange={item => {
-              setCountry(item.id);
-              const a = stateList.filter(e => e?.country === item?.id);
-              setFilteredState(a);
-            }}
-          />
-          {errors?.country && (
-            <HelperText
-              type="error"
-              style={{fontSize: 14, alignSelf: 'flex-start'}}>
-              {errors?.country}
-            </HelperText>
-          )}
-
-          <Text style={styles.inputFieldTitleTxt}>State</Text>
-          <Dropdown
-            style={[styles.dropdown, SHADOWS.small]}
-            disable={country === ''}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            iconStyle={styles.iconStyle}
-            data={filteredState}
-            maxHeight={300}
-            labelField="name"
-            valueField="id"
-            placeholder={'Select State'}
-            value={state}
-            onChange={item => {
-              setState(item.id);
-              const a = distList.filter(e => e?.state === item?.id);
-              setFilteredDist(a);
-            }}
-          />
-          {errors?.state && (
-            <HelperText
-              type="error"
-              style={{fontSize: 14, alignSelf: 'flex-start'}}>
-              {errors?.state}
-            </HelperText>
-          )}
-          <Text style={styles.inputFieldTitleTxt}>District</Text>
-          <Dropdown
-            style={[styles.dropdown, SHADOWS.small]}
-            disable={state === ''}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            iconStyle={styles.iconStyle}
-            data={filteredDist}
-            maxHeight={300}
-            labelField="name"
-            valueField="id"
-            placeholder={'Select District'}
-            value={district}
-            onChange={item => {
-              setDistrict(item.id);
-            }}
-          />
-          {errors?.district && (
-            <HelperText
-              type="error"
-              style={{fontSize: 14, alignSelf: 'flex-start'}}>
-              {errors?.district}
-            </HelperText>
-          )}
-
-          <Text style={styles.inputFieldTitleTxt}>Upload upto 12 Images</Text>
+          <Text
+            style={
+              styles.inputFieldTitleTxt
+            }>{`Upload upto ${imageUri.length} Images`}</Text>
           {errors?.image && (
             <HelperText
               type="error"
@@ -505,6 +591,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     margin: 0,
+  },
+
+  container: {
+    backgroundColor: 'white',
+    padding: 16,
   },
 
   dropdown: {

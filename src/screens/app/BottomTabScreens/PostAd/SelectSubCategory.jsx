@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import GobackHeader from '../../../../components/GobackHeader.jsx';
@@ -32,6 +33,7 @@ const SelectSubCategory = ({navigation}) => {
     },
   });
   const renderFlatItems = ({item, index}) => {
+    console.log(item);
     return (
       <View style={[styles.categoryMainContainer, SHADOWS.small]}>
         <TouchableOpacity
@@ -41,6 +43,7 @@ const SelectSubCategory = ({navigation}) => {
             navigation.navigate('PostAdDetails', {
               category_id,
               subcategory_id: item?.id,
+              no_of_images: item?.no_of_images,
               dynamic_field: item?.dynamic_field?.map(df => ({
                 ...df,
                 value: '',
@@ -75,24 +78,32 @@ const SelectSubCategory = ({navigation}) => {
       </View>
     );
   };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
-      <Loader visible={loading} />
       <GobackHeader bg title="Post Your Ads" />
       <View style={styles.flatListMainView}>
-        <FlatList
-          data={subCategories}
-          keyExtractor={(item, index) => index}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderFlatItems}
-          ListHeaderComponent={flatHeader}
-          ListHeaderComponentStyle={{
-            backgroundColor: COLORS.lightWhite,
-            padding: 10,
-          }}
-          stickyHeaderIndices={[0]}
-          ListFooterComponent={() => <View style={{height: height * 0.1}} />}
-        />
+        {loading ? (
+          <ActivityIndicator
+            size={'large'}
+            color={COLORS.primary}
+            style={{alignSelf: 'center', marginTop: 50}}
+          />
+        ) : (
+          <FlatList
+            data={subCategories}
+            keyExtractor={(item, index) => index}
+            showsVerticalScrollIndicator={false}
+            renderItem={renderFlatItems}
+            ListHeaderComponent={flatHeader}
+            ListHeaderComponentStyle={{
+              backgroundColor: COLORS.lightWhite,
+              padding: 10,
+            }}
+            stickyHeaderIndices={[0]}
+            ListFooterComponent={() => <View style={{height: height * 0.1}} />}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
