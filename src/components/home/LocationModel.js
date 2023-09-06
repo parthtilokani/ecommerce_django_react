@@ -19,7 +19,13 @@ const LocationModel = ({
       style={locationView ? {} : { display: "none" }}>
       <div className='card'>
         <div className='h5 p-1 text-center mt-1 mb-0'>Select Location</div>
-        {error && <div className='text-center text-danger'>{error}</div>}
+        {error && (
+          <div
+            className='px-3 text-start text-danger'
+            style={{ fontSize: "12px" }}>
+            {error}
+          </div>
+        )}
         {ourLocation?.name && (
           <div className='fw-bold px-3 mb-2'>
             Selected : <span>{ourLocation?.name}</span>
@@ -79,6 +85,8 @@ const LocationModel = ({
           className='close-btn'
           alt=''
           onClick={() => {
+            if (!ourLocation?.name)
+              return setError("Select location to continue.");
             setLocationView(false);
             setError("");
           }}

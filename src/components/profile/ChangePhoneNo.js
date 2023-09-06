@@ -11,7 +11,7 @@ const ChangePhoneNo = ({ setChangePhoneNoModel, refetchUser }) => {
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpSentOnce, setOtpSentOnce] = useState(false);
-  const [clock, setClock] = useState(60);
+  const [clock, setClock] = useState(0);
   const [data, setData] = useState({
     phonenumber: "",
     phone_no: "",

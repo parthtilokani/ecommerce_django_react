@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { axiosOpen } from "../utils/axios.js";
 
 // css
 import "../styles/css/navbar.css";
@@ -8,17 +10,40 @@ import "../styles/css/navbar.css";
 import useAuth from "../hooks/useAuth.js";
 
 const Navbar = () => {
+  const [logo, setLogo] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
   const { auth, setAuth } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
+  const [gotLogo, setGotLogo] = useState(false);
+  useQuery({
+    queryKey: ["logo"],
+    queryFn: async () => {
+      const { data } = await axiosOpen.get("/user/app_icon");
+      setLogo(data ? data[0] : []);
+      setGotLogo(true);
+      return data || [];
+    },
+    enabled: !gotLogo,
+  });
+
   return (
     <nav>
       <div id='app-brand'>
-        <h3>
-          <Link to='/'>Classified Ads</Link>
-        </h3>
+        <div className='logo-wrapper'>
+          <Link to='/'>
+            {logo?.icon_image ? (
+              <img
+                src={logo?.icon_image}
+                alt='logo'
+                style={{ width: logo?.width, height: logo?.height }}
+              />
+            ) : (
+              <h3>Classified Ads</h3>
+            )}
+          </Link>
+        </div>
         <div
           id='hamburger'
           className={isOpen ? "hamburger-close" : ""}

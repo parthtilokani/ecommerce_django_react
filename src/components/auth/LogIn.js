@@ -32,12 +32,13 @@ export const LogIn = ({ setSignUpMethod, message }) => {
     setErrors({});
     setLoading(true);
     axiosOpen
-      .post("/user/token", { ...data })
+      .post("/user/token", { ...data, email: data.email.toLowerCase() })
       .then((res) => {
         setAuth({
           accessToken: res?.data?.access,
           refreshToken: res?.data?.refresh,
           email: data?.email,
+          lastLogin: new Date(),
         });
         localStorage.setItem(
           "auth",
@@ -45,6 +46,7 @@ export const LogIn = ({ setSignUpMethod, message }) => {
             accessToken: res?.data?.access,
             refreshToken: res?.data?.refresh,
             email: data?.email,
+            lastLogin: new Date(),
           })
         );
       })

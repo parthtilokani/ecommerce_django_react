@@ -247,3 +247,7 @@
   background-color: var(--secondary) !important;
   color: white !important;
 }
+
+.transactions tbody {
+  font-size: clamp(0.8rem, 4vw, 1rem);
+}

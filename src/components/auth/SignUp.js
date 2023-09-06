@@ -126,6 +126,7 @@ const SignUp = ({ setSignUpMethod, setMessage }) => {
         {
           ...data,
           area_code: data.area_code || "91",
+          email: data.email.toLowerCase(),
         },
         { params: { profile_id: profileId } }
       )

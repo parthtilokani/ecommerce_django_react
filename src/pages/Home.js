@@ -24,7 +24,7 @@ const Home = () => {
   const { location: ourLocation, setLocation } = useOurLocation();
   const location = useLocation();
 
-  const [locationView, setLocationView] = useState(false);
+  const [locationView, setLocationView] = useState(true);
   const [categoryView, setCategoryView] = useState(false);
   const [subCategoryView, setSubCategoryView] = useState(false);
   const [search, setSearch] = useState("");
@@ -68,6 +68,7 @@ const Home = () => {
   useEffect(() => {
     (() => {
       if (!ourLocation?.name) handleGetLocation();
+      else setLocationView(false);
     })();
   }, []);
 
@@ -94,6 +95,7 @@ const Home = () => {
         const { latitude, longitude } = position.coords;
         try {
           setLoading(true);
+          setError("");
           const data = await handleGetCurrentLocation({ latitude, longitude });
           if (data.status === "OK") {
             setLocation((prev) => ({

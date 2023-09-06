@@ -24,6 +24,13 @@ const Contact = () => {
       return await axiosOpen.post(`/user/contact_us`, formData);
     },
     onSuccess: (res) => {
+      setErrors({});
+      setData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
       toast.success("Your message has been recorded");
     },
     onError: (err) => {

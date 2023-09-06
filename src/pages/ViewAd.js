@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 
 import "../styles/css/viewad.css";
 import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
-import { URI } from "../utils/API.js";
 
 const ViewAd = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -62,7 +61,7 @@ const ViewAd = () => {
                       ad?.images?.map(({ image }, index) => (
                         <div key={index} className='image-wrapper'>
                           <img
-                            src={URI + "/" + image}
+                            src={image}
                             alt={`${index + 1}`}
                             className='carousel-image'
                           />

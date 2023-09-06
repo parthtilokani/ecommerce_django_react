@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link, useLocation } from "react-router-dom";
 
 // css
 import "../styles/css/search.css";
 
-import { Link, useLocation } from "react-router-dom";
+import { URI } from "../utils/API.js";
+
 import AdCardSkeleton from "../components/skeletons/AdCardSkeleton.js";
 import useOurLocation from "../hooks/useOurLocation.js";
 
@@ -311,7 +313,10 @@ const Search = () => {
                           ad?.ads_image?.length > 0 &&
                           ad?.ads_image[0] &&
                           ad?.ads_image[0]?.image
-                            ? ad?.ads_image[0].image
+                            ? ad?.ads_image[0].image?.replace(
+                                "https://classified-ads.us-west-2.elasticbeanstalk.com",
+                                URI
+                              )
                             : "https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/themes/classima/assets/img/noimage-listing-thumb.jpg"
                         }
                         alt=''

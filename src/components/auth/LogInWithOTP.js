@@ -80,12 +80,14 @@ export const LogInWithOTP = ({ setSignUpMethod }) => {
         setAuth({
           accessToken: res?.data?.access,
           refreshToken: res?.data?.refresh,
+          lastLogin: new Date(),
         });
         localStorage.setItem(
           "auth",
           JSON.stringify({
             accessToken: res?.data?.access,
             refreshToken: res?.data?.refresh,
+            lastLogin: new Date(),
           })
         );
       })

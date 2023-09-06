@@ -17,6 +17,11 @@ nav {
   text-align: center;
   z-index: 3;
 }
+#app-brand .logo-wrapper img {
+  max-width: 200px;
+  max-height: 50px;
+  object-fit: contain;
+}
 #app-brand h3 {
   padding: 0 1rem;
 }

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { axiosOpen } from "../../utils/axios.js";
-import { URI } from "../../utils/API.js";
 import { Link } from "react-router-dom";
 
 const MostRecentAds = () => {
@@ -42,7 +41,7 @@ const MostRecentAds = () => {
                       ad?.ads_image?.length > 0 &&
                       ad?.ads_image[0] &&
                       ad?.ads_image[0]?.image
-                        ? URI + "/" + ad?.ads_image[0].image
+                        ? ad?.ads_image[0].image
                         : "https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/themes/classima/assets/img/noimage-listing-thumb.jpg"
                     }
                     alt=''

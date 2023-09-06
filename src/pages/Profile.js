@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 
 //css
 import "../styles/css/profile.css";
 import useAxiosPrivate from "../hooks/useAxiosPrivate.js";
-import { Link, useNavigate } from "react-router-dom";
 import AdCardSkeleton from "../components/skeletons/AdCardSkeleton.js";
 import EditProfile from "../components/profile/EditProfile.js";
 import ChangePassword from "../components/profile/ChangePassword.js";
 import NoAdsCard from "../components/profile/NoAdsCard.js";
 import useAuth from "../hooks/useAuth.js";
 import ChangePhoneNo from "../components/profile/ChangePhoneNo.js";
+import Transactions from "../components/profile/Transactions.js";
 
 const Profile = () => {
   const { setAuth } = useAuth();
@@ -399,6 +400,8 @@ const Profile = () => {
             ))}
         </div>
       </div>
+
+      {userData?.id && <Transactions />}
 
       {/*Delete Model*/}
       {deleteModel !== 0 && (

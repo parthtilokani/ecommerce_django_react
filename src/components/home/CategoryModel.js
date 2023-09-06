@@ -1,5 +1,7 @@
 import React from "react";
 
+import { URI } from "../../utils/API.js";
+
 const CategoryModel = ({
   categoryView,
   categories,
@@ -35,7 +37,7 @@ const CategoryModel = ({
           )}
           {categories?.length > 0 &&
             categories?.map((category, idx) => (
-              <div key={idx} className='col-4'>
+              <div key={idx} className='col-4 mb-4'>
                 <div
                   style={{ cursor: "pointer" }}
                   onClick={() => {
@@ -46,7 +48,10 @@ const CategoryModel = ({
                   <div className='c-card d-flex flex-column justify-content-center align-items-center'>
                     <div className='img-wrapper'>
                       <img
-                        src={category?.icon}
+                        src={category?.icon?.replace(
+                          "https://classified-ads.us-west-2.elasticbeanstalk.com",
+                          URI
+                        )}
                         alt=''
                         onError={(e) => {
                           e.target.onerror = null;

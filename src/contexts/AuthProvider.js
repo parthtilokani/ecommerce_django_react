@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   useEffect(() => {
-    (async () => {
+    const refreshToken = async () => {
       try {
         if (!auth?.refreshToken) return;
         const { data } = await axiosOpen.post("/user/token/refresh", {
@@ -29,11 +29,12 @@ export const AuthProvider = ({ children }) => {
         setAuth({});
         localStorage.removeItem("auth");
       }
-    })();
+    };
+    refreshToken();
   }, []);
 
   useEffect(() => {
-    const twoMinutes = 1000 * 60 * 29;
+    const timeInMiliSeconds = 1000 * 60 * 58;
     let tokenRefreshTimeout;
 
     const refreshToken = async () => {
@@ -57,7 +58,7 @@ export const AuthProvider = ({ children }) => {
 
     const scheduleTokenRefresh = () => {
       clearTimeout(tokenRefreshTimeout);
-      tokenRefreshTimeout = setTimeout(refreshToken, twoMinutes);
+      tokenRefreshTimeout = setTimeout(refreshToken, timeInMiliSeconds);
     };
 
     scheduleTokenRefresh();

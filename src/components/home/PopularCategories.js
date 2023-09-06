@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { axiosOpen } from "../../utils/axios.js";
-import { URI } from "../../utils/API.js";
 import { Link } from "react-router-dom";
 
 const PopularCategories = () => {
@@ -45,11 +44,7 @@ const PopularCategories = () => {
                 <div className='c-card d-flex flex-column justify-content-center align-items-center'>
                   <div className='img-wrapper'>
                     <img
-                      src={
-                        URI +
-                        "/ads_category_icon" +
-                        category?.category?.icon?.split("ads_category_icon")[1]
-                      }
+                      src={category?.category?.icon}
                       alt=''
                       onError={(e) => {
                         e.target.onerror = null;

@@ -207,10 +207,17 @@ const PostNewAdd = () => {
   const handleFileChange = (e) => {
     const files = e.target?.files || [];
     if (files.length === 0) return;
-    if (files.length + images.length > noOfImages) return;
     const newImgs = [];
     for (let file of files) {
+      if (images.length + newImgs.length === noOfImages) break;
       if (file.type.split("/")[0] !== "image") continue;
+      if (file.size > 1000 * 1000 * 4) {
+        setErrors((prev) => ({
+          ...prev,
+          images: "Few images uploaded had file size greater than 4mb.",
+        }));
+        continue;
+      }
       newImgs.push({
         name: file.name,
         src: URL.createObjectURL(file),
@@ -226,8 +233,8 @@ const PostNewAdd = () => {
       ad_description: isValid("Ad description", data.ad_description),
       location: isValid("Location", ourLocation?.name || ""),
     };
-    if (!obj.ad_description && data?.ad_description.length < 150)
-      obj.ad_description = "Ad description should be atleast 150 characters.";
+    if (!obj.ad_description && data?.ad_description.length < 25)
+      obj.ad_description = "Ad description should be atleast 25 characters.";
     dynamicFields.forEach((df) =>
       df?.is_required
         ? (obj[df?.field_name] = isValid(df?.field_name, df?.value))
@@ -260,11 +267,11 @@ const PostNewAdd = () => {
 
   const handleSubmitImages = (ads_id) => {
     Promise.all(
-      images.map((img) => {
+      images.map(async (img) => {
         const formData = new FormData();
         formData.append("image", img?.image);
         formData.append("ads", ads_id);
-        return uploadImage(formData);
+        return await uploadImage(formData);
       })
     ).finally(() => {
       toast.success("Your Ad was posted!");
@@ -436,6 +443,9 @@ const PostNewAdd = () => {
                     <label className='form-label m-0'>
                       Upload upto {noOfImages} images :
                     </label>
+                    <div style={{ color: "grey", fontSize: 12 }}>
+                      (Upload images with size less than 4mb.)
+                    </div>
                     <input
                       type='file'
                       accept='image/*'

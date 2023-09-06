@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 
 import Navbar from "../sections/Navbar.js";
-import Footer from "../sections/Footer.js";
+// import Footer from "../sections/Footer.js";
 
 const Layout = () => {
   return (
@@ -18,7 +18,7 @@ const Layout = () => {
           <Outlet />
         </Suspense>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

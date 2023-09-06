@@ -1,5 +1,6 @@
 #signup-bg {
-  background-image: url(https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/uploads/2019/10/home-big-banner2.jpg);
+  /* background-image: url(https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/uploads/2019/10/home-big-banner2.jpg); */
+  background-image: url("../../images/home-hero.jpg");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
