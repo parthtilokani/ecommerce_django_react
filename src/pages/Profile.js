@@ -36,10 +36,7 @@ const Profile = () => {
     queryKey: ["my_data"],
     queryFn: async () => {
       const { data } = await axiosPrivate.get("/user/user/get_current_user");
-      setFetchedQueries((prev) => {
-        prev[0] = true;
-        return [...prev];
-      });
+      setFetchedQueries((prev) => [true, prev[1]]);
       return data;
     },
     enabled: !fetchedQueries[0],
@@ -58,10 +55,7 @@ const Profile = () => {
         },
       });
       setTotalData(data?.count || 0);
-      setFetchedQueries((prev) => {
-        prev[1] = true;
-        return [...prev];
-      });
+      setFetchedQueries((prev) => [prev[0], true]);
       return data || [];
     },
     enabled: !fetchedQueries[1],

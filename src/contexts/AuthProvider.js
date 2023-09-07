@@ -19,10 +19,18 @@ export const AuthProvider = ({ children }) => {
         const { data } = await axiosOpen.post("/user/token/refresh", {
           refresh: auth.refreshToken,
         });
-        setAuth((prev) => ({ ...prev, accessToken: data?.access }));
+        setAuth((prev) => ({
+          ...prev,
+          accessToken: data?.access,
+          refreshToken: data?.refresh,
+        }));
         localStorage.setItem(
           "auth",
-          JSON.stringify({ ...auth, accessToken: data?.access })
+          JSON.stringify({
+            ...auth,
+            accessToken: data?.access,
+            refreshToken: data?.refresh,
+          })
         );
       } catch (error) {
         console.error("Error refreshing token:", error);
@@ -43,10 +51,18 @@ export const AuthProvider = ({ children }) => {
         const { data } = await axiosOpen.post("/user/token/refresh", {
           refresh: auth.refreshToken,
         });
-        setAuth((prev) => ({ ...prev, accessToken: data?.access }));
+        setAuth((prev) => ({
+          ...prev,
+          accessToken: data?.access,
+          refreshToken: data?.refresh,
+        }));
         localStorage.setItem(
           "auth",
-          JSON.stringify({ ...auth, accessToken: data?.access })
+          JSON.stringify({
+            ...auth,
+            accessToken: data?.access,
+            refreshToken: data?.refresh,
+          })
         );
         scheduleTokenRefresh();
       } catch (error) {
