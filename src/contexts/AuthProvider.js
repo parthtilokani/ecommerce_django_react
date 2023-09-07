@@ -17,8 +17,11 @@ export const AuthProvider = ({ children }) => {
         const { data } = await axiosOpen.post('/user/token/refresh', {
           refresh: auth.refreshToken,
         });
-        setAuth((prev) => ({ ...prev, accessToken: data?.access }));
-        localStorage.setItem('auth', JSON.stringify({ ...auth, accessToken: data?.access }));
+        setAuth((prev) => ({ ...prev, accessToken: data?.access, refreshToken: data?.refresh }));
+        localStorage.setItem(
+          'auth',
+          JSON.stringify({ ...auth, accessToken: data?.access, refreshToken: data?.refresh })
+        );
       } catch (error) {
         console.error('Error refreshing token:', error);
         setAuth({});
@@ -28,7 +31,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const twoMinutes = 1000 * 60 * 29;
+    const twoMinutes = 1000 * 60 * 58;
     let tokenRefreshTimeout;
 
     const refreshToken = async () => {
@@ -37,8 +40,11 @@ export const AuthProvider = ({ children }) => {
         const { data } = await axiosOpen.post('/user/token/refresh', {
           refresh: auth.refreshToken,
         });
-        setAuth((prev) => ({ ...prev, accessToken: data?.access }));
-        localStorage.setItem('auth', JSON.stringify({ ...auth, accessToken: data?.access }));
+        setAuth((prev) => ({ ...prev, accessToken: data?.access, refreshToken: data?.refresh }));
+        localStorage.setItem(
+          'auth',
+          JSON.stringify({ ...auth, accessToken: data?.access, refreshToken: data?.refresh })
+        );
         scheduleTokenRefresh();
       } catch (error) {
         console.error('Error refreshing token:', error);
