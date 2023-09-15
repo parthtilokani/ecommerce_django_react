@@ -52,7 +52,8 @@ export const PostAdDynamicFields = ({
       </Pressable>
     );
   };
-  const {field_type, field_name, options} = dynamic_field;
+  const {field_type, field_name, options, is_required} = dynamic_field;
+  console.log('sadasd', field_name);
   let arrayOfObjects;
   if (options?.length > 0) {
     arrayOfObjects = options?.map((label, index) => ({
@@ -66,7 +67,14 @@ export const PostAdDynamicFields = ({
     case 'Text':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}{' '}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Input
             id={field_name}
             placeholder={field_name}
@@ -80,7 +88,14 @@ export const PostAdDynamicFields = ({
     case 'TextArea':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Input
             id={field_name}
             placeholder={field_name}
@@ -92,7 +107,6 @@ export const PostAdDynamicFields = ({
               styles.input,
               {height: viewHeight, minHeight: height * 0.05},
             ]}
-            maxLength={25}
             onContentSizeChange={handleContentSizeChange}
           />
         </>
@@ -100,7 +114,14 @@ export const PostAdDynamicFields = ({
     case 'Price':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}{' '}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Input
             id={field_name}
             placeholder={field_name}
@@ -115,7 +136,14 @@ export const PostAdDynamicFields = ({
     case 'Number':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}{' '}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Input
             id={field_name}
             placeholder={field_name}
@@ -130,7 +158,14 @@ export const PostAdDynamicFields = ({
     case 'PhoneNumber':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}{' '}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Input
             id={'phoneNumber'}
             errors={errors}
@@ -147,7 +182,14 @@ export const PostAdDynamicFields = ({
     case 'Date':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}{' '}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Input
             id={field_name}
             placeholder={'YYYY/MM/DD'}
@@ -175,7 +217,14 @@ export const PostAdDynamicFields = ({
     case 'Time':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}{' '}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Input
             id={field_name}
             placeholder={field_name}
@@ -204,7 +253,14 @@ export const PostAdDynamicFields = ({
     case 'Select':
       return (
         <>
-          <Text style={styles.inputFieldTitleTxt}>{field_name}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {field_name}{' '}
+            {!is_required ? (
+              <Text style={{color: COLORS.gray}}> (Optional)</Text>
+            ) : (
+              <Text style={{color: 'red'}}>*</Text>
+            )}
+          </Text>
           <Dropdown
             style={[styles.dropdown, {...SHADOWS.small}]}
             placeholderStyle={styles.placeholderStyle}

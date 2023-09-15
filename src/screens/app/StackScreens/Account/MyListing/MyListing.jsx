@@ -47,7 +47,6 @@ const MyListing = () => {
       });
       setLoading(false);
       setMyAds(data || []);
-      console.log('mylistinggggggg', JSON.stringify(data));
     } catch (e) {
       setLoading(false);
       Toast.error('Session is invalid or expired!');

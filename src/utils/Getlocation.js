@@ -1,7 +1,6 @@
 import Geolocation from 'react-native-geolocation-service';
 import useLocation from '../hooks/useLocation.js';
 export const Getlocation = async () => {
-  console.log('inside');
   return new Promise((resolve, reject) => {
     Geolocation.getCurrentPosition(
       async position => {
@@ -12,7 +11,6 @@ export const Getlocation = async () => {
         if (data.status === 'OK') {
           resolve(data.results);
         } else {
-          console.log(data);
           reject(data);
         }
       },

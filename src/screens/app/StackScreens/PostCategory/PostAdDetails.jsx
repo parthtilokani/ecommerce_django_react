@@ -322,7 +322,7 @@ const PostAdDetails = () => {
     onError: err => {
       console.log('PostAds error', err);
       setLoading(false);
-      Toast.error('Something went wrong!');
+      Toast.error(err?.response?.data?.detail || 'Something went wrong!');
     },
   });
 
@@ -337,32 +337,59 @@ const PostAdDetails = () => {
     onSuccess: res => {
       console.log('PostAds Images Response', res);
       setLoading(false);
-      Toast.success('Ad Posted Successfully!');
-      setTimeout(() => {
-        navigation.replace('MyListing');
-      }, 2000);
     },
     onError: err => {
-      console.log('Postads Image error', err);
+      console.log('Postads Image error', err?.response);
       setLoading(false);
-      Toast.error('Error while uploading Image');
     },
   });
 
   const handleSubmitImages = ads_id => {
-    imageUri
-      .filter(e => e)
-      .forEach(img => {
-        let formData = new FormData();
-        formData.append('image', {
-          name: img?.fileName,
-          type: img?.type,
-          uri:
-            Platform.OS === 'ios' ? img?.uri?.replace('file://', '') : img.uri,
-        });
-        formData.append('ads', ads_id);
-        return uploadImage(formData);
-      });
+    Promise.all(
+      imageUri
+        .filter(e => e)
+        .map(img => {
+          let formData = new FormData();
+          formData.append('image', {
+            name: img?.fileName,
+            type: img?.type,
+            uri:
+              Platform.OS === 'ios'
+                ? img?.uri?.replace('file://', '')
+                : img.uri,
+          });
+          formData.append('ads', ads_id);
+          return uploadImage(formData);
+        }),
+    ).finally(() => {
+      setLoading(false);
+      Toast.success('Ad Posted Successfully!');
+      setTimeout(() => {
+        navigation.replace('MyListing');
+      }, 2000);
+    });
+    // imageUri
+    //   .filter(e => e)
+    //   .map(img => {
+    //     let formData = new FormData();
+    //     formData.append('image', {
+    //       name: img?.fileName,
+    //       type: img?.type,
+    //       uri:
+    //         Platform.OS === 'ios'
+    //           ? img?.uri?.replace('file://', '')
+    //           : img.uri,
+    //     });
+    //     formData.append('ads', ads_id);
+    //     return uploadImage(formData);
+    //   })
+
+    // ).finally(() => {
+    //   Toast.success('Ad Posted Successfully!');
+    //   setTimeout(() => {
+    //     navigation.replace('MyListing');
+    //   }, 2000);
+    // });
   };
 
   const handlePostAd = async () => {
@@ -377,6 +404,9 @@ const PostAdDetails = () => {
           e?.is_required &&
           (obj[e.field_name] = isValid(e.field_name, e.value)),
       );
+      if (formDetails?.description.length < 25) {
+        obj.ad_description = 'Please enter atleast 25 Character';
+      }
       const len = imageUri.filter(e => e);
       if (len == 0) {
         obj.image = 'Please select atleast one image';
@@ -417,7 +447,9 @@ const PostAdDetails = () => {
 
       <KeyboardAvoidingWrapper>
         <View style={styles.inputFieldView}>
-          <Text style={styles.inputFieldTitleTxt}>Ad Title</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            Ad Title <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Input
             id={'ad_title'}
             placeholder={'Ad Title'}
@@ -426,7 +458,9 @@ const PostAdDetails = () => {
             onChangeText={text => handleInputChange('ad_title', text)}
             style={styles.input}
           />
-          <Text style={styles.inputFieldTitleTxt}>Description</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            Description <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Input
             id={'ad_description'}
             placeholder={'Description'}
@@ -442,7 +476,9 @@ const PostAdDetails = () => {
             onContentSizeChange={handleContentSizeChange}
           />
 
-          <Text style={styles.inputFieldTitleTxt}>Location</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            Location <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Input
             id={'location'}
             placeholder={'Press icon to fetch current location'}
@@ -539,10 +575,9 @@ const PostAdDetails = () => {
             );
           })}
 
-          <Text
-            style={
-              styles.inputFieldTitleTxt
-            }>{`Upload upto ${imageUri.length} Images`}</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            {`Upload upto ${imageUri.length} Images`} (Max size limit:4MB)
+          </Text>
           {errors?.image && (
             <HelperText
               type="error"

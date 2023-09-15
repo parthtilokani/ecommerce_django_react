@@ -54,7 +54,7 @@ const Home = () => {
     })();
     fetchPopularCategory();
     fetchMostRecentAds();
-  }, []);
+  }, [searchLocation]);
 
   useEffect(() => {
     (async () => {
@@ -73,25 +73,19 @@ const Home = () => {
       page_size: itemPerPage,
       lat: searchLocation[0]?.geometry?.location?.lat,
       long: searchLocation[0]?.geometry?.location?.lng,
-      // place_id: location[0]?.place_id,
+      place_id: searchLocation[0]?.place_id,
     };
-    if (searchValue) {
-      paramsObj.search = searchValue;
-    }
+    if (searchValue) paramsObj.search = searchValue;
     if (category) paramsObj.category = category;
     if (subCategory) paramsObj.sub_category = subCategory;
-    if (
-      !searchLocation[0]?.geometry?.location?.lat &&
-      !searchLocation[0]?.geometry?.location?.lng
-    ) {
-      paramsObj.place_id = location[0]?.place_id;
-    }
+
+    console.log('paramObj', paramsObj);
+
     try {
       setSearchLoading(true);
       const {data} = await axiosOpen.get('/ads/ads', {
         params: paramsObj,
       });
-      console.log('da324234234234234sdfas', data?.results);
       setSearchLoading(false);
       setSearchData(data);
     } catch (e) {
@@ -148,10 +142,15 @@ const Home = () => {
   };
 
   const fetchMostRecentAds = async () => {
+    console.log('mostrecentAds', searchLocation[0]?.place_id);
     try {
       setMostRecentAdsLoader(true);
+      console.log(searchLocation[0]?.geometry?.location?.lat);
       const {data} = await axiosOpen('/ads/ads/most_recent', {
         params: {
+          latitude: searchLocation[0]?.geometry?.location?.lat,
+          longitude: searchLocation[0]?.geometry?.location?.lng,
+          place_id: searchLocation[0]?.place_id || '',
           page: 1,
           limit: 8,
         },
@@ -162,6 +161,7 @@ const Home = () => {
           ? [...data?.popular_category]
           : [],
       );
+      console.log('data?.popular_category', data?.popular_category);
     } catch (e) {
       setMostRecentAdsLoader(false);
       console.log('error mostRecentAds', e?.response?.data);

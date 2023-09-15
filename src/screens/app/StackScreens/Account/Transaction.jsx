@@ -1,4 +1,11 @@
-import {SafeAreaView, StyleSheet, Text, View, FlatList} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate.js';
 import {useQuery} from '@tanstack/react-query';
@@ -14,15 +21,24 @@ const Transaction = () => {
   const itemPerPage = 10;
   const [totalData, setTotalData] = useState(0);
 
-  const [fetchedQueries, setFetchedQueries] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
+      console.log('asdasdasd');
       const transactionData = await axiosPrivate.get(
         '/user/user/get_current_user_credits_history',
+        {
+          params: {
+            page: currentPage,
+            page_size: itemPerPage,
+          },
+        },
       );
       console.log(transactionData?.data);
       setTotalData(transactionData?.data);
+      setLoading(false);
     })();
   }, [itemPerPage, currentPage]);
 
@@ -36,9 +52,9 @@ const Transaction = () => {
           alignItems: 'center',
           marginHorizontal: 15,
           marginTop: 2,
-          paddingVertical: 10,
+          paddingVertical: 15,
           paddingHorizontal: 7,
-          backgroundColor: index % 2 == 0 ? COLORS.gray : COLORS.gray2,
+          backgroundColor: index % 2 == 0 ? COLORS.primary : COLORS.gray2,
         }}>
         <Text
           style={{
@@ -48,7 +64,7 @@ const Transaction = () => {
             textAlign: 'center',
           }}>
           {item?.created_on
-            ? new Date(e?.created_on).toLocaleString('en-IN', {
+            ? new Date(item?.created_on).toLocaleString('en-IN', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric',
@@ -90,7 +106,7 @@ const Transaction = () => {
           paddingVertical: 15,
           paddingHorizontal: 7,
           marginTop: 20,
-          backgroundColor: COLORS.primary,
+          backgroundColor: COLORS.secondary,
         }}>
         <Text
           style={{
@@ -204,14 +220,18 @@ const Transaction = () => {
                 paddingHorizontal: 7,
                 backgroundColor: COLORS.gray2,
               }}>
-              <Text
-                style={{
-                  color: COLORS.black,
-                  fontSize: normalize(FONTSIZE.small),
-                  fontWeight: '500',
-                }}>
-                No data available
-              </Text>
+              {loading ? (
+                <ActivityIndicator size={'large'} color={COLORS.primary} />
+              ) : (
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontSize: normalize(FONTSIZE.small),
+                    fontWeight: '500',
+                  }}>
+                  No data available
+                </Text>
+              )}
             </View>
           );
         }}

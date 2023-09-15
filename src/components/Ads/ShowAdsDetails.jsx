@@ -89,7 +89,6 @@ const ShowAdsDetails = () => {
   //   // Add more image objects as needed
   // ];
 
-  console.log('wewwewew', data?.create_user?.phone_no);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [mobileNumber, setMobileNumber] = useState('');
@@ -373,7 +372,7 @@ const ShowAdsDetails = () => {
                 fontSize: normalize(17),
                 color: COLORS.black,
               }}>
-              {/* ₹{data?.price} */}
+              {data?.create_user?.phone_no}
             </Text>
             <TouchableOpacity
               style={{

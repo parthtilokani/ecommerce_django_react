@@ -35,7 +35,6 @@ const Categories = ({
   };
 
   const Item = ({item}) => {
-    console.log(item?.category?.icon);
     return (
       <TouchableOpacity
         style={styles.item}

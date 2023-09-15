@@ -91,8 +91,6 @@ const LocationScreen = ({navigation}) => {
         params: {address: text},
       });
 
-      console.log('new API', typeof res?.status);
-
       const data = res;
       if (data.status === 200) {
         setError('');
@@ -113,10 +111,7 @@ const LocationScreen = ({navigation}) => {
     }
   };
 
-  console.log(addressList.length);
-
   const renderFlatItems = ({item}) => {
-    console.log(item);
     return (
       <Pressable
         onPress={() => {

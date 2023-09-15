@@ -15,7 +15,6 @@ import {baseURL} from '../../utils/Api.js';
 
 const ListFlatAds = ({data, editDelete, deleteAds, isMyAds}) => {
   const navigation = useNavigation();
-  console.log(data);
   const imageUri = data?.ads_image[0]?.image;
   // let imageUri;
   // if (data?.ads_image[0]?.image.includes(baseURL?.replace('/api', ''))) {

@@ -286,7 +286,6 @@ const EditAdDetails = () => {
             ...new Array(numberOfImages - newImages.length).fill(null),
           ]);
         } else if (res?.didCancel) {
-          console.log('dsada');
         } else if (res?.errorMessage) {
           console.log('sdsadsa23123', res);
         }
@@ -307,7 +306,7 @@ const EditAdDetails = () => {
       <AdImage
         handleDelete={() => handleDelete(index)}
         key={index}
-        imageURL={item?.uri}
+        imageURL={item?.image || item?.uri}
         handleImage={checkLibraryPermission}
       />
     );
@@ -350,15 +349,11 @@ const EditAdDetails = () => {
     onSuccess: res => {
       console.log('PostAds Images Response', res);
       setLoading(false);
-      Toast.success('Ad updated Successfully!');
-      setTimeout(() => {
-        navigation.replace('MyListing');
-      }, 2000);
     },
     onError: err => {
       console.log('Postads Image error', err);
       setLoading(false);
-      Toast.error('Error while uploading Image');
+      // Toast.error('Error while uploading Image');
     },
   });
 
@@ -393,7 +388,13 @@ const EditAdDetails = () => {
           return uploadImage(formData);
         }),
       ...imagesToDelete.map(img => deleteImage(img?.id)),
-    ]);
+    ]).finally(() => {
+      setLoading(false);
+      Toast.success('Ad updated Successfully!');
+      setTimeout(() => {
+        navigation.replace('MyListing');
+      }, 2000);
+    });
   };
 
   const handleUpdateAd = async () => {
@@ -458,7 +459,9 @@ const EditAdDetails = () => {
       <Loader visible={loading} />
       <KeyboardAvoidingWrapper>
         <View style={styles.inputFieldView}>
-          <Text style={styles.inputFieldTitleTxt}>Category</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            Category <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Dropdown
             style={[styles.dropdown, {...SHADOWS.medium}]}
             placeholderStyle={styles.placeholderStyle}
@@ -482,7 +485,9 @@ const EditAdDetails = () => {
               setFormDetails(prev => ({...prev, category: item?.id}));
             }}
           />
-          <Text style={styles.inputFieldTitleTxt}>SubCategory</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            SubCategory <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Dropdown
             style={[styles.dropdown, {...SHADOWS.medium}]}
             placeholderStyle={styles.placeholderStyle}
@@ -516,7 +521,9 @@ const EditAdDetails = () => {
             </HelperText>
           )}
 
-          <Text style={styles.inputFieldTitleTxt}>Ad Title</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            Ad Title <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Input
             id={'ad_title'}
             placeholder={'Ad Title'}
@@ -525,7 +532,9 @@ const EditAdDetails = () => {
             onChangeText={text => handleInputChange('ad_title', text)}
             style={styles.input}
           />
-          <Text style={styles.inputFieldTitleTxt}>Description</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            Description <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Input
             id={'ad_description'}
             placeholder={'Description'}
@@ -541,7 +550,9 @@ const EditAdDetails = () => {
             onContentSizeChange={handleContentSizeChange}
           />
 
-          <Text style={styles.inputFieldTitleTxt}>Location</Text>
+          <Text style={styles.inputFieldTitleTxt}>
+            Location <Text style={{color: 'red'}}>*</Text>
+          </Text>
           <Input
             id={'location'}
             placeholder={'Press icon to fetch current location'}

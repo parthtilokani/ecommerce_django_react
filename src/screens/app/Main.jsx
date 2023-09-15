@@ -40,7 +40,6 @@ const Main = () => {
     setTab(tabNumber);
   };
 
-  console.log('sadasdsad', fd);
   useEffect(() => {
     if (payment) {
       Toast.success('Plan purches successfully!');
