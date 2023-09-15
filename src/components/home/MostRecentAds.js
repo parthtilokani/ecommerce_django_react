@@ -4,16 +4,25 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosOpen } from "../../utils/axios.js";
 import { Link } from "react-router-dom";
 
+import useOurLocation from "../../hooks/useOurLocation.js";
+
 const MostRecentAds = () => {
+  const { location: ourLocation } = useOurLocation();
+
   const [fetchedQueries, setFetchedQueries] = useState(false);
   const { data: ads } = useQuery({
     queryKey: ["most_recent_ads"],
     queryFn: async () => {
+      const paramsObj = {
+        latitude: ourLocation?.lat,
+        longitude: ourLocation?.lng,
+        place_id: ourLocation?.place_id,
+        page: 1,
+        limit: 8,
+      };
+
       const { data } = await axiosOpen.get("/ads/ads/most_recent", {
-        params: {
-          page: 1,
-          limit: 8,
-        },
+        params: paramsObj,
       });
       setFetchedQueries((prev) => true);
       return data?.popular_category &&

@@ -82,7 +82,7 @@ const ViewAd = () => {
                     &gt;
                   </button>
                 </div>
-                <div className='d-sm-flex my-2'>
+                <div className='d-sm-flex align-items-start my-2'>
                   <div className='d-flex align-items-center me-3 mb-1'>
                     <img src='/assets/svgs/time.svg' className='icon' alt='' />
                     {isLoading ? (
@@ -90,7 +90,7 @@ const ViewAd = () => {
                         className='skeleton skeleton-text h4'
                         style={{ width: "200px" }}></div>
                     ) : (
-                      <span>
+                      <span style={{ width: "180px" }}>
                         {ad?.posted_on &&
                           new Date(ad?.posted_on).toLocaleString("en-IN", {
                             month: "short",
@@ -103,11 +103,12 @@ const ViewAd = () => {
                       </span>
                     )}
                   </div>
-                  <div className='d-flex align-items-center'>
+                  <div className='d-flex'>
                     <img
                       src='/assets/svgs/location.svg'
                       className='icon'
                       alt=''
+                      style={{ marginTop: "4px" }}
                     />
                     {isLoading ? (
                       <div
@@ -187,6 +188,17 @@ const ViewAd = () => {
                 <div className='h6 fw-bold'>
                   Contact Info : +{ad?.create_user?.area_code}-
                   {ad?.create_user?.phone_no}
+                  <a
+                    href={`https://wa.me/${ad?.create_user?.area_code}${ad?.create_user?.phone_no}`}
+                    target='_blank'
+                    rel='noreferrer'>
+                    <img
+                      src='/assets/svgs/whatsapp.png'
+                      alt=''
+                      style={{ width: "30px" }}
+                      className='ms-2'
+                    />
+                  </a>
                 </div>
               </div>
             </div>

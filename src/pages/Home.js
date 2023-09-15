@@ -279,7 +279,7 @@ const Home = () => {
       <PopularCategories />
 
       {/*Featured Ads*/}
-      <MostRecentAds />
+      {ourLocation?.name && <MostRecentAds />}
 
       {/*Our Top Locations*/}
       {/* <div id='home-top-locations'>
