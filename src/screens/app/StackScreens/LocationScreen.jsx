@@ -33,7 +33,7 @@ const LocationScreen = ({navigation}) => {
   const [searchValue, setSearchValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [addressList, setAddressList] = useState([]);
-  const {location, setLocation} = useLocation();
+  const {location, setLocation, address, setAddress} = useLocation();
 
   useEffect(() => {
     checkPermission();
@@ -116,6 +116,7 @@ const LocationScreen = ({navigation}) => {
       <Pressable
         onPress={() => {
           setLocation(item?.description || item?.formatted_address);
+          setAddress(item);
           navigation.navigate('Drawer');
         }}
         style={[styles.locationListContainer]}>

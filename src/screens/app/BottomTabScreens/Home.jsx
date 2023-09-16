@@ -10,7 +10,7 @@ import React, {useRef, useState, useEffect} from 'react';
 import Header from '../../../components/Header/Header.jsx';
 import Categories from '../../../components/Categories/Categories.jsx';
 import Button from '../../../components/Button/Button.jsx';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 
 import {COLORS, FONTSIZE, SHADOWS} from '../../../constant/theme.js';
 import icons from '../../../constant/icons.js';
@@ -30,8 +30,10 @@ import HalfScreenModal from '../../../components/PhoneOtpModal/HalfScreenModal.j
 
 const Home = () => {
   const navigation = useNavigation();
-  const {location, setLocation} = useLocation();
+  const isFocused = useIsFocused();
+  const {location, setLocation, address} = useLocation();
   const scrollViewRef = useRef();
+
   const [refreshing, setRefreshing] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [popularCategory, setPopulaCategory] = useState(null);
@@ -48,13 +50,15 @@ const Home = () => {
   const [searchData, setSearchData] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
+  console.log('sauravsadasdasd', address?.place_id);
+
   useEffect(() => {
     (async () => {
       if (await isConnectedToInternet()) checkPermission();
     })();
     fetchPopularCategory();
     fetchMostRecentAds();
-  }, [searchLocation]);
+  }, [searchLocation, isFocused]);
 
   useEffect(() => {
     (async () => {
@@ -65,15 +69,15 @@ const Home = () => {
         })
         .catch(err => console.log(err));
     })();
-  }, [searchValue, category, subCategory]);
+  }, [searchValue, category, subCategory, isFocused]);
 
   const onSearch = async () => {
     const paramsObj = {
       page: currentPage,
       page_size: itemPerPage,
-      lat: searchLocation[0]?.geometry?.location?.lat,
-      long: searchLocation[0]?.geometry?.location?.lng,
-      place_id: searchLocation[0]?.place_id,
+      lat: address?.geometry?.location?.lat,
+      long: address?.geometry?.location?.lng,
+      place_id: address?.place_id,
     };
     if (searchValue) paramsObj.search = searchValue;
     if (category) paramsObj.category = category;
@@ -142,15 +146,15 @@ const Home = () => {
   };
 
   const fetchMostRecentAds = async () => {
-    console.log('mostrecentAds', searchLocation[0]?.place_id);
+    console.log('mostrecentAds', JSON.stringify(searchLocation));
     try {
       setMostRecentAdsLoader(true);
       console.log(searchLocation[0]?.geometry?.location?.lat);
       const {data} = await axiosOpen('/ads/ads/most_recent', {
         params: {
-          latitude: searchLocation[0]?.geometry?.location?.lat,
-          longitude: searchLocation[0]?.geometry?.location?.lng,
-          place_id: searchLocation[0]?.place_id || '',
+          latitude: address?.geometry?.location?.lat,
+          longitude: address?.geometry?.location?.lng,
+          place_id: address?.place_id || '',
           page: 1,
           limit: 8,
         },
