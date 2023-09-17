@@ -33,7 +33,7 @@ const LocationScreen = ({navigation}) => {
   const [searchValue, setSearchValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [addressList, setAddressList] = useState([]);
-  const {location, setLocation, address, setAddress} = useLocation();
+  const {location, setLocation, setAddress} = useLocation();
 
   useEffect(() => {
     checkPermission();

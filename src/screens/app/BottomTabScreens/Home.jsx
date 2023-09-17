@@ -27,6 +27,7 @@ import {axiosOpen} from '../../../utils/axios.js';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate.js';
 import {retrieveUserSession} from '../../../utils/AsyncStorage/userSession.js';
 import HalfScreenModal from '../../../components/PhoneOtpModal/HalfScreenModal.jsx';
+import {add} from 'react-native-reanimated';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -49,41 +50,43 @@ const Home = () => {
   const [searchLocation, setSearchLoacation] = useState([]);
   const [searchData, setSearchData] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
-
-  console.log('sauravsadasdasd', address?.place_id);
-
-  useEffect(() => {
-    (async () => {
-      if (await isConnectedToInternet()) checkPermission();
-    })();
-    fetchPopularCategory();
-    fetchMostRecentAds();
-  }, [searchLocation, isFocused]);
+  const [locationGet, setLocationGet] = useState(false);
 
   useEffect(() => {
     (async () => {
       Getlocation()
         .then(e => {
           setSearchLoacation(e);
+          setLocationGet(true);
+
           onSearch();
         })
         .catch(err => console.log(err));
     })();
-  }, [searchValue, category, subCategory, isFocused]);
+  }, [searchValue, category, subCategory]);
+
+  useEffect(() => {
+    (async () => {
+      if (await isConnectedToInternet()) checkPermission();
+    })();
+    fetchPopularCategory();
+  }, []);
+
+  useEffect(() => {
+    searchLocation && locationGet && fetchMostRecentAds();
+  }, [searchLocation, isFocused, address, locationGet]);
 
   const onSearch = async () => {
     const paramsObj = {
       page: currentPage,
       page_size: itemPerPage,
-      lat: address?.geometry?.location?.lat,
-      long: address?.geometry?.location?.lng,
-      place_id: address?.place_id,
+      lat: searchLocation[0]?.geometry?.location?.lat,
+      long: searchLocation[0]?.geometry?.location?.lng,
+      place_id: searchLocation[0]?.place_id,
     };
     if (searchValue) paramsObj.search = searchValue;
     if (category) paramsObj.category = category;
     if (subCategory) paramsObj.sub_category = subCategory;
-
-    console.log('paramObj', paramsObj);
 
     try {
       setSearchLoading(true);
@@ -123,9 +126,7 @@ const Home = () => {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    // ads = fetchAds();
-    // console.log('refresh', fetchAds());
-    // setRefreshing(false);
+    // fetchMostRecentAds();
 
     setTimeout(() => {
       setRefreshing(false);
@@ -146,15 +147,17 @@ const Home = () => {
   };
 
   const fetchMostRecentAds = async () => {
-    console.log('mostrecentAds', JSON.stringify(searchLocation));
     try {
       setMostRecentAdsLoader(true);
-      console.log(searchLocation[0]?.geometry?.location?.lat);
       const {data} = await axiosOpen('/ads/ads/most_recent', {
         params: {
-          latitude: address?.geometry?.location?.lat,
-          longitude: address?.geometry?.location?.lng,
-          place_id: address?.place_id || '',
+          latitude:
+            address?.geometry?.location?.lat ||
+            searchLocation[0]?.geometry?.location?.lat,
+          longitude:
+            address?.geometry?.location?.lng ||
+            searchLocation[0]?.geometry?.location?.lng,
+          place_id: address?.place_id || searchLocation[0]?.place_id,
           page: 1,
           limit: 8,
         },
@@ -165,10 +168,9 @@ const Home = () => {
           ? [...data?.popular_category]
           : [],
       );
-      console.log('data?.popular_category', data?.popular_category);
     } catch (e) {
       setMostRecentAdsLoader(false);
-      console.log('error mostRecentAds', e?.response?.data);
+      console.log('error mostRecentAds', e);
     }
   };
 
