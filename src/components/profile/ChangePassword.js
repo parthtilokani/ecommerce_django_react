@@ -67,8 +67,8 @@ const ChangePassword = ({ setChangePasswordModel }) => {
   };
 
   return (
-    <div id='edit-profile'>
-      <div className='card'>
+    <div id='edit-profile' onClick={() => setChangePasswordModel(false)}>
+      <div className='card' onClick={(e) => e.stopPropagation()}>
         <div className='text-center h4 fw-bold'>Change Password</div>
 
         <div className='position-relative'>

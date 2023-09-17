@@ -34,45 +34,14 @@ const ForgotPassword = ({ setForgotPasswordView }) => {
     },
   });
 
-  const {
-    mutate: verifyToken,
-    isLoading: isVerifing,
-    error2,
-  } = useMutation({
-    mutationFn: async ({ token, password }) => {
-      try {
-        const tokenInValid = isValid("Token", token);
-        const passwordInValid = isValid("Password", password, "password");
-        if (tokenInValid || passwordInValid) {
-          const obj = { token: tokenInValid, password: passwordInValid };
-          throw obj;
-        }
-        await axiosOpen.post("/user/password_reset/confirm/", {
-          token,
-          password,
-        });
-      } catch (err) {
-        setMessage("");
-        console.log(err);
-        let obj = { message: "Something went wrong! Retry" };
-        if (err?.response?.data?.email?.length > 0)
-          obj = { email: err?.response?.data?.email[0] };
-        throw obj;
-      }
-    },
-    onSuccess: () => {
-      setMessage("Password reset successfully! Try Logging in");
-    },
-  });
-
   return (
-    <div className='signup-otp-model'>
-      <div className='card'>
-        <div className='text-center h4 fw-bold'>Forgot Password</div>
-        <div style={{ height: "15px" }} className='text-success'>
-          {message}
-        </div>
-        <div className='mt-3'>
+    <div
+      className='signup-otp-model'
+      onClick={() => setForgotPasswordView(false)}>
+      <div className='card' onClick={(e) => e.stopPropagation()}>
+        <div className='text-center h4 fw-bold mb-0'>Forgot Password</div>
+        <div className='text-success'>{message}</div>
+        <div className='mt-2'>
           <input
             type='text'
             id='email'

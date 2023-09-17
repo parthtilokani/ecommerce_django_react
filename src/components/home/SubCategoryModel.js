@@ -8,11 +8,14 @@ const SubCategoryModel = ({
   setSubCategoryView,
   selectedSubCategory,
 }) => {
+  const handleClose = () => setSubCategoryView(false);
+
   return (
     <div
       className='location-model'
-      style={subCategoryView ? {} : { display: "none" }}>
-      <div className='card'>
+      style={subCategoryView ? {} : { display: "none" }}
+      onClick={handleClose}>
+      <div className='card' onClick={(e) => e.stopPropagation()}>
         <div className='h5 p-1 text-center'>Select Sub-Category</div>
         <div className='px-3 category-model-body row align-items-stretch'>
           {selectedSubCategory?.name && (
@@ -78,7 +81,7 @@ const SubCategoryModel = ({
           src='./assets/svgs/close.svg'
           className='close-btn'
           alt=''
-          onClick={() => setSubCategoryView(false)}
+          onClick={handleClose}
         />
       </div>
     </div>

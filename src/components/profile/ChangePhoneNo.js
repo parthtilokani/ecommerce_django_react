@@ -98,8 +98,8 @@ const ChangePhoneNo = ({ setChangePhoneNoModel, refetchUser }) => {
   };
 
   return (
-    <div id='change-phone-no'>
-      <div className='card'>
+    <div id='change-phone-no' onClick={() => setChangePhoneNoModel(false)}>
+      <div className='card' onClick={(e) => e.stopPropagation()}>
         <div className='text-center'>
           <h3 className='fw-bold signup-head'>Change Phone Number</h3>
         </div>

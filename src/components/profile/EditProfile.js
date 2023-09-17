@@ -54,8 +54,8 @@ const EditProfile = ({ setEditModel, userData, refetchUser }) => {
   };
 
   return (
-    <div id='edit-profile'>
-      <div className='card'>
+    <div id='edit-profile' onClick={() => setEditModel(false)}>
+      <div className='card' onClick={(e) => e.stopPropagation()}>
         <div className='text-center h4 fw-bold'>Edit Profile</div>
 
         <div>

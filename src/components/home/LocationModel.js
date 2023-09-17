@@ -13,11 +13,18 @@ const LocationModel = ({
   setError,
   handleGetLocation,
 }) => {
+  const handleClose = () => {
+    if (!ourLocation?.name) return setError("Select location to continue.");
+    setLocationView(false);
+    setError("");
+  };
+
   return (
     <div
       className='location-model'
-      style={locationView ? {} : { display: "none" }}>
-      <div className='card'>
+      style={locationView ? {} : { display: "none" }}
+      onClick={handleClose}>
+      <div className='card' onClick={(e) => e.stopPropagation()}>
         <div className='h5 p-1 text-center mt-1 mb-0'>Select Location</div>
         {error && (
           <div
@@ -84,12 +91,7 @@ const LocationModel = ({
           src='/assets/svgs/close.svg'
           className='close-btn'
           alt=''
-          onClick={() => {
-            if (!ourLocation?.name)
-              return setError("Select location to continue.");
-            setLocationView(false);
-            setError("");
-          }}
+          onClick={handleClose}
         />
       </div>
     </div>

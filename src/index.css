@@ -59,3 +59,10 @@ main {
 .pointer {
   cursor: pointer !important;
 }
+
+/*main animation*/
+@keyframes slideIn {
+  to {
+    transform: translateY(0);
+  }
+}

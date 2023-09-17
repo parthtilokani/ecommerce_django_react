@@ -26,7 +26,7 @@ const Search = () => {
   const [locationView, setLocationView] = useState(false);
   const [categoryView, setCategoryView] = useState(false);
   const [subCategoryView, setSubCategoryView] = useState(false);
-  const [search, setSearch] = useState(state?.searchText || "");
+  const [search, setSearch] = useState(state?.search || "");
 
   const [searchLocation, setSearchLocation] = useState("");
   const [addressList, setAddressList] = useState([]);

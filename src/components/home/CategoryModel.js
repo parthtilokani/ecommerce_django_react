@@ -10,11 +10,14 @@ const CategoryModel = ({
   setSelectedCategory,
   setSelectedSubCategory,
 }) => {
+  const handleClose = () => setCategoryView(false);
+
   return (
     <div
       className='location-model'
-      style={categoryView ? {} : { display: "none" }}>
-      <div className='card'>
+      style={categoryView ? {} : { display: "none" }}
+      onClick={handleClose}>
+      <div className='card' onClick={(e) => e.stopPropagation()}>
         <div className='h5 p-1 text-center'>Select Category</div>
         <div className='px-3 category-model-body row align-items-stretch'>
           {selectedCategory?.name && (
@@ -69,7 +72,7 @@ const CategoryModel = ({
           src='./assets/svgs/close.svg'
           className='close-btn'
           alt=''
-          onClick={() => setCategoryView(false)}
+          onClick={handleClose}
         />
       </div>
     </div>

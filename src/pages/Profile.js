@@ -399,8 +399,8 @@ const Profile = () => {
 
       {/*Delete Model*/}
       {deleteModel !== 0 && (
-        <div className='signup-otp-model'>
-          <div className='card'>
+        <div className='signup-otp-model' onClick={() => setDeleteModel(0)}>
+          <div className='card' onClick={(e) => e.stopPropagation()}>
             <div className='text-center h4 fw-bold'>Delete your ad post ?</div>
             <div className='mt-1 text-center d-flex justify-content-center'>
               <div>
@@ -430,8 +430,11 @@ const Profile = () => {
         </div>
       )}
       {deleteUserModel && (
-        <div className='signup-otp-model' id='delete-user-model'>
-          <div className='card'>
+        <div
+          className='signup-otp-model'
+          id='delete-user-model'
+          onClick={() => setDeleteUserModel(false)}>
+          <div className='card' onClick={(e) => e.stopPropagation()}>
             <div className='text-center h4 fw-bold'>Delete your account ?</div>
 
             <div className='my-2 position-relative'>
