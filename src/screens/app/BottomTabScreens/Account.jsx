@@ -201,6 +201,7 @@ const Account = props => {
         <TouchableOpacity
           style={styles.menuListingView}
           onPress={() => {
+            if (!isLogin) return navigation.navigate('SignIn');
             navigation.navigate('MyListing', {userData});
           }}>
           <View style={styles.menuIconView}>

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Image,
@@ -28,6 +28,7 @@ import {getPostAge} from '../../utils/supportFunctions.js';
 import Ionicons from 'react-native-vector-icons/Ionicons.js';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons.js';
 import {measure} from 'react-native-reanimated';
+import {retrieveUserSession} from '../../utils/AsyncStorage/userSession.js';
 
 const ShowAdsDetails = () => {
   const {
@@ -91,7 +92,7 @@ const ShowAdsDetails = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [isLogin, setIsLogin] = useState();
   const [whatsAppMsg, setWhatsAppMsg] = useState(
     'Hi, I am interested in your ad posting',
   );
@@ -102,6 +103,13 @@ const ShowAdsDetails = () => {
     }
   });
   const viewConfigRef = useRef({viewAreaCoveragePercentThreshold: 50});
+
+  useEffect(() => {
+    (async () => {
+      const userToken = JSON.parse(await retrieveUserSession('userToken'));
+      setIsLogin(userToken);
+    })();
+  }, []);
 
   const renderItem = ({item}) => {
     const imageUri = item?.image;
@@ -372,8 +380,9 @@ const ShowAdsDetails = () => {
                 fontSize: normalize(17),
                 color: COLORS.black,
               }}>
-              {data?.create_user?.phone_no}
+              {isLogin && data?.create_user?.phone_no}
             </Text>
+
             <TouchableOpacity
               style={{
                 width: width * 0.3,

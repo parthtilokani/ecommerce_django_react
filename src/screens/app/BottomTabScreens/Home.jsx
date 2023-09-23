@@ -51,6 +51,7 @@ const Home = () => {
   const [searchData, setSearchData] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [locationGet, setLocationGet] = useState(false);
+  const [apply, setApply] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -63,6 +64,11 @@ const Home = () => {
         })
         .catch(err => console.log(err));
     })();
+    if (searchValue != '') {
+      setApply(true);
+    } else {
+      setApply(false);
+    }
   }, [searchValue, category, subCategory]);
 
   useEffect(() => {
@@ -184,7 +190,7 @@ const Home = () => {
         isSearchInput
         btnText={location}
         setFilterModalVisible={setFilterModalVisible}
-        searchValue={searchValue?.trim()}
+        searchValue={searchValue}
         setSearchValue={setSearchValue}
         onSearch={onSearch}
       />
@@ -208,7 +214,7 @@ const Home = () => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }>
-          {searchValue != '' && (
+          {apply && (
             <>
               <ListGridAds
                 data={searchData?.results}
@@ -228,7 +234,7 @@ const Home = () => {
               />
             </>
           )}
-          {searchValue == '' && (
+          {!apply && (
             <>
               <Categories
                 scrollEnabled={false}
@@ -259,6 +265,7 @@ const Home = () => {
             setCategory={setCategory}
             subCategory={subCategory}
             setSubCategory={setSubCategory}
+            setApply={setApply}
           />
         </ScrollView>
       )}

@@ -14,6 +14,7 @@ const HalfScreenModal = ({
   setCategory,
   subCategory,
   setSubCategory,
+  setApply,
 }) => {
   const [select, setSelect] = useState(0);
 
@@ -197,6 +198,7 @@ const HalfScreenModal = ({
                 ? setCategory(null) | setSubCategory(null)
                 : setSubCategory(null);
               setSearch('');
+              setApply(false);
             }}>
             CLEAR
           </Text>
@@ -212,7 +214,8 @@ const HalfScreenModal = ({
             }}
             disabled={category == null}
             onPress={() => {
-              setSearch(' ');
+              // setSearch(' ');
+              setApply(true);
               onClose();
             }}>
             APPLY
