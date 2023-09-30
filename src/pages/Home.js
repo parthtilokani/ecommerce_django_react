@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { axiosOpen } from "../utils/axios.js";
@@ -23,6 +23,7 @@ import {
 const Home = () => {
   const { location: ourLocation, setLocation } = useOurLocation();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [locationView, setLocationView] = useState(true);
   const [categoryView, setCategoryView] = useState(false);
@@ -79,6 +80,19 @@ const Home = () => {
       }
     })();
   }, [location]);
+
+  useEffect(() => {
+    (() => {
+      if (search.length <= 0) return;
+      navigate("/search", {
+        state: {
+          category: selectedCategory,
+          subcategory: selectedSubCategory,
+          search: search,
+        },
+      });
+    })();
+  }, [search]);
 
   const handleGetLocation = () => {
     setLoading(true);
@@ -151,6 +165,18 @@ const Home = () => {
     };
   }, [searchLocation]);
 
+  const onSearch = (e) => {
+    if (e.key !== "Enter") return;
+    if (!ourLocation?.name) return setLocationView(true);
+    navigate("/search", {
+      state: {
+        category: selectedCategory,
+        subcategory: selectedSubCategory,
+        search: search,
+      },
+    });
+  };
+
   return (
     <div className='position-relative'>
       {/*HERO*/}
@@ -211,6 +237,7 @@ const Home = () => {
                     id='search'
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={onSearch}
                   />
                 </div>
               </div>

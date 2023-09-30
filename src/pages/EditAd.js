@@ -85,9 +85,6 @@ const EditAd = () => {
         price: data?.price || "",
         category: data?.category || "",
         sub_category: data?.sub_category || "",
-        district: data?.district || "",
-        state: data?.state || "",
-        country: data?.country || "",
         enabled: false,
       });
 
@@ -228,19 +225,6 @@ const EditAd = () => {
   };
 
   const handleChange = (e) => {
-    if (e.target.id === "country")
-      return setData((prev) => ({
-        ...prev,
-        state: "",
-        district: "",
-        country: e.target.value,
-      }));
-    if (e.target.id === "state")
-      return setData((prev) => ({
-        ...prev,
-        district: "",
-        state: e.target.value,
-      }));
     if (e.target.id === "sub_category") handleSubCategoryClick(e.target.value);
     setData((prev) => ({
       ...prev,
@@ -314,7 +298,11 @@ const EditAd = () => {
       dynamic_field: dynamicFields.map((df) => ({
         field_name: df?.field_name,
         field_type: df?.field_type,
-        value: df?.value,
+        value:
+          df?.value &&
+          (df?.field_type === "Price" || df?.field_type === "Number")
+            ? Number(df?.value)
+            : df?.value,
       })),
       location: ourLocation?.name,
       latitude: ourLocation?.lat,

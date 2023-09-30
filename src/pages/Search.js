@@ -177,6 +177,16 @@ const Search = () => {
     );
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      refetch();
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search]);
+
   return (
     <div>
       <div id='search-hero'>
@@ -238,6 +248,7 @@ const Search = () => {
                     id='search'
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    autoFocus={true}
                   />
                 </div>
               </div>

@@ -254,7 +254,11 @@ const PostNewAdd = () => {
         .map((df) => ({
           field_name: df?.field_name,
           field_type: df?.field_type,
-          value: df?.value,
+          value:
+            df?.value &&
+            (df?.field_type === "Price" || df?.field_type === "Number")
+              ? Number(df?.value)
+              : df?.value,
         })),
       location: ourLocation?.name,
       latitude: ourLocation?.lat,

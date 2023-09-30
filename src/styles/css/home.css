@@ -355,7 +355,7 @@
 /*Info Panel*/
 #home-info-panel {
   min-height: 270px;
-  padding: 40px 0;
+  padding: 0 0 40px 0;
   position: relative;
 }
 #home-info-panel .info-panel-main {
