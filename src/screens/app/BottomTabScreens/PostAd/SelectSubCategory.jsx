@@ -33,7 +33,6 @@ const SelectSubCategory = ({navigation}) => {
     },
   });
   const renderFlatItems = ({item, index}) => {
-    console.log(item);
     return (
       <View style={[styles.categoryMainContainer, SHADOWS.small]}>
         <TouchableOpacity

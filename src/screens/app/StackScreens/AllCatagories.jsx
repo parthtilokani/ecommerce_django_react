@@ -17,7 +17,6 @@ const AllCatagories = () => {
   const fetchPlans = async () => {
     setIsloading(true);
     const data = await axiosOpen('ads/category');
-    console.log('AllCategory', data?.data);
     setCategoryData(data?.data);
     setIsloading(false);
   };

@@ -221,7 +221,6 @@ const SignUp = ({navigation}) => {
   };
 
   const onChangeCountry = country => {
-    console.log(country?.callingCode);
     setFormDetails(prevState => ({
       ...prevState,
       areaCode: country?.callingCode,

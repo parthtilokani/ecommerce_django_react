@@ -27,11 +27,13 @@ import useLocation from '../../../hooks/useLocation.js';
 import {Searchbar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons.js';
 import {axiosOpen} from '../../../utils/axios.js';
+import CustomAlert from '../../../components/CustomAlert/CustomAlert.jsx';
 
 const LocationScreen = ({navigation}) => {
   const [error, setError] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [customAlert, setCustomAert] = useState(false);
   const [addressList, setAddressList] = useState([]);
   const {location, setLocation, setAddress} = useLocation();
 
@@ -68,9 +70,33 @@ const LocationScreen = ({navigation}) => {
       .then(e => {
         setAddressList(e);
         if (location == 'Location') {
-          setLocation(e[0]?.formatted_address);
+          setLocation(prev => ({
+            ...prev,
+            name: e[0].formatted_address,
+            place_id: e[0].place_id,
+            ...e[0]?.geometry?.location,
+          }));
+          // setLocation(e[0]?.formatted_address);
         }
         setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
+
+  const fetchCurrentLocation = () => {
+    Getlocation()
+      .then(e => {
+        setLocation(prev => ({
+          ...prev,
+          name: e[0].formatted_address,
+          place_id: e[0].place_id,
+          ...e[0]?.geometry?.location,
+        }));
+        setLoading(false);
+        navigation.navigate('Drawer');
       })
       .catch(err => {
         console.log(err);
@@ -94,7 +120,6 @@ const LocationScreen = ({navigation}) => {
       const data = res;
       if (data.status === 200) {
         setError('');
-        console.log('getting data', data?.data?.results);
         setAddressList([...data?.data?.results]);
       } else if (data.status === 'ZERO_RESULTS') {
         setError('Unable to fetch your location');
@@ -115,7 +140,13 @@ const LocationScreen = ({navigation}) => {
     return (
       <Pressable
         onPress={() => {
-          setLocation(item?.description || item?.formatted_address);
+          setLocation(prev => ({
+            ...prev,
+            name: item?.description || item?.formatted_address,
+            ...(item?.geometry?.location || {}),
+            place_id: item?.place_id,
+          }));
+          // setLocation(item?.description || item?.formatted_address);
           setAddress(item);
           navigation.navigate('Drawer');
         }}
@@ -132,6 +163,18 @@ const LocationScreen = ({navigation}) => {
     <View style={{flex: 1}}>
       {/* <Loader visible={loading} /> */}
       <GobackHeader bg title={'Select Location'} />
+      <CustomAlert
+        visible={customAlert}
+        title={'Alert!'}
+        message={'This app want to fetch your current location?'}
+        okBtn={'Allow'}
+        cancleBtn={`Don't Allow`}
+        onOkPress={() => {
+          setCustomAert(false);
+          fetchCurrentLocation();
+        }}
+        onCancel={() => setCustomAert(false)}
+      />
       <Text
         style={{
           color: 'black',
@@ -140,7 +183,7 @@ const LocationScreen = ({navigation}) => {
           margin: 5,
           textAlign: 'center',
         }}>
-        Selected Location : {location}
+        Selected Location : {location?.name}
       </Text>
       <View
         style={[
@@ -176,9 +219,10 @@ const LocationScreen = ({navigation}) => {
             borderRadius: 10,
           }}
           onPress={() => {
-            setSearchValue('');
-            setAddressList([]);
-            checkPermission();
+            // setSearchValue('');
+            // setAddressList([]);
+            // checkPermission();
+            setCustomAert(true);
           }}>
           <MaterialIcons
             name="my-location"

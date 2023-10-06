@@ -38,8 +38,10 @@ const Categories = ({
     return (
       <TouchableOpacity
         style={styles.item}
-        disabled={nav}
-        onPress={() => !nav && navigation.navigate('Category', {item: item})}>
+        // disabled={nav}
+        onPress={() => {
+          navigation.navigate('Category', {item: item});
+        }}>
         <Image
           source={{
             uri:

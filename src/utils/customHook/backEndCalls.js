@@ -61,7 +61,6 @@ export const signUP = async values => {
 };
 
 export const requestOtp = async values => {
-  console.log('asdasdasd');
   try {
     const response = await axios.get(`${baseURL}/user/otp`, {
       params: {

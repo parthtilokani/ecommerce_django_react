@@ -80,7 +80,6 @@ const EditPhoneNumber = () => {
         setLoading(false);
         if (!err?.response) return Toast.error('No internet connection!');
 
-        console.log(err.response);
         if (typeof err.response?.data?.error === 'string')
           Toast.error(err?.response?.data?.error);
         else Toast.error('Something went wrong!');
@@ -113,7 +112,6 @@ const EditPhoneNumber = () => {
         }, 3000);
       })
       .catch(err => {
-        console.log(err?.response);
         setLoading(false);
         if (!err?.response) return Toast.error('No internet connection!');
         const {phone_no, detail, Details, error} = err?.response?.data;

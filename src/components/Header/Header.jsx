@@ -41,7 +41,10 @@ const Header = ({
             // clearButtonMode="always"
             value={searchValue}
             // onFocus={() => navigation.navigate('Search')}
-            onChangeText={v => setSearchValue(v)}
+            onChangeText={v => {
+              console.log('search value change');
+              setSearchValue(v);
+            }}
             inputStyle={{
               alignSelf: 'center',
               fontSize: normalize(FONTSIZE.xxSmall),

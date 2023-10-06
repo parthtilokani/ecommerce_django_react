@@ -64,7 +64,6 @@ const Profile = () => {
   };
 
   const onChangeCountry = country => {
-    console.log(country?.callingCode);
     setFormDetails(prevState => ({
       ...prevState,
       areaCode: country?.callingCode,
@@ -72,12 +71,20 @@ const Profile = () => {
   };
 
   const onChange = (event, selectedDate) => {
+    console.log('Selected date', event);
     setShow(false);
-    const formattedDate = new Date(selectedDate).toISOString().slice(0, 10);
-    setFormDetails(prevState => ({
-      ...prevState,
-      dob: formattedDate,
-    }));
+    if (event.type === 'set') {
+      const formattedDate = new Date(selectedDate).toISOString().slice(0, 10);
+      setFormDetails(prevState => ({
+        ...prevState,
+        dob: formattedDate,
+      }));
+    } else {
+      setFormDetails(prevState => ({
+        ...prevState,
+        dob: undefined,
+      }));
+    }
   };
 
   const onUpdateProfile = async () => {
@@ -89,6 +96,7 @@ const Profile = () => {
         return setErrors(obj);
       setErrors({});
       setIsLoading(true);
+
       const update = await axiosPrivate.patch(`user/user/edit_user_profile`, {
         area_code: formDetails.areaCode,
         dob: formDetails?.dob,
@@ -100,12 +108,12 @@ const Profile = () => {
       if (update?.status === 200) {
         setEditOn(false);
         Toast.success('Successfully updated!');
-        setTimeout(() => {
-          return navigation.replace('Drawer', {
-            screen: 'Main',
-            params: {tab: 4},
-          });
-        }, 3000);
+        // setTimeout(() => {
+        //   return navigation.replace('Drawer', {
+        //     screen: 'Main',
+        //     params: {tab: 4},
+        //   });
+        // }, 3000);
       } else {
         Toast.error('Something went wrong!');
       }
@@ -184,10 +192,10 @@ const Profile = () => {
 
             <Text style={styles.inputTitleTxt}>Phone Number</Text>
             <Input
-              id={'phoneNumber'}
+              id={'phoneNumber1'}
               errors={errors}
               placeholder={'Phone Number'}
-              value={formDetails.phoneNumber}
+              value={`+${formDetails.areaCode} - ${formDetails.phoneNumber}`}
               onChangeText={text =>
                 handleInputChange('phoneNumber', text.replace(/[^0-9]/, ''))
               }
@@ -195,7 +203,7 @@ const Profile = () => {
               leftIcon={icons.phone}
               style={styles.input}
               inputStyle={{color: editOn ? COLORS.black : COLORS.gray}}
-              maxLength={10}
+              maxLength={20}
               keyboardType={'phone-pad'}
               onChangeCountry={onChangeCountry}
               editable={editOn}

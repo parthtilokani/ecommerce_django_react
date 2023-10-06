@@ -30,6 +30,7 @@ import buy from '../assets/buy.png';
 import description from '../assets/description.png';
 import filter from '../assets/panel.png';
 import transaction from '../assets/bank-statement.png';
+import exclamation from '../assets/exclamation.png';
 
 export default {
   menu,
@@ -64,4 +65,5 @@ export default {
   description,
   filter,
   transaction,
+  exclamation,
 };

@@ -70,7 +70,6 @@ const ListGridAds = ({
       );
     }
   };
-  console.log(isLoading);
 
   if (isLoading)
     return (

@@ -36,7 +36,6 @@ const Transaction = () => {
           },
         },
       );
-      console.log(transactionData?.data);
       setTotalData(transactionData?.data);
       setLoading(false);
     })();

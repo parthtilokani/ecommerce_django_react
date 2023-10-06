@@ -212,7 +212,8 @@ const ShowAdsDetails = () => {
           {data?.ads_image.length > 0 ? data?.ads_image.length : '1'}
         </Text>
       </View>
-      <ScrollView style={{flex: 1, marginBottom: 55}}>
+      <ScrollView
+        style={{flex: 1, marginBottom: 55, backgroundColor: COLORS.white}}>
         <View style={{marginHorizontal: 10, marginTop: 10}}>
           <Text
             style={{
@@ -357,7 +358,7 @@ const ShowAdsDetails = () => {
           </Text>
         </View>
       </ScrollView>
-      {!isMyAds && (
+      {!isMyAds && isLogin ? (
         <View
           style={{
             backgroundColor: COLORS.white,
@@ -380,7 +381,7 @@ const ShowAdsDetails = () => {
                 fontSize: normalize(17),
                 color: COLORS.black,
               }}>
-              {isLogin && data?.create_user?.phone_no}
+              {data?.create_user?.phone_no}
             </Text>
 
             <TouchableOpacity
@@ -408,6 +409,16 @@ const ShowAdsDetails = () => {
             </TouchableOpacity>
           </View>
         </View>
+      ) : (
+        <View
+          style={{
+            backgroundColor: COLORS.white,
+            height: 65,
+            width: width,
+            justifyContent: 'center',
+            position: 'absolute',
+            bottom: 0,
+          }}></View>
       )}
     </SafeAreaView>
   );

@@ -60,7 +60,6 @@ const SignIn = ({navigation}) => {
           return navigation.replace('Drawer');
         }, 3000);
       } else {
-        console.log(response);
         setLoading(false);
         if (!response?.res) return Toast.error('Invalid Credentials');
         setFormDetails({

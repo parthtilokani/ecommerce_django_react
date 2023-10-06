@@ -1,25 +1,52 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Modal} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  Image,
+} from 'react-native';
 import {COLORS, FONTSIZE} from '../../constant/theme.js';
-import {normalize, width} from '../../constant/index.js';
+import {icons, normalize, width} from '../../constant/index.js';
 import OTPTextView from 'react-native-otp-textinput';
 import Button from '../Button/Button.jsx';
 
-const CustomAlert = ({visible, title, message, onCancel, onOkPress}) => {
+const CustomAlert = ({
+  visible,
+  title,
+  message,
+  onCancel,
+  onOkPress,
+  okBtn,
+  cancleBtn,
+}) => {
   return (
     <Modal visible={visible} transparent>
       <View style={styles.container}>
         <View style={styles.alert}>
-          <Text style={styles.title}>{title}</Text>
+          {/* <Text style={styles.title}>{title}</Text> */}
+          <Image
+            source={icons.exclamation}
+            style={{
+              height: 50,
+              width: 50,
+              tintColor: 'red',
+              marginBottom: 10,
+            }}
+          />
           <Text style={styles.message}>{message}</Text>
           <View style={styles.buttonView}>
             <TouchableOpacity style={styles.button} onPress={onCancel}>
-              <Text style={styles.buttonText}>NO</Text>
+              <Text style={styles.buttonText}>{cancleBtn || 'NO'}</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, {backgroundColor: 'red'}]}
+              style={[
+                styles.button,
+                {backgroundColor: okBtn ? 'green' : 'red'},
+              ]}
               onPress={onOkPress}>
-              <Text style={styles.buttonText}>YES</Text>
+              <Text style={styles.buttonText}>{okBtn || 'YES'}</Text>
             </TouchableOpacity>
           </View>
         </View>

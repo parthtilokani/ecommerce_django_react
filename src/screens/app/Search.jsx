@@ -45,14 +45,13 @@ const Search = () => {
     })();
   }, []);
   useEffect(() => {
-    (async () => {
-      Getlocation()
-        .then(e => {
-          setLocation(e);
-          onSearch();
-        })
-        .catch(err => console.log(err));
-    })();
+    // Getlocation()
+    //   .then(e => {
+    // setLocation(e)
+    console.log('first');
+    onSearch();
+    // })
+    // .catch(err => console.log(err));
   }, [searchValue, category, subCategory]);
 
   const onSearch = async () => {
@@ -74,6 +73,8 @@ const Search = () => {
     ) {
       paramsObj.place_id = location[0]?.place_id;
     }
+
+    console.log('search Param', paramsObj);
     try {
       setIsloading(true);
       const {data} = await axiosOpen.get('/ads/ads', {
@@ -147,7 +148,10 @@ const Search = () => {
         iconColor={COLORS.secondary}
         // clearButtonMode="always"
         value={searchValue}
-        onChangeText={v => setSearchValue(v)}
+        onChangeText={v => {
+          console.log('Search value change');
+          setSearchValue(v);
+        }}
         inputStyle={{
           alignSelf: 'center',
           fontSize: normalize(FONTSIZE.xxSmall),

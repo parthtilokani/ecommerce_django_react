@@ -3,7 +3,12 @@ import {createContext, useState} from 'react';
 const LocationContext = createContext({});
 
 export const LocationProvider = ({children}) => {
-  const [location, setLocation] = useState('Location');
+  const [location, setLocation] = useState({
+    name: 'Location',
+    lat: '',
+    long: '',
+    place_id: '',
+  });
   const [address, setAddress] = useState([]);
 
   return (

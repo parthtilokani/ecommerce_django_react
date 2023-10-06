@@ -5,6 +5,10 @@ import {
   RefreshControl,
   Platform,
   Text,
+  AppState,
+  Modal,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 import React, {useRef, useState, useEffect} from 'react';
 import Header from '../../../components/Header/Header.jsx';
@@ -52,6 +56,28 @@ const Home = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [locationGet, setLocationGet] = useState(false);
   const [apply, setApply] = useState(false);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener('change', nextAppState => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === 'active'
+  //     ) {
+  //       console.log('App has come to the foreground!');
+  //       fetchMostRecentAds();
+  //     }
+
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //     console.log('AppState', appState.current);
+  //   });
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, [location.place_id]);
 
   useEffect(() => {
     (async () => {
@@ -64,6 +90,7 @@ const Home = () => {
         })
         .catch(err => console.log(err));
     })();
+
     if (searchValue != '') {
       setApply(true);
     } else {
@@ -79,16 +106,16 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    searchLocation && locationGet && fetchMostRecentAds();
-  }, [searchLocation, isFocused, address, locationGet]);
+    location.name !== 'Location' && fetchMostRecentAds();
+  }, [isFocused, location?.place_id, locationGet]);
 
   const onSearch = async () => {
     const paramsObj = {
       page: currentPage,
       page_size: itemPerPage,
-      lat: searchLocation[0]?.geometry?.location?.lat,
-      long: searchLocation[0]?.geometry?.location?.lng,
-      place_id: searchLocation[0]?.place_id,
+      lat: location?.lat,
+      long: location?.long,
+      place_id: location?.place_id,
     };
     if (searchValue) paramsObj.search = searchValue;
     if (category) paramsObj.category = category;
@@ -117,17 +144,26 @@ const Home = () => {
     if (isPermissionGranted) {
       // setLoading(true);
       const position = await Getlocation();
-      if (location === 'Location') {
-        setLocation(position[0].formatted_address);
+      if (location?.name === 'Location') {
+        setLocation(prev => ({
+          ...prev,
+          name: position[0].formatted_address,
+          place_id: position[0].place_id,
+          ...position[0]?.geometry?.location,
+        }));
       }
     } else {
       await RequestPermission(permission);
-      if (location === 'Location') {
+      if (location?.name === 'Location') {
         const position = await Getlocation();
-        setLocation(position[0].formatted_address);
+        setLocation(prev => ({
+          ...prev,
+          name: position[0].formatted_address,
+          place_id: position[0].place_id,
+          ...position[0]?.geometry?.location,
+        }));
       }
     }
-    // setLoading(false);
   };
 
   const handleRefresh = () => {
@@ -140,7 +176,6 @@ const Home = () => {
   };
 
   const fetchPopularCategory = async () => {
-    console.log(await retrieveUserSession('userToken'));
     try {
       setPopularCategoryLoader(true);
       const popularCategory = await axiosOpen('/ads/ads/popular_category');
@@ -157,16 +192,19 @@ const Home = () => {
       setMostRecentAdsLoader(true);
       const {data} = await axiosOpen('/ads/ads/most_recent', {
         params: {
-          latitude:
-            address?.geometry?.location?.lat ||
-            searchLocation[0]?.geometry?.location?.lat,
-          longitude:
-            address?.geometry?.location?.lng ||
-            searchLocation[0]?.geometry?.location?.lng,
-          place_id: address?.place_id || searchLocation[0]?.place_id,
+          latitude: location?.lat,
+          longitude: location?.long,
+          place_id: location?.place_id,
           page: 1,
           limit: 8,
         },
+      });
+      console.log({
+        latitude: location?.lat,
+        longitude: location?.long,
+        place_id: location?.place_id,
+        page: 1,
+        limit: 8,
       });
       setMostRecentAdsLoader(false);
       setMostRecentAds(
@@ -188,13 +226,14 @@ const Home = () => {
     <View style={{flex: 1}}>
       <Header
         isSearchInput
-        btnText={location}
+        btnText={location?.name}
         setFilterModalVisible={setFilterModalVisible}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         onSearch={onSearch}
       />
-      {location === 'Location' ? (
+
+      {location?.name === 'Location' ? (
         <Text
           style={{
             color: COLORS.black,
@@ -299,5 +338,50 @@ const styles = StyleSheet.create({
     height: height * 0.039,
     tintColor: COLORS.white,
     transform: [{rotate: '90deg'}],
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  alert: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 5,
+    width: '80%',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: normalize(FONTSIZE.large),
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: COLORS.black,
+  },
+  message: {
+    fontSize: normalize(FONTSIZE.xxSmall),
+    marginBottom: 20,
+    color: COLORS.black,
+    textAlign: 'center',
+  },
+  buttonView: {
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // alignSelf: 'flex-end',
+  },
+  button: {
+    backgroundColor: 'red',
+    alignItems: 'center',
+    width: width * 0.3,
+    paddingVertical: 10,
+    marginHorizontal: 20,
+    borderRadius: 5,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: normalize(FONTSIZE.xxSmall),
+    fontWeight: 'bold',
+    color: COLORS.white,
   },
 });

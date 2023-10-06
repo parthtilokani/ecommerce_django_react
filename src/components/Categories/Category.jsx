@@ -12,11 +12,13 @@ import {baseURL} from '../../utils/Api.js';
 import Button from '../Button/Button.jsx';
 import {width} from '../../constant/index.js';
 import {axiosOpen} from '../../utils/axios.js';
+import useLocation from '../../hooks/useLocation.js';
 
 const Category = ({navigation}) => {
   const {
     params: {item},
   } = useRoute();
+  const {location} = useLocation();
   const [ads, setAds] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
@@ -26,9 +28,26 @@ const Category = ({navigation}) => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const data = await axiosOpen('ads/ads');
+      const data = await axiosOpen('ads/ads', {
+        params: {
+          lat: location?.lat,
+          long: location?.lng,
+          place_id: location?.place_id,
+          page: 1,
+          page_size: 10,
+        },
+      });
+      console.log({
+        lat: location?.lat,
+        long: location?.lng,
+        place_id: location?.place_id,
+        page: 1,
+        page_size: 10,
+      });
       setAds(
-        data?.data?.results?.filter(e => e?.category === item?.category?.id),
+        data?.data?.results?.filter(e => {
+          return e?.category === (item?.category?.id || item?.id);
+        }),
       );
       setIsLoading(false);
     } catch (e) {

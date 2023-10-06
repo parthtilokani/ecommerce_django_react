@@ -275,7 +275,6 @@ export const PostAdDynamicFields = ({
             placeholder={'Select options'}
             value={value}
             onChange={item => {
-              console.log(item?.value);
               handleSelectChange(item?.value);
             }}
           />

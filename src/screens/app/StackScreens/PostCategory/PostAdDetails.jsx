@@ -1,6 +1,8 @@
 import {
   FlatList,
+  Image,
   Keyboard,
+  Modal,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -53,6 +55,7 @@ const PostAdDetails = () => {
     date: false,
     time: false,
   });
+  const [upgradeModal, setUpgradeModal] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [formDetails, setFormDetails] = useState({
     ad_title: '',
@@ -148,7 +151,6 @@ const PostAdDetails = () => {
 
       const data = res;
       if (data.status === 200) {
-        console.log(JSON.stringify(data));
         setAddressList([...data?.data?.results]);
       } else if (data.status === 'ZERO_RESULTS') {
         setAddressList([]);
@@ -277,7 +279,6 @@ const PostAdDetails = () => {
             ...new Array(no_of_images - newImages.length).fill(null),
           ]);
         } else if (res?.didCancel) {
-          console.log('dsada');
         } else if (res?.errorMessage) {
           console.log('sdsadsa23123', res);
         }
@@ -322,7 +323,14 @@ const PostAdDetails = () => {
     onError: err => {
       console.log('PostAds error', err);
       setLoading(false);
-      Toast.error(err?.response?.data?.detail || 'Something went wrong!');
+      if (
+        err?.response?.data?.detail ===
+        'Cannot create a new ad, No credit found.'
+      ) {
+        setUpgradeModal(true);
+      } else {
+        Toast.error(err?.response?.data?.detail || 'Something went wrong!');
+      }
     },
   });
 
@@ -530,12 +538,10 @@ const PostAdDetails = () => {
                 data={addressList}
                 scrollEnabled={false}
                 renderItem={({item}) => {
-                  console.log('latitude', item?.geometry?.location?.lat);
                   return (
                     <TouchableOpacity
                       style={{marginVertical: 10}}
                       onPress={() => {
-                        console.log(item?.place_id);
                         setAddressList([]);
                         setSearchValue('');
                         setFormDetails(prev => ({
@@ -598,6 +604,38 @@ const PostAdDetails = () => {
           />
         </View>
       </KeyboardAvoidingWrapper>
+
+      <Modal visible={upgradeModal} transparent>
+        <View style={styles.alert_container}>
+          <View style={styles.alert}>
+            <Image
+              source={icons.exclamation}
+              style={{
+                height: 50,
+                width: 50,
+                tintColor: 'red',
+                marginBottom: 10,
+              }}
+            />
+            <Text style={styles.message}>
+              You do not have sufficient balance to create New ads. Do you want
+              to upgrade?
+            </Text>
+            <View style={styles.buttonView}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setUpgradeModal(false)}>
+                <Text style={styles.buttonText}>{'NO'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Allplans')}
+                style={[styles.button, {backgroundColor: COLORS.primary}]}>
+                <Text style={styles.buttonText}>{'YES'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -660,5 +698,50 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
     color: COLORS.black,
+  },
+  alert_container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  alert: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 5,
+    width: '80%',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: normalize(FONTSIZE.large),
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: COLORS.black,
+  },
+  message: {
+    fontSize: normalize(FONTSIZE.xxSmall),
+    marginBottom: 20,
+    color: COLORS.black,
+    textAlign: 'center',
+  },
+  buttonView: {
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // alignSelf: 'flex-end',
+  },
+  button: {
+    backgroundColor: 'red',
+    alignItems: 'center',
+    width: width * 0.3,
+    paddingVertical: 10,
+    marginHorizontal: 20,
+    borderRadius: 5,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: normalize(FONTSIZE.xxSmall),
+    fontWeight: 'bold',
+    color: COLORS.white,
   },
 });

@@ -419,7 +419,6 @@ const EditAdDetails = () => {
         obj.image = 'Please select atleast one image';
       }
       if (Object.values(obj).filter(e => e !== '').length > 0) {
-        console.log(obj);
         return setErrors(obj);
       }
 
@@ -449,9 +448,6 @@ const EditAdDetails = () => {
     }
   };
 
-  console.log(
-    subCategoryList.filter(e => e?.category === formDetails.category),
-  );
   return (
     <SafeAreaView style={{flex: 1}}>
       <ToastManager duration={2000} style={{width: width * 0.9}} />

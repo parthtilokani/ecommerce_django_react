@@ -72,7 +72,6 @@ const Allplans = () => {
       .post('/ads_plan/pay', {ads_plan_id: plan_id})
       .then(res => {
         setIsLoading(false);
-        console.log(res);
         const options = {
           key: res.data?.api_id,
           amount: res.data?.payment?.amount,

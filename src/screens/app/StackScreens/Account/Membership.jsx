@@ -35,7 +35,6 @@ const Membership = () => {
   const viewConfigRef = useRef({viewAreaCoveragePercentThreshold: 50});
 
   const renderItem = ({item, idx}) => {
-    console.log(item?.count);
     return (
       <View style={[styles.flatItemContainer]}>
         <View style={[styles.flatItemView, SHADOWS.medium]}>
