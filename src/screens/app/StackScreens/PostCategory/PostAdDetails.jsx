@@ -537,6 +537,7 @@ const PostAdDetails = () => {
               <FlatList
                 data={addressList}
                 scrollEnabled={false}
+                keyboardShouldPersistTaps={'always'}
                 renderItem={({item}) => {
                   return (
                     <TouchableOpacity
@@ -544,6 +545,7 @@ const PostAdDetails = () => {
                       onPress={() => {
                         setAddressList([]);
                         setSearchValue('');
+
                         setFormDetails(prev => ({
                           ...prev,
                           location:
@@ -554,7 +556,7 @@ const PostAdDetails = () => {
                         }));
                       }}>
                       <Text style={{color: COLORS.black}}>
-                        {item?.description || item?.formatted_address}
+                        {item?.description || item?.formatted_address}asd
                       </Text>
                     </TouchableOpacity>
                   );

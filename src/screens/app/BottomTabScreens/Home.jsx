@@ -199,7 +199,7 @@ const Home = () => {
           limit: 8,
         },
       });
-      console.log({
+      console.log('Mostrecent Ads', {
         latitude: location?.lat,
         longitude: location?.long,
         place_id: location?.place_id,

@@ -53,7 +53,6 @@ export const PostAdDynamicFields = ({
     );
   };
   const {field_type, field_name, options, is_required} = dynamic_field;
-  console.log('sadasd', field_name);
   let arrayOfObjects;
   if (options?.length > 0) {
     arrayOfObjects = options?.map((label, index) => ({

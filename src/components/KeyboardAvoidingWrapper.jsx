@@ -8,8 +8,11 @@ import React from 'react';
 
 const KeyboardAvoidingWrapper = ({children}) => {
   return (
-    <KeyboardAvoidingView style={{flex: 1}}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <KeyboardAvoidingView style={{flex: 1}} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1}}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps={'handled'}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           {children}
         </TouchableWithoutFeedback>
