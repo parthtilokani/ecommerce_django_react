@@ -25,8 +25,11 @@ const Bottomtab = ({callBack, tabValue}) => {
   const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState(tabValue);
   const setTab = async tab => {
-    // if (await retrieveUserSession('userToken')) {
-    const userToken = JSON.parse(await retrieveUserSession('userToken'));
+    const getToken = await retrieveUserSession('userToken');
+    let userToken;
+    if (getToken) {
+      userToken = JSON.parse(await retrieveUserSession('userToken'));
+    }
     if (tab == 2) {
       setSelectedTab(0);
       if (userToken?.access) {
@@ -35,8 +38,6 @@ const Bottomtab = ({callBack, tabValue}) => {
         return navigation.navigate('SignIn');
       }
     }
-    // } else {
-    //   return navigation.navigate('SignIn');
     // }
 
     setSelectedTab(tab);

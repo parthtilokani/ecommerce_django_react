@@ -42,7 +42,6 @@ const Header = ({
             value={searchValue}
             // onFocus={() => navigation.navigate('Search')}
             onChangeText={v => {
-              console.log('search value change');
               setSearchValue(v);
             }}
             inputStyle={{

@@ -149,7 +149,6 @@ const Search = () => {
         // clearButtonMode="always"
         value={searchValue}
         onChangeText={v => {
-          console.log('Search value change');
           setSearchValue(v);
         }}
         inputStyle={{

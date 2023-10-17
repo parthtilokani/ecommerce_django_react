@@ -79,24 +79,36 @@ const Home = () => {
   //   };
   // }, [location.place_id]);
 
+  let debounceTimeout;
   useEffect(() => {
-    (async () => {
-      Getlocation()
-        .then(e => {
-          setSearchLoacation(e);
-          setLocationGet(true);
-
-          onSearch();
-        })
-        .catch(err => console.log(err));
-    })();
-
+    debounceSearch();
     if (searchValue != '') {
       setApply(true);
     } else {
       setApply(false);
     }
-  }, [searchValue, category, subCategory]);
+    // Clean up the debounce timeout
+    return () => clearTimeout(debounceTimeout);
+  }, [searchValue]);
+
+  const debounceSearch = () => {
+    clearTimeout(debounceTimeout);
+    setSearchLoading(true);
+    debounceTimeout = setTimeout(() => {
+      onSearch();
+    }, 1000);
+  };
+
+  useEffect(() => {
+    // (async () => {
+    //   Getlocation()
+    //     .then(e => {
+    //       setLocationGet(true);
+    //     })
+    //     .catch(err => console.log(err));
+    // })();
+    onSearch();
+  }, [category, subCategory]);
 
   useEffect(() => {
     (async () => {
@@ -107,7 +119,7 @@ const Home = () => {
 
   useEffect(() => {
     location.name !== 'Location' && fetchMostRecentAds();
-  }, [isFocused, location?.place_id, locationGet]);
+  }, [isFocused, location?.place_id]);
 
   const onSearch = async () => {
     const paramsObj = {
@@ -198,13 +210,6 @@ const Home = () => {
           page: 1,
           limit: 8,
         },
-      });
-      console.log('Mostrecent Ads', {
-        latitude: location?.lat,
-        longitude: location?.long,
-        place_id: location?.place_id,
-        page: 1,
-        limit: 8,
       });
       setMostRecentAdsLoader(false);
       setMostRecentAds(
