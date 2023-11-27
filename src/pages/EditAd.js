@@ -61,6 +61,7 @@ const EditAd = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[0],
+    staleTime: Infinity,
   });
   const { data: subcategories } = useQuery({
     queryKey: ["subcategories"],
@@ -73,6 +74,7 @@ const EditAd = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[1],
+    staleTime: Infinity,
   });
 
   const { data: ad, isLoading: isLoadingAd } = useQuery({
@@ -335,24 +337,25 @@ const EditAd = () => {
 
   return (
     <>
-      <div id='post-new-ad'>
-        <div className='pya-main'>
-          <div className='h3 fw-bold'>Edit Ad</div>
-          <div className='row'>
-            <div className='col-md-6'>
+      <div id="post-new-ad">
+        <div className="pya-main">
+          <div className="h3 fw-bold">Edit Ad</div>
+          <div className="row">
+            <div className="col-md-6">
               <div>
-                <label className='form-label m-0' htmlFor='category'>
-                  Category<span className='text-danger'>*</span> :
+                <label className="form-label m-0" htmlFor="category">
+                  Category<span className="text-danger">*</span> :
                 </label>
                 <select
-                  type='text'
+                  type="text"
                   className={`form-control form-control-sm${
                     errors?.category ? " is-invalid" : ""
                   }`}
-                  id='category'
+                  id="category"
                   value={data.category}
-                  onChange={handleChange}>
-                  <option value=''>--select--</option>
+                  onChange={handleChange}
+                >
+                  <option value="">--select--</option>
                   {categories?.map((category) => (
                     <option value={category.id} key={category.id}>
                       {category.name}
@@ -364,18 +367,19 @@ const EditAd = () => {
                 </div>
               </div>
               <div>
-                <label className='form-label m-0' htmlFor='sub_category'>
-                  Sub Category<span className='text-danger'>*</span> :
+                <label className="form-label m-0" htmlFor="sub_category">
+                  Sub Category<span className="text-danger">*</span> :
                 </label>
                 <select
-                  type='text'
+                  type="text"
                   className={`form-control form-control-sm${
                     errors?.sub_category ? " is-invalid" : ""
                   }`}
-                  id='sub_category'
+                  id="sub_category"
                   value={data.sub_category}
-                  onChange={handleChange}>
-                  <option value=''>--select--</option>
+                  onChange={handleChange}
+                >
+                  <option value="">--select--</option>
                   {subcategories
                     ?.filter(
                       (e) => Number(e.category) === Number(data.category)
@@ -391,32 +395,32 @@ const EditAd = () => {
                 </div>
               </div>
               <div>
-                <label className='form-label m-0' htmlFor='ad_title'>
-                  Ad title<span className='text-danger'>*</span> :
+                <label className="form-label m-0" htmlFor="ad_title">
+                  Ad title<span className="text-danger">*</span> :
                 </label>
                 <input
-                  type='text'
+                  type="text"
                   className={`form-control form-control-sm${
                     errors?.ad_title ? " is-invalid" : ""
                   }`}
-                  id='ad_title'
+                  id="ad_title"
                   value={data.ad_title}
                   onChange={handleChange}
-                  maxLength='150'
+                  maxLength="150"
                 />
                 <div style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
                   {errors?.ad_title && errors?.ad_title}
                 </div>
               </div>
               <div>
-                <label className='form-label m-0' htmlFor='ad_description'>
-                  Ad description<span className='text-danger'>*</span> :
+                <label className="form-label m-0" htmlFor="ad_description">
+                  Ad description<span className="text-danger">*</span> :
                 </label>
                 <textarea
                   className={`form-control form-control-sm${
                     errors?.ad_description ? " is-invalid" : ""
                   }`}
-                  id='ad_description'
+                  id="ad_description"
                   value={data.ad_description}
                   onChange={handleChange}
                 />
@@ -425,15 +429,15 @@ const EditAd = () => {
                 </div>
               </div>
               <div>
-                <label className='form-label m-0' htmlFor='location'>
-                  Location<span className='text-danger'>*</span> :
+                <label className="form-label m-0" htmlFor="location">
+                  Location<span className="text-danger">*</span> :
                 </label>
                 <input
-                  type='text'
+                  type="text"
                   className={`form-control form-control-sm${
                     errors?.location ? " is-invalid" : ""
                   }`}
-                  id='location'
+                  id="location"
                   value={ourLocation?.name}
                   onChange={() => {}}
                   onClick={() => setLocationView(true)}
@@ -443,11 +447,11 @@ const EditAd = () => {
                 </div>
               </div>
               {dynamicFields?.map((df, i) => (
-                <div className='mt-2' key={i}>
-                  <label className='form-label m-0' htmlFor={df?.field_name}>
+                <div className="mt-2" key={i}>
+                  <label className="form-label m-0" htmlFor={df?.field_name}>
                     {df?.field_name}
                     {df?.is_required ? (
-                      <span className='text-danger'>*</span>
+                      <span className="text-danger">*</span>
                     ) : (
                       <span style={{ color: "grey", fontSize: 12 }}>
                         <sup>(optional)</sup>
@@ -464,34 +468,35 @@ const EditAd = () => {
                     }`,
                   })}
                   <div
-                    style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                    style={{ fontSize: "10px", color: "red", minHeight: 10 }}
+                  >
                     {errors[df?.field_name] && errors[df?.field_name]}
                   </div>
                 </div>
               ))}
             </div>
-            <div className='col-md-6'>
+            <div className="col-md-6">
               <div>
-                <label className='form-label m-0'>
+                <label className="form-label m-0">
                   Upload upto 12 images :
                 </label>
                 <div style={{ color: "grey", fontSize: 12 }}>
                   (Upload images with size less than 4mb.)
                 </div>
                 <input
-                  type='file'
-                  accept='image/*'
+                  type="file"
+                  accept="image/*"
                   style={{ display: "none" }}
                   ref={imageRef}
                   multiple={true}
                   onChange={handleFileChange}
                 />
-                <div className='mt-1 img-input'>
+                <div className="mt-1 img-input">
                   {new Array(noOfImages).fill(null).map((_, i) => (
-                    <div key={i} className='img-input-col'>
+                    <div key={i} className="img-input-col">
                       {images[i] ? (
-                        <div className='img-wrapper'>
-                          <img src={images[i].image} alt='' />
+                        <div className="img-wrapper">
+                          <img src={images[i].image} alt="" />
                           <span onClick={() => handleDeleteImage(i)}>
                             &times;
                           </span>
@@ -499,8 +504,9 @@ const EditAd = () => {
                       ) : (
                         <div
                           onClick={() => imageRef.current.click()}
-                          className='img-placeholder'>
-                          <img src='/assets/svgs/img-ph.svg' alt='' />
+                          className="img-placeholder"
+                        >
+                          <img src="/assets/svgs/img-ph.svg" alt="" />
                         </div>
                       )}
                     </div>
@@ -512,17 +518,19 @@ const EditAd = () => {
                     color: "red",
                     minHeight: 10,
                     marginLeft: 5,
-                  }}>
+                  }}
+                >
                   {errors?.images && errors?.images}
                 </div>
               </div>
             </div>
           </div>
-          <div className='text-end'>
+          <div className="text-end">
             <button
-              className='btn btn-submit text-white'
+              className="btn btn-submit text-white"
               onClick={handleSubmit}
-              disabled={isLoading || isUploadingImage}>
+              disabled={isLoading || isUploadingImage}
+            >
               {isLoading || isUploadingImage ? "Updating" : "Update Ad"}
             </button>
           </div>

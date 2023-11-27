@@ -50,7 +50,8 @@ const Home = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[0],
-    initialData: [],
+    // initialData: [],
+    staleTime: Infinity,
   });
   const { data: subcategories } = useQuery({
     queryKey: ["subcategories"],
@@ -63,7 +64,8 @@ const Home = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[1],
-    initialData: [],
+    // initialData: [],
+    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -178,70 +180,73 @@ const Home = () => {
   };
 
   return (
-    <div className='position-relative'>
+    <div className="position-relative">
       {/*HERO*/}
-      <div id='home-hero'>
-        <div className='overlay'>
-          <div id='home-search'>
-            <div className='row justify-content-center'>
-              <div className='col-lg-6 col-xl-2 cols'>
+      <div id="home-hero">
+        <div className="overlay">
+          <div id="home-search">
+            <div className="row justify-content-center">
+              <div className="col-lg-6 col-xl-2 cols">
                 <div
-                  className='input-wrapper'
-                  onClick={() => setLocationView(true)}>
+                  className="input-wrapper"
+                  onClick={() => setLocationView(true)}
+                >
                   <div>
-                    <img src='/assets/svgs/location.svg' alt='location' />
+                    <img src="/assets/svgs/location.svg" alt="location" />
                   </div>
-                  <div className='p-hldr' style={{ overflow: "hidden" }}>
+                  <div className="p-hldr" style={{ overflow: "hidden" }}>
                     {ourLocation?.name ? ourLocation?.name : "Location"}
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-xl-2 cols'>
+              <div className="col-lg-6 col-xl-2 cols">
                 <div
-                  className='input-wrapper'
-                  onClick={() => setCategoryView(true)}>
+                  className="input-wrapper"
+                  onClick={() => setCategoryView(true)}
+                >
                   <div>
-                    <img src='/assets/svgs/category.svg' alt='category' />
+                    <img src="/assets/svgs/category.svg" alt="category" />
                   </div>
-                  <div className='p-hldr'>
+                  <div className="p-hldr">
                     {selectedCategory?.name
                       ? selectedCategory?.name
                       : "Category"}
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-xl-2 cols'>
+              <div className="col-lg-6 col-xl-2 cols">
                 <div
-                  className='input-wrapper'
-                  onClick={() => setSubCategoryView(true)}>
+                  className="input-wrapper"
+                  onClick={() => setSubCategoryView(true)}
+                >
                   <div>
                     <img
-                      src='/assets/svgs/subcategory.svg'
-                      alt='sub-category'
+                      src="/assets/svgs/subcategory.svg"
+                      alt="sub-category"
                     />
                   </div>
-                  <div className='p-hldr'>
+                  <div className="p-hldr">
                     {selectedSubCategory?.name
                       ? selectedSubCategory?.name
                       : "Sub-Category"}
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-xl-4 cols'>
-                <div className='input-wrapper'>
+              <div className="col-lg-6 col-xl-4 cols">
+                <div className="input-wrapper">
                   <div>
-                    <img src='/assets/svgs/text.svg' alt='text' />
+                    <img src="/assets/svgs/text.svg" alt="text" />
                   </div>
                   <input
-                    placeholder='Search Keywords'
-                    id='search'
+                    placeholder="Search Keywords"
+                    id="search"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={onSearch}
                   />
                 </div>
               </div>
-              <div className='col-lg-12 col-xl-2 cols'>
+              <div className="col-lg-12 col-xl-2 cols">
                 <Link
                   to={ourLocation?.name ? "/search" : ""}
                   onClick={() => {
@@ -251,12 +256,13 @@ const Home = () => {
                     category: selectedCategory,
                     subcategory: selectedSubCategory,
                     search: search,
-                  }}>
-                  <div className='input-wrapper search-btn justify-content-center'>
+                  }}
+                >
+                  <div className="input-wrapper search-btn justify-content-center">
                     <div>
-                      <img src='/assets/svgs/search.svg' alt='search' />
+                      <img src="/assets/svgs/search.svg" alt="search" />
                     </div>
-                    <div className='p-hldr'>Search</div>
+                    <div className="p-hldr">Search</div>
                   </div>
                 </Link>
               </div>

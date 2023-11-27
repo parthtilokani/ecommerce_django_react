@@ -9,13 +9,14 @@ const InfoPanel = () => {
     queryKey: ["total_ads"],
     queryFn: async () => {
       const { data } = await axiosOpen.get("/ads/ads/total_count");
-      setFetchedQueries((prev) => [true, prev[1], prev[2]]);
+      setFetchedQueries((prev) => [true, prev[1]]);
       return {
         total_count: data?.total_count,
         distinct_states_count: data?.distinct_states_count,
       };
     },
     enabled: !fetchedQueries[0],
+    staleTime: Infinity,
   });
   const { data: total_users } = useQuery({
     queryKey: ["total_users"],
@@ -25,6 +26,7 @@ const InfoPanel = () => {
       return data?.registered_user || 100;
     },
     enabled: !fetchedQueries[1],
+    staleTime: Infinity,
   });
 
   return (

@@ -91,7 +91,8 @@ const Search = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[1],
-    initialData: [],
+    // initialData: [],
+    staleTime: Infinity,
   });
   const { data: subcategories } = useQuery({
     queryKey: ["subcategories"],
@@ -104,7 +105,8 @@ const Search = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[2],
-    initialData: [],
+    // initialData: [],
+    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -189,77 +191,82 @@ const Search = () => {
 
   return (
     <div>
-      <div id='search-hero'>
-        <div className='overlay'>
+      <div id="search-hero">
+        <div className="overlay">
           <div
-            id='search-bar'
-            className='position-absolute top-100 start-50 translate-middle'>
-            <div className='row justify-content-center'>
-              <div className='col-lg-6 col-xl-2 cols'>
+            id="search-bar"
+            className="position-absolute top-100 start-50 translate-middle"
+          >
+            <div className="row justify-content-center">
+              <div className="col-lg-6 col-xl-2 cols">
                 <div
-                  className='input-wrapper'
-                  onClick={() => setLocationView(true)}>
+                  className="input-wrapper"
+                  onClick={() => setLocationView(true)}
+                >
                   <div>
-                    <img src='/assets/svgs/location.svg' alt='location' />
+                    <img src="/assets/svgs/location.svg" alt="location" />
                   </div>
-                  <div className='p-hldr' style={{ overflow: "hidden" }}>
+                  <div className="p-hldr" style={{ overflow: "hidden" }}>
                     {ourLocation?.name ? ourLocation?.name : "Location"}
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-xl-2 cols'>
+              <div className="col-lg-6 col-xl-2 cols">
                 <div
-                  className='input-wrapper'
-                  onClick={() => setCategoryView(true)}>
+                  className="input-wrapper"
+                  onClick={() => setCategoryView(true)}
+                >
                   <div>
-                    <img src='/assets/svgs/category.svg' alt='category' />
+                    <img src="/assets/svgs/category.svg" alt="category" />
                   </div>
-                  <div className='p-hldr'>
+                  <div className="p-hldr">
                     {selectedCategory?.name
                       ? selectedCategory?.name
                       : "Category"}
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-xl-2 cols'>
+              <div className="col-lg-6 col-xl-2 cols">
                 <div
-                  className='input-wrapper'
-                  onClick={() => setSubCategoryView(true)}>
+                  className="input-wrapper"
+                  onClick={() => setSubCategoryView(true)}
+                >
                   <div>
                     <img
-                      src='/assets/svgs/subcategory.svg'
-                      alt='sub-category'
+                      src="/assets/svgs/subcategory.svg"
+                      alt="sub-category"
                     />
                   </div>
-                  <div className='p-hldr'>
+                  <div className="p-hldr">
                     {selectedSubCategory?.name
                       ? selectedSubCategory?.name
                       : "Sub-Category"}
                   </div>
                 </div>
               </div>
-              <div className='col-lg-6 col-xl-4 cols'>
-                <div className='input-wrapper'>
+              <div className="col-lg-6 col-xl-4 cols">
+                <div className="input-wrapper">
                   <div>
-                    <img src='/assets/svgs/text.svg' alt='text' />
+                    <img src="/assets/svgs/text.svg" alt="text" />
                   </div>
                   <input
-                    placeholder='Search Keywords'
-                    id='search'
+                    placeholder="Search Keywords"
+                    id="search"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     autoFocus={true}
                   />
                 </div>
               </div>
-              <div className='col-lg-12 col-xl-2 cols'>
+              <div className="col-lg-12 col-xl-2 cols">
                 <div
-                  className='input-wrapper search-btn justify-content-center'
-                  onClick={refetch}>
+                  className="input-wrapper search-btn justify-content-center"
+                  onClick={refetch}
+                >
                   <div>
-                    <img src='/assets/svgs/search.svg' alt='search' />
+                    <img src="/assets/svgs/search.svg" alt="search" />
                   </div>
-                  <div className='p-hldr'>Search</div>
+                  <div className="p-hldr">Search</div>
                 </div>
               </div>
             </div>
@@ -305,20 +312,20 @@ const Search = () => {
         }}
       />
 
-      <div id='search-results'>
-        <div className='featured-ads-main row mx-auto'>
+      <div id="search-results">
+        <div className="featured-ads-main row mx-auto">
           {isLoadingAds ? (
             new Array(4).fill(null).map((_, i) => (
-              <div key={i} className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3'>
+              <div key={i} className="col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3">
                 <AdCardSkeleton />
               </div>
             ))
           ) : myAds?.length > 0 ? (
             myAds?.map((ad, i) => (
-              <div className='col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3' key={i}>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6 p-3" key={i}>
                 <Link to={`/ads/view/${ad?.id}`}>
-                  <div className='fa-card'>
-                    <div className='fa-img-main position-relative'>
+                  <div className="fa-card">
+                    <div className="fa-img-main position-relative">
                       <img
                         src={
                           ad?.ads_image?.length > 0 &&
@@ -330,16 +337,16 @@ const Search = () => {
                               )
                             : "https://www.radiustheme.com/demo/wordpress/publicdemo/classima/wp-content/themes/classima/assets/img/noimage-listing-thumb.jpg"
                         }
-                        alt=''
+                        alt=""
                       />
-                      <div className='fa-img-overlay'></div>
+                      <div className="fa-img-overlay"></div>
                     </div>
-                    <div className='fa-card-body'>
+                    <div className="fa-card-body">
                       <div>
-                        <div className='h6 fw-bold'>{ad?.ad_title}</div>
-                        <p className=''>{ad?.ad_description}</p>
-                        <div className='d-flex align-items-center mt-1'>
-                          <img src='/assets/svgs/time.svg' alt='' />
+                        <div className="h6 fw-bold">{ad?.ad_title}</div>
+                        <p className="">{ad?.ad_description}</p>
+                        <div className="d-flex align-items-center mt-1">
+                          <img src="/assets/svgs/time.svg" alt="" />
                           <span>
                             {ad?.posted_on &&
                               new Date(ad?.posted_on).toLocaleString("en-IN", {
@@ -352,12 +359,12 @@ const Search = () => {
                               })}
                           </span>
                         </div>
-                        <div className='d-flex align-items-center'>
-                          <img src='/assets/svgs/profile.svg' alt='' />
+                        <div className="d-flex align-items-center">
+                          <img src="/assets/svgs/profile.svg" alt="" />
                           <span>{ad?.create_user?.name || "Ananomous"}</span>
                         </div>
-                        <div className='d-flex align-items-center'>
-                          <img src='/assets/svgs/location.svg' alt='' />
+                        <div className="d-flex align-items-center">
+                          <img src="/assets/svgs/location.svg" alt="" />
                           <span>{ad?.location || "No Location"}</span>
                         </div>
                       </div>
@@ -371,51 +378,56 @@ const Search = () => {
           )}
         </div>
 
-        <div className='row mt-20 m-1'>
-          <div className='col-sm-12 col-md-6 mb-20'>
+        <div className="row mt-20 m-1">
+          <div className="col-sm-12 col-md-6 mb-20">
             <div
-              className='dataTables_info'
-              id='datatable_info'
-              role='status'
-              aria-live='polite'>
+              className="dataTables_info"
+              id="datatable_info"
+              role="status"
+              aria-live="polite"
+            >
               Showing {currentPage * itemPerPage - itemPerPage + 1} to{" "}
               {Math.min(currentPage * itemPerPage, totalData)} of {totalData}{" "}
               entries
             </div>
           </div>
 
-          <div className='col-sm-12 col-md-6'>
-            <div className='d-flex'>
-              <ul className='pagination ms-auto'>
+          <div className="col-sm-12 col-md-6">
+            <div className="d-flex">
+              <ul className="pagination ms-auto">
                 <li
                   className={
                     currentPage === 1
                       ? "paginate_button page-item previous disabled"
                       : "paginate_button page-item previous"
-                  }>
+                  }
+                >
                   <span
-                    className='page-link text-dark'
+                    className="page-link text-dark"
                     style={{ cursor: "pointer" }}
-                    onClick={() => setCurrentPage((prev) => prev - 1)}>
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
                     Previous
                   </span>
                 </li>
 
                 {!(currentPage - 1 < 1) && (
-                  <li className='paginate_button page-item'>
+                  <li className="paginate_button page-item">
                     <span
-                      className='page-link text-dark'
+                      className="page-link text-dark"
                       style={{ cursor: "pointer" }}
-                      onClick={(e) => setCurrentPage((prev) => prev - 1)}>
+                      onClick={(e) => setCurrentPage((prev) => prev - 1)}
+                    >
                       {currentPage - 1}
                     </span>
                   </li>
                 )}
 
-                <li className='paginate_button page-item active'>
+                <li className="paginate_button page-item active">
                   <span
-                    className='page-link bg-secondary'
-                    style={{ cursor: "pointer" }}>
+                    className="page-link bg-secondary"
+                    style={{ cursor: "pointer" }}
+                  >
                     {currentPage}
                   </span>
                 </li>
@@ -424,13 +436,14 @@ const Search = () => {
                   (currentPage + 1) * itemPerPage - itemPerPage >
                   totalData - 1
                 ) && (
-                  <li className='paginate_button page-item '>
+                  <li className="paginate_button page-item ">
                     <span
-                      className='page-link text-dark'
+                      className="page-link text-dark"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         setCurrentPage((prev) => prev + 1);
-                      }}>
+                      }}
+                    >
                       {currentPage + 1}
                     </span>
                   </li>
@@ -444,11 +457,13 @@ const Search = () => {
                     )
                       ? "paginate_button page-item next"
                       : "paginate_button page-item next disabled"
-                  }>
+                  }
+                >
                   <span
-                    className='page-link text-dark'
+                    className="page-link text-dark"
                     style={{ cursor: "pointer" }}
-                    onClick={() => setCurrentPage((prev) => prev + 1)}>
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
                     Next
                   </span>
                 </li>

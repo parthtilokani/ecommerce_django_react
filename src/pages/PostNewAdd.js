@@ -62,6 +62,7 @@ const PostNewAdd = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[0],
+    staleTime: Infinity,
   });
   const { data: subcategories } = useQuery({
     queryKey: ["subcategories"],
@@ -74,6 +75,7 @@ const PostNewAdd = () => {
       return typeof data === "object" ? [...data] : [];
     },
     enabled: !fetchedQueries[1],
+    staleTime: Infinity,
   });
 
   const { mutate, isLoading } = useMutation({
@@ -285,20 +287,20 @@ const PostNewAdd = () => {
 
   return (
     <>
-      <div id='post-new-ad'>
-        <div className='text-center h3 fw-bold'>POST YOUR AD</div>
-        <div className='pya-main'>
+      <div id="post-new-ad">
+        <div className="text-center h3 fw-bold">POST YOUR AD</div>
+        <div className="pya-main">
           {stage === 1 ? (
             <>
-              <div className='row'>
-                <div className='col-md-6'>
-                  <div className='h5 fw-bold'>
-                    Choose category<span className='text-danger'>*</span> :
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="h5 fw-bold">
+                    Choose category<span className="text-danger">*</span> :
                   </div>
-                  <ul className='categories'>
+                  <ul className="categories">
                     {isLoadingCategories && (
                       <li>
-                        <div className='c-name disabled'>Loading...</div>
+                        <div className="c-name disabled">Loading...</div>
                       </li>
                     )}
                     {categories?.map((category, i) => (
@@ -307,21 +309,22 @@ const PostNewAdd = () => {
                           onClick={() => handleCategoryClick(category.id)}
                           className={`c-name${
                             selectedCategory === category.id ? " active" : ""
-                          }`}>
+                          }`}
+                        >
                           {category.name}
                           {selectedCategory === category.id && (
-                            <div className='c-toggle'>&gt;</div>
+                            <div className="c-toggle">&gt;</div>
                           )}
                         </div>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className='col-md-6' ref={subCategoryRef}>
-                  <div className='h5 fw-bold'>
-                    Choose subcategory<span className='text-danger'>*</span> :
+                <div className="col-md-6" ref={subCategoryRef}>
+                  <div className="h5 fw-bold">
+                    Choose subcategory<span className="text-danger">*</span> :
                   </div>
-                  <ul className='categories'>
+                  <ul className="categories">
                     {selectedCategory ? (
                       subcategories
                         ?.filter((e) => e.category === selectedCategory)
@@ -335,14 +338,15 @@ const PostNewAdd = () => {
                               }`}
                               onClick={() =>
                                 handleSubCategoryClick(subcategory.id)
-                              }>
+                              }
+                            >
                               {subcategory.name}
                             </div>
                           </li>
                         ))
                     ) : (
                       <li>
-                        <div className='c-name disabled'>Choose a Category</div>
+                        <div className="c-name disabled">Choose a Category</div>
                       </li>
                     )}
                   </ul>
@@ -351,71 +355,75 @@ const PostNewAdd = () => {
             </>
           ) : (
             <>
-              <div className='row'>
-                <div className='col-md-6'>
+              <div className="row">
+                <div className="col-md-6">
                   <div>
-                    <label className='form-label m-0' htmlFor='ad_title'>
-                      Ad title<span className='text-danger'>*</span> :
+                    <label className="form-label m-0" htmlFor="ad_title">
+                      Ad title<span className="text-danger">*</span> :
                     </label>
                     <input
-                      type='text'
+                      type="text"
                       className={`form-control form-control-sm${
                         errors?.ad_title ? " is-invalid" : ""
                       }`}
-                      id='ad_title'
+                      id="ad_title"
                       value={data.ad_title}
                       onChange={handleChange}
-                      maxLength='150'
+                      maxLength="150"
                     />
                     <div
-                      style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                      style={{ fontSize: "10px", color: "red", minHeight: 10 }}
+                    >
                       {errors?.ad_title && errors?.ad_title}
                     </div>
                   </div>
                   <div>
-                    <label className='form-label m-0' htmlFor='ad_description'>
-                      Ad description<span className='text-danger'>*</span> :
+                    <label className="form-label m-0" htmlFor="ad_description">
+                      Ad description<span className="text-danger">*</span> :
                     </label>
                     <textarea
                       className={`form-control form-control-sm${
                         errors?.ad_description ? " is-invalid" : ""
                       }`}
-                      id='ad_description'
+                      id="ad_description"
                       value={data.ad_description}
                       onChange={handleChange}
                     />
                     <div
-                      style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                      style={{ fontSize: "10px", color: "red", minHeight: 10 }}
+                    >
                       {errors?.ad_description && errors?.ad_description}
                     </div>
                   </div>
                   <div>
-                    <label className='form-label m-0' htmlFor='location'>
-                      Location<span className='text-danger'>*</span> :
+                    <label className="form-label m-0" htmlFor="location">
+                      Location<span className="text-danger">*</span> :
                     </label>
                     <input
-                      type='text'
+                      type="text"
                       className={`form-control form-control-sm${
                         errors?.location ? " is-invalid" : ""
                       }`}
-                      id='location'
+                      id="location"
                       value={ourLocation?.name}
                       onChange={() => {}}
                       onClick={() => setLocationView(true)}
                     />
                     <div
-                      style={{ fontSize: "10px", color: "red", minHeight: 10 }}>
+                      style={{ fontSize: "10px", color: "red", minHeight: 10 }}
+                    >
                       {errors?.location && errors?.location}
                     </div>
                   </div>
                   {dynamicFields?.map((df, i) => (
-                    <div className='mt-2' key={i}>
+                    <div className="mt-2" key={i}>
                       <label
-                        className='form-label m-0'
-                        htmlFor={df?.field_name}>
+                        className="form-label m-0"
+                        htmlFor={df?.field_name}
+                      >
                         {df?.field_name}
                         {df?.is_required ? (
-                          <span className='text-danger'>*</span>
+                          <span className="text-danger">*</span>
                         ) : (
                           <span style={{ color: "grey", fontSize: 12 }}>
                             <sup>(optional)</sup>
@@ -436,34 +444,35 @@ const PostNewAdd = () => {
                           fontSize: "10px",
                           color: "red",
                           minHeight: 10,
-                        }}>
+                        }}
+                      >
                         {errors[df?.field_name] && errors[df?.field_name]}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className='col-md-6'>
+                <div className="col-md-6">
                   <div>
-                    <label className='form-label m-0'>
+                    <label className="form-label m-0">
                       Upload upto {noOfImages} images :
                     </label>
                     <div style={{ color: "grey", fontSize: 12 }}>
                       (Upload images with size less than 4mb.)
                     </div>
                     <input
-                      type='file'
-                      accept='image/*'
+                      type="file"
+                      accept="image/*"
                       style={{ display: "none" }}
                       ref={imageRef}
                       multiple={true}
                       onChange={handleFileChange}
                     />
-                    <div className='mt-1 img-input'>
+                    <div className="mt-1 img-input">
                       {new Array(noOfImages).fill(null).map((_, i) => (
-                        <div key={i} className='img-input-col'>
+                        <div key={i} className="img-input-col">
                           {images[i] ? (
-                            <div className='img-wrapper'>
-                              <img src={images[i].src} alt='' />
+                            <div className="img-wrapper">
+                              <img src={images[i].src} alt="" />
                               <span onClick={() => deleteImage(i)}>
                                 &times;
                               </span>
@@ -471,8 +480,9 @@ const PostNewAdd = () => {
                           ) : (
                             <div
                               onClick={() => imageRef.current.click()}
-                              className='img-placeholder'>
-                              <img src='/assets/svgs/img-ph.svg' alt='' />
+                              className="img-placeholder"
+                            >
+                              <img src="/assets/svgs/img-ph.svg" alt="" />
                             </div>
                           )}
                         </div>
@@ -484,27 +494,30 @@ const PostNewAdd = () => {
                         color: "red",
                         minHeight: 10,
                         marginLeft: 5,
-                      }}>
+                      }}
+                    >
                       {errors?.images && errors?.images}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className='text-end'>
+              <div className="text-end">
                 <button
-                  className='btn btn-back text-white me-2'
+                  className="btn btn-back text-white me-2"
                   onClick={() => {
                     setStage(1);
                     setErrors({});
                     window.scrollTo(0, 0);
                   }}
-                  disabled={isLoading}>
+                  disabled={isLoading}
+                >
                   Back
                 </button>
                 <button
-                  className='btn btn-submit text-white'
+                  className="btn btn-submit text-white"
                   onClick={handleSubmit}
-                  disabled={isLoading || isUploadingImage}>
+                  disabled={isLoading || isUploadingImage}
+                >
                   {isLoading || isUploadingImage ? "Posting" : "Post Ad"}
                 </button>
               </div>

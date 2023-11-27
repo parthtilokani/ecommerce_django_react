@@ -18,6 +18,7 @@ const ViewAd = () => {
       return data || [];
     },
     enabled: !fetchedQueries[0],
+    staleTime: Infinity,
   });
 
   const nextSlide = () =>
@@ -37,58 +38,61 @@ const ViewAd = () => {
     );
 
   return (
-    <div id='view_ad'>
-      <div className='va-body'>
-        <div className='row m-1'>
-          <div className='col-lg-8 mb-2'>
-            <div className='card'>
-              <div className='card-body'>
+    <div id="view_ad">
+      <div className="va-body">
+        <div className="row m-1">
+          <div className="col-lg-8 mb-2">
+            <div className="card">
+              <div className="card-body">
                 {isLoading ? (
                   <>
-                    <div className='skeleton skeleton-text h4'></div>
-                    <div className='skeleton skeleton-text h4'></div>
+                    <div className="skeleton skeleton-text h4"></div>
+                    <div className="skeleton skeleton-text h4"></div>
                   </>
                 ) : (
-                  <div className='h4 fw-bold my-2'>{ad?.ad_title}</div>
+                  <div className="h4 fw-bold my-2">{ad?.ad_title}</div>
                 )}
-                <div className='carousel-container'>
+                <div className="carousel-container">
                   <div
-                    className='carousel-wrapper'
+                    className="carousel-wrapper"
                     style={{
                       transform: `translateX(${-currentImage * 100}%)`,
-                    }}>
+                    }}
+                  >
                     {ad?.images?.length > 0 ? (
                       ad?.images?.map(({ image }, index) => (
-                        <div key={index} className='image-wrapper'>
+                        <div key={index} className="image-wrapper">
                           <img
                             src={image}
                             alt={`${index + 1}`}
-                            className='carousel-image'
+                            className="carousel-image"
                           />
                         </div>
                       ))
                     ) : (
-                      <div className='image-wrapper'>
+                      <div className="image-wrapper">
                         <div
-                          className='carousel-image skeleton'
-                          style={{ height: "300px" }}></div>
+                          className="carousel-image skeleton"
+                          style={{ height: "300px" }}
+                        ></div>
                       </div>
                     )}
                   </div>
-                  <button className='carousel-button prev' onClick={prevSlide}>
+                  <button className="carousel-button prev" onClick={prevSlide}>
                     &lt;
                   </button>
-                  <button className='carousel-button next' onClick={nextSlide}>
+                  <button className="carousel-button next" onClick={nextSlide}>
                     &gt;
                   </button>
                 </div>
-                <div className='d-sm-flex align-items-start my-2'>
-                  <div className='d-flex align-items-center me-3 mb-1'>
-                    <img src='/assets/svgs/time.svg' className='icon' alt='' />
+                <div className="d-sm-flex align-items-start my-2">
+                  <div className="d-flex align-items-center me-3 mb-1">
+                    <img src="/assets/svgs/time.svg" className="icon" alt="" />
                     {isLoading ? (
                       <div
-                        className='skeleton skeleton-text h4'
-                        style={{ width: "200px" }}></div>
+                        className="skeleton skeleton-text h4"
+                        style={{ width: "200px" }}
+                      ></div>
                     ) : (
                       <span style={{ width: "180px" }}>
                         {ad?.posted_on &&
@@ -103,17 +107,18 @@ const ViewAd = () => {
                       </span>
                     )}
                   </div>
-                  <div className='d-flex'>
+                  <div className="d-flex">
                     <img
-                      src='/assets/svgs/location.svg'
-                      className='icon'
-                      alt=''
+                      src="/assets/svgs/location.svg"
+                      className="icon"
+                      alt=""
                       style={{ marginTop: "4px" }}
                     />
                     {isLoading ? (
                       <div
-                        className='skeleton skeleton-text h4'
-                        style={{ width: "200px" }}></div>
+                        className="skeleton skeleton-text h4"
+                        style={{ width: "200px" }}
+                      ></div>
                     ) : (
                       <span>{ad?.location || "No Location"}</span>
                     )}
@@ -121,14 +126,14 @@ const ViewAd = () => {
                 </div>
 
                 <div>
-                  <div className='mb-2'>
-                    <div className='py-1'>
+                  <div className="mb-2">
+                    <div className="py-1">
                       {isLoading ? (
                         <>
-                          <div className='skeleton skeleton-text h4'></div>
-                          <div className='skeleton skeleton-text h4'></div>
-                          <div className='skeleton skeleton-text h4'></div>
-                          <div className='skeleton skeleton-text h4'></div>
+                          <div className="skeleton skeleton-text h4"></div>
+                          <div className="skeleton skeleton-text h4"></div>
+                          <div className="skeleton skeleton-text h4"></div>
+                          <div className="skeleton skeleton-text h4"></div>
                         </>
                       ) : (
                         ad?.ad_description
@@ -139,8 +144,8 @@ const ViewAd = () => {
                         (df) => df?.field_type === "Text" && df?.value?.trim()
                       )
                       ?.map((df, i) => (
-                        <div className='fw-bold py-1' key={i}>
-                          <span className='fw-bold'>{df?.field_name}</span> :{" "}
+                        <div className="fw-bold py-1" key={i}>
+                          <span className="fw-bold">{df?.field_name}</span> :{" "}
                           {df?.value}
                         </div>
                       ))}
@@ -158,8 +163,8 @@ const ViewAd = () => {
                           df?.value?.toString()?.trim()
                       )
                       ?.map((df, i) => (
-                        <div key={i} className='py-1'>
-                          <span className='fw-bold'>{df?.field_name}</span> :{" "}
+                        <div key={i} className="py-1">
+                          <span className="fw-bold">{df?.field_name}</span> :{" "}
                           {df?.value}
                         </div>
                       ))}
@@ -169,8 +174,8 @@ const ViewAd = () => {
                           df?.field_type === "TextArea" && df?.value?.trim()
                       )
                       ?.map((df, i) => (
-                        <div key={i} className='py-1'>
-                          <span className='fw-bold'>{df?.field_name}</span> :{" "}
+                        <div key={i} className="py-1">
+                          <span className="fw-bold">{df?.field_name}</span> :{" "}
                           {df?.value}
                         </div>
                       ))}
@@ -179,24 +184,25 @@ const ViewAd = () => {
               </div>
             </div>
           </div>
-          <div className='col-lg-4 mb-2'>
-            <div className='card'>
-              <div className='card-body'>
-                <div className='h5 fw-bold'>Seller Information</div>
+          <div className="col-lg-4 mb-2">
+            <div className="card">
+              <div className="card-body">
+                <div className="h5 fw-bold">Seller Information</div>
                 <hr />
-                <div className='h6 fw-bold'>Name : {ad?.create_user?.name}</div>
-                <div className='h6 fw-bold'>
+                <div className="h6 fw-bold">Name : {ad?.create_user?.name}</div>
+                <div className="h6 fw-bold">
                   Contact Info : +{ad?.create_user?.area_code}-
                   {ad?.create_user?.phone_no}
                   <a
                     href={`https://wa.me/${ad?.create_user?.area_code}${ad?.create_user?.phone_no}`}
-                    target='_blank'
-                    rel='noreferrer'>
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <img
-                      src='/assets/svgs/whatsapp.png'
-                      alt=''
+                      src="/assets/svgs/whatsapp.png"
+                      alt=""
                       style={{ width: "30px" }}
-                      className='ms-2'
+                      className="ms-2"
                     />
                   </a>
                 </div>

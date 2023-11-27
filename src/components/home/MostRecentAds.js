@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { axiosOpen } from "../../utils/axios.js";
@@ -9,8 +9,17 @@ import useOurLocation from "../../hooks/useOurLocation.js";
 const MostRecentAds = () => {
   const { location: ourLocation } = useOurLocation();
 
-  const { data: ads, refetch } = useQuery({
-    queryKey: ["most_recent_ads"],
+  const { data: ads } = useQuery({
+    queryKey: [
+      "most_recent_ads",
+      {
+        latitude: ourLocation?.lat,
+        longitude: ourLocation?.lng,
+        place_id: ourLocation?.place_id,
+        page: 1,
+        limit: 8,
+      },
+    ],
     queryFn: async () => {
       const paramsObj = {
         latitude: ourLocation?.lat,
@@ -28,13 +37,14 @@ const MostRecentAds = () => {
         ? [...data?.popular_category]
         : [];
     },
-    enabled: false,
-    initialData: [],
+    // enabled: false,
+    // initialData: [],
+    staleTime: Infinity,
   });
 
-  useEffect(() => {
-    refetch();
-  }, [ourLocation]);
+  // useEffect(() => {
+  //   refetch();
+  // }, [ourLocation]);
 
   return (
     <div id="home-featured-ads">

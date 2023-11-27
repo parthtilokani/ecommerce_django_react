@@ -11,20 +11,18 @@ const PackageAndPricing = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
-  const [fetchedQueries, setFetchedQueries] = useState([false]);
+  const [fetchedQueries, setFetchedQueries] = useState(false);
 
   const { data: adsPlans } = useQuery({
     queryKey: ["ads_plans"],
     queryFn: async () => {
       const { data } = await axiosOpen.get("/ads_plan/ads_plan/");
-      setFetchedQueries((prev) => {
-        prev[0] = true;
-        return [...prev];
-      });
+      setFetchedQueries(true);
       return typeof data === "object" ? [...data] : [];
     },
-    enabled: !fetchedQueries[0],
-    initialData: [],
+    enabled: !fetchedQueries,
+    // initialData: [],
+    staleTime: Infinity,
   });
 
   function buyPackage(plan_id) {
@@ -77,24 +75,25 @@ const PackageAndPricing = () => {
   }
 
   return (
-    <section id='our-pricing-and-packages'>
-      <div className='text-center py-4 mx-1'>
-        <div className='h2 fw-bold'>Our Pricing and Packages</div>
+    <section id="our-pricing-and-packages">
+      <div className="text-center py-4 mx-1">
+        <div className="h2 fw-bold">Our Pricing and Packages</div>
       </div>
-      <div className='row mx-auto our-pricing-main justify-content-center'>
+      <div className="row mx-auto our-pricing-main justify-content-center">
         {adsPlans?.map((plan, i) => (
-          <div className='col-xl-3 col-lg-4 col-md-6' key={i}>
-            <div className='our-pricing-card mx-auto'>
-              <div className='h4 text-capitalize'>{plan?.name}</div>
-              <div className='h1 pricing'>₹ {plan?.price}</div>
-              <div className='op-features'>
+          <div className="col-xl-3 col-lg-4 col-md-6" key={i}>
+            <div className="our-pricing-card mx-auto">
+              <div className="h4 text-capitalize">{plan?.name}</div>
+              <div className="h1 pricing">₹ {plan?.price}</div>
+              <div className="op-features">
                 {plan?.ads_number_restriction} Ads /per month
               </div>
-              <div className='op-features'>{plan?.description || "-"}</div>
+              <div className="op-features">{plan?.description || "-"}</div>
               <div>
                 <button
                   onClick={() => buyPackage(plan?.id)}
-                  disabled={Number(plan.price) === 0}>
+                  disabled={Number(plan.price) === 0}
+                >
                   {Number(plan.price) === 0
                     ? "Active"
                     : auth?.accessToken

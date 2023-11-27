@@ -26,17 +26,18 @@ const Navbar = () => {
       return data || [];
     },
     enabled: !gotLogo,
+    staleTime: Infinity,
   });
 
   return (
     <nav>
-      <div id='app-brand'>
-        <div className='logo-wrapper'>
-          <Link to='/'>
+      <div id="app-brand">
+        <div className="logo-wrapper">
+          <Link to="/">
             {logo?.icon_image ? (
               <img
                 src={logo?.icon_image}
-                alt='logo'
+                alt="logo"
                 style={{ width: logo?.width, height: logo?.height }}
               />
             ) : (
@@ -45,33 +46,36 @@ const Navbar = () => {
           </Link>
         </div>
         <div
-          id='hamburger'
+          id="hamburger"
           className={isOpen ? "hamburger-close" : ""}
-          onClick={() => setIsOpen((prev) => !prev)}>
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
           <span></span>
           <span></span>
           <span></span>
         </div>
       </div>
-      <div id='app-menu' className={isOpen ? "menu-open" : ""}>
+      <div id="app-menu" className={isOpen ? "menu-open" : ""}>
         <ul>
           <li>
             <Link
-              to='/home'
+              to="/home"
               style={{
                 color:
                   location.pathname === "/home" || location.pathname === "/"
                     ? "#43c6ac"
                     : "",
               }}
-              onClick={() => setIsOpen(false)}>
+              onClick={() => setIsOpen(false)}
+            >
               Home
             </Link>
           </li>
           <li>
             <Link
-              to='/home#our-pricing-and-packages'
-              onClick={() => setIsOpen(false)}>
+              to="/home#our-pricing-and-packages"
+              onClick={() => setIsOpen(false)}
+            >
               Pricing and Packages
             </Link>
           </li>
@@ -80,32 +84,35 @@ const Navbar = () => {
           </li> */}
           <li>
             <Link
-              to='/contact'
+              to="/contact"
               style={{
                 color: location.pathname === "/contact" ? "#43c6ac" : "",
               }}
-              onClick={() => setIsOpen(false)}>
+              onClick={() => setIsOpen(false)}
+            >
               Contact
             </Link>
           </li>
           <li>
             {auth?.accessToken ? (
               <Link
-                to='/profile'
+                to="/profile"
                 style={{
                   color: location.pathname === "/profile" ? "#43c6ac" : "",
                 }}
-                onClick={() => setIsOpen(false)}>
+                onClick={() => setIsOpen(false)}
+              >
                 Profile
               </Link>
             ) : (
               <Link
-                to='/login'
+                to="/login"
                 state={{ page: 2 }}
                 style={{
                   color: location.pathname === "/login" ? "#43c6ac" : "",
                 }}
-                onClick={() => setIsOpen(false)}>
+                onClick={() => setIsOpen(false)}
+              >
                 Log In
               </Link>
             )}
@@ -118,37 +125,40 @@ const Navbar = () => {
                   localStorage.removeItem("auth");
                   setIsOpen(false);
                   navigate("/", { replace: true });
-                }}>
+                }}
+              >
                 Log out
               </Link>
             </li>
           )}
           <li>
             {auth?.accessToken ? (
-              <Link to='/post-new-ad'>
+              <Link to="/post-new-ad">
                 <button
-                  className='nav-post-ad'
+                  className="nav-post-ad"
                   style={{
                     backgroundColor:
                       location.pathname === "/post-new-ad"
                         ? "rgb(62, 176, 154)"
                         : "",
                   }}
-                  onClick={() => setIsOpen(false)}>
+                  onClick={() => setIsOpen(false)}
+                >
                   + Post Your Ad
                 </button>
               </Link>
             ) : (
-              <Link to='/login'>
+              <Link to="/login">
                 <button
-                  className='nav-post-ad'
+                  className="nav-post-ad"
                   style={{
                     backgroundColor:
                       location.pathname === "/post-new-ad"
                         ? "rgb(62, 176, 154)"
                         : "",
                   }}
-                  onClick={() => setIsOpen(false)}>
+                  onClick={() => setIsOpen(false)}
+                >
                   + Post Your Ad
                 </button>
               </Link>
