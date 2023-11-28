@@ -14,7 +14,9 @@ import Router from "./routes.js";
 import { AuthProvider } from "./contexts/AuthProvider.js";
 import { LocationProvider } from "./contexts/LocationProvider.js";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
 
 const App = () => {
   return (
@@ -25,7 +27,7 @@ const App = () => {
             <ScrollToTop />
             <Router />
             <ToastContainer
-              position='top-right'
+              position="top-right"
               autoClose={3000}
               hideProgressBar={false}
               newestOnTop={false}
@@ -34,7 +36,7 @@ const App = () => {
               pauseOnFocusLoss
               draggable
               pauseOnHover
-              theme='colored'
+              theme="colored"
             />
           </LocationProvider>
         </AuthProvider>
